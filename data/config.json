@@ -1,0 +1,84 @@
+{
+  "couple": {
+    "bride": {
+      "firstName": "Pramudi",
+      "lastName": "Piyumika",
+      "fullName": "Pramudi Piyumika"
+    },
+    "groom": {
+      "firstName": "Kaveeth",
+      "lastName": "Manodhya",
+      "fullName": "Kaveeth Manodhya"
+    },
+    "displayNames": "Kaveeth & Pramudi",
+    "tagline": "Together Forever"
+  },
+  "wedding": {
+    "dateTimeISO": "2026-10-19T10:00:00",
+    "displayDate": "December 19, 2026",
+    "year": "2026"
+  },
+  "story": {
+    "invitationText": "Together with their families, Amara Silva and Kaveen Fernando invite you to celebrate their joyful union. Your presence will make this day even more special and memorable for us both.",
+    "paragraphs": [
+      "We met on a rainy Tuesday in October — unexpectedly, the way the best things in life always seem to happen. What started as a chance encounter soon blossomed into the most beautiful chapter of our lives.",
+      "Through adventures big and small, laughter and tears, we found in each other a home. Today, we take another step forward — this time, together, forever."
+    ]
+  },
+  "events": {
+    "ceremony": {
+      "title": "Poruwa ceremony",
+      "icon": "🌸",
+      "time": "10:00 AM",
+      "venueName": "Araliya Gardens",
+      "address": "123 Lotus Lane, Colombo 05, Sri Lanka",
+      "mapsUrl": "https://maps.google.com/?q=Colombo+05+Sri+Lanka",
+      "dressCode": "Traditional / Semi-Formal"
+    }
+  },
+  "gallery": [
+    {
+      "src": "/images/gallery-1.png",
+      "alt": "Golden hour"
+    },
+    {
+      "src": "/images/gallery-2.png",
+      "alt": "Garden stroll"
+    },
+    {
+      "src": "/images/gallery-3.png",
+      "alt": "Intimate moment"
+    },
+    {
+      "src": "/images/gallery-4.png",
+      "alt": "Beach walk"
+    }
+  ],
+  "heroImage": "/images/hero.png",
+  "heroLayout": 1,
+  "rsvp": {
+    "whatsappNumber": "94711690138",
+    "deadline": "December 1, 2026",
+    "maxGuests": 6
+  },
+  "envelope": {
+    "title": "A Wedding Invitation",
+    "subtitle": "kaveeth & pramudi",
+    "buttonText": "Open Invitation"
+  },
+  "theme": {
+    "colorPrimary": "#2D5A27",
+    "colorSecondary": "#A3B18A",
+    "colorTextLight": "#344E41",
+    "colorTextDark": "#1B261B",
+    "colorBg": "#F0F4EF",
+    "colorSurface": "#FFFFFF",
+    "heroOverlayStart": "rgba(15, 30, 15, 0.55)",
+    "heroOverlayEnd": "rgba(15, 30, 15, 0.25)"
+  },
+  "meta": {
+    "title": "Amara & Kaveen — Wedding Invitation",
+    "description": "Join us as we celebrate the union of Amara Silva and Kaveen Fernando on December 19, 2026.",
+    "ogImage": "/images/gallery-1.png"
+  }
+}
