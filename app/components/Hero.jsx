@@ -72,7 +72,7 @@ function Layout1({ config }) {
         {/* Content Box */}
         <div className="relative z-20 flex flex-col items-center justify-end pt-[50%] h-full text-center px-8 pb-16">
           <p style={{ ...eyebrow, marginBottom: '24px' }}>Wedding Celebration</p>
-          
+
           <h1 className="font-serif tracking-widest leading-tight" style={{ fontSize: 'clamp(32px, 8vw, 42px)', color: 'var(--colorTextDark)' }}>
             {(couple?.groom?.firstName || 'Groom').toUpperCase()}
           </h1>
@@ -84,12 +84,12 @@ function Layout1({ config }) {
           <div style={{ width: '60px', height: '1.5px', background: 'var(--colorPrimary)', margin: '32px 0', opacity: 0.8 }} />
 
           <p style={detail}>{dayLabel ? dayLabel + ', ' : ''} {wedding?.displayDate}</p>
-          {ceremony?.time && <p style={{...detail, marginTop: '4px'}}>{ceremony.time}</p>}
-          
+          {ceremony?.time && <p style={{ ...detail, marginTop: '4px' }}>{ceremony.time}</p>}
+
           {ceremony?.venueName && (
             <>
               <p className="font-script mt-6" style={{ fontSize: '20px', color: 'var(--colorPrimary)' }}>Venue</p>
-              <p style={{...detail, marginTop: '4px'}}>{ceremony?.venueName}</p>
+              <p style={{ ...detail, marginTop: '4px' }}>{ceremony?.venueName}</p>
             </>
           )}
 
@@ -130,22 +130,22 @@ function Layout2({ config }) {
         <div style={{ position: 'absolute', top: '16px', left: '16px', right: '16px', bottom: '16px', border: '1px solid var(--colorPrimary)', opacity: 0.4, borderRadius: '50% 50% / 10% 10%', pointerEvents: 'none' }} />
 
         <div style={{
-           margin: '0 auto 24px', width: 'clamp(200px, 60vw, 300px)', height: 'clamp(280px, 80vw, 400px)',
-           borderRadius: '50%',
-           overflow: 'hidden',
-           border: '4px solid var(--colorPrimary)',
-           padding: '4px',
-           position: 'relative'
+          margin: '0 auto 24px', width: 'clamp(200px, 60vw, 300px)', height: 'clamp(280px, 80vw, 400px)',
+          borderRadius: '50%',
+          overflow: 'hidden',
+          border: '4px solid var(--colorPrimary)',
+          padding: '4px',
+          position: 'relative'
         }}>
-           <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden' }}>
-             <img src={heroImage || '/images/hero.png'} alt="Hero" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-           </div>
+          <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden' }}>
+            <img src={heroImage || '/images/hero.png'} alt="Hero" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
         </div>
 
         {/* Content */}
         <div className="relative z-20 flex flex-col items-center text-center px-4 w-full">
           <p className="font-script text-[var(--colorPrimary)] mb-2" style={{ fontSize: 'clamp(28px, 6vw, 40px)' }}>We Are Getting Married</p>
-          
+
           <h1 className="font-serif" style={{ fontSize: 'clamp(24px, 5vw, 32px)', color: 'var(--colorTextDark)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
             {couple?.groom?.firstName || 'Groom'}
           </h1>
@@ -155,15 +155,15 @@ function Layout2({ config }) {
           </h1>
 
           <div className="flex gap-4 mt-8 items-center text-[var(--colorTextDark)] opacity-80 uppercase tracking-widest font-sans text-xs">
-             <span>{dayLabel}</span>
-             <span className="w-1.5 h-1.5 bg-[var(--colorPrimary)] rounded-full"/>
-             <span>{wedding?.displayDate}</span>
+            <span>{dayLabel}</span>
+            <span className="w-1.5 h-1.5 bg-[var(--colorPrimary)] rounded-full" />
+            <span>{wedding?.displayDate}</span>
           </div>
-          
+
           {ceremony?.venueName && (
-             <p className="font-sans text-[0.65rem] tracking-widest uppercase mt-4 text-[var(--colorTextDark)]/70 max-w-[200px]">
-               {ceremony?.venueName}
-             </p>
+            <p className="font-sans text-[0.65rem] tracking-widest uppercase mt-4 text-[var(--colorTextDark)]/70 max-w-[200px]">
+              {ceremony?.venueName}
+            </p>
           )}
 
         </div>
@@ -201,8 +201,8 @@ function Layout3({ config }) {
         {/* Full Image Background wrapped by Arch */}
         {heroImage && (
           <div className="absolute inset-0 opacity-40 pointer-events-none z-0">
-             <img src={heroImage} className="w-full h-full object-cover grayscale mix-blend-multiply filter saturate-50" />
-             <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 40%, var(--colorBg) 100%)' }} />
+            <img src={heroImage} className="w-full h-full object-cover grayscale mix-blend-multiply filter saturate-50" />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 40%, var(--colorBg) 100%)' }} />
           </div>
         )}
 
@@ -218,12 +218,12 @@ function Layout3({ config }) {
           zIndex: 1
         }}>
           {/* Inner border */}
-          <div style={{ position: 'absolute', inset: '6px', border: '1px solid var(--colorPrimary)', opacity: 0.5, borderRadius: '344px 344px 0 0' }}/>
+          <div style={{ position: 'absolute', inset: '6px', border: '1px solid var(--colorPrimary)', opacity: 0.5, borderRadius: '344px 344px 0 0' }} />
         </div>
 
         {/* Top floral decoration placeholder */}
-        <div className="absolute top-0 left-0 right-0 h-32 opacity-20 pointer-events-none z-0" 
-             style={{ background: 'radial-gradient(circle at top, var(--colorPrimary) 0%, transparent 70%)' }} />
+        <div className="absolute top-0 left-0 right-0 h-32 opacity-20 pointer-events-none z-0"
+          style={{ background: 'radial-gradient(circle at top, var(--colorPrimary) 0%, transparent 70%)' }} />
 
         {/* Content Box */}
         <div className="relative z-20 flex flex-col items-center pt-[15vh] px-8 pb-32 text-center h-full">
@@ -232,7 +232,7 @@ function Layout3({ config }) {
           </p>
 
           <p className="font-sans text-[0.65rem] md:text-xs tracking-widest uppercase mb-4 leading-relaxed max-w-[280px]" style={{ color: 'var(--colorTextDark)', opacity: 0.8 }}>
-            You Are Cordially Invited To<br/>
+            You Are Cordially Invited To<br />
             Celebrate the marriage of
           </p>
 
@@ -259,7 +259,7 @@ function Layout3({ config }) {
 
           <p className="font-script text-2xl mb-1" style={{ color: 'var(--colorSecondary)' }}>Venue</p>
           <p className="font-sans text-[0.65rem] tracking-widest uppercase leading-snug max-w-[200px]" style={{ color: 'var(--colorTextDark)', opacity: 0.8 }}>
-            {ceremony?.venueName}<br/>
+            {ceremony?.venueName}<br />
             {ceremony?.address}
           </p>
         </div>
