@@ -177,7 +177,10 @@ function GalleryEditor({ gallery, onChange, onUpload }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {gallery.map((photo, i) => (
           <div key={i} className="relative group bg-slate-50 rounded-xl border border-slate-200 overflow-hidden p-2">
-            <div className="aspect-square rounded-lg overflow-hidden mb-2 bg-white relative">
+            <div 
+              className="w-full rounded-lg overflow-hidden mb-2 bg-white relative shadow-sm border border-slate-100"
+              style={{ aspectRatio: '3 / 4' }}
+            >
               {photo.src ? (
                 <img src={photo.src} alt={photo.alt} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
               ) : (
@@ -332,7 +335,14 @@ function AdminDashboard() {
 
     // 2. Determine if cropping is needed
     if (type === 'hero' || type === 'gallery') {
-      const aspect = type === 'hero' ? 16 / 9 : 4 / 5; // Fixed for hero, suggested for gallery
+      let aspect = 1.0;
+      if (type === 'hero') {
+        // Layout 1: ~1.81, Layout 2: ~1.66
+        aspect = config.heroLayout === 2 ? 1.66 : 1.81;
+      } else if (type === 'gallery') {
+        aspect = 0.75; // Standard 3:4 Portrait for masonry
+      }
+
       setCropping({
         file: URL.createObjectURL(processedFile),
         path,
@@ -576,7 +586,20 @@ function AdminDashboard() {
           )}
 
           {activeTab === 'wedding' && (
-            <SectionCard title="Wedding Date & Year" icon="📅">
+            <SectionCard title="Hero Style" icon="✨">
+              <div 
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden mb-5 transition-all duration-500"
+                style={{ aspectRatio: config.heroLayout === 2 ? '1.66 / 1' : '1.81 / 1' }}
+              >
+                {config.heroImage ? (
+                  <img src={config.heroImage} className="w-full h-full object-cover" alt="Hero Preview" />
+                ) : (
+                  <div className="text-center p-6">
+                    <span className="text-3xl opacity-20">📸</span>
+                    <p className="text-[10px] text-slate-400 mt-2 uppercase tracking-widest">No Hero Image</p>
+                  </div>
+                )}
+              </div>
               <FieldGroup label="Wedding Date & Time (ISO 8601)" hint="Format: YYYY-MM-DDTHH:MM:SS">
                 <input
                   type="datetime-local"
