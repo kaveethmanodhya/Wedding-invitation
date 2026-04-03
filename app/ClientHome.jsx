@@ -18,15 +18,10 @@ export default function ClientHome({ config }) {
 
   useEffect(() => {
     setMounted(true);
-    const opened = sessionStorage.getItem('wedding_invitation_opened');
-    if (opened) {
-      setHasOpened(true);
-    }
   }, []);
 
   const handleOpen = () => {
     setHasOpened(true);
-    sessionStorage.setItem('wedding_invitation_opened', 'true');
   };
 
   const revealStyle = config.revealStyle || 'envelope';
@@ -35,7 +30,7 @@ export default function ClientHome({ config }) {
 
   return (
     <>
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {!hasOpened && (
           revealStyle === 'couple' ? (
             <CoupleReveal key="couple-reveal" config={config} onOpen={handleOpen} />

@@ -314,7 +314,9 @@ function AdminDashboard() {
 
     // 1. Initial Compression (Reduce huge files before cropping/sending)
     let processedFile = file;
-    if (file.size > 1024 * 1024) { // > 1MB
+    const isGif = file.type === 'image/gif' || file.name.toLowerCase().endsWith('.gif');
+
+    if (!isGif && file.size > 1024 * 1024) { // Only compress non-GIFs > 1MB
       showToast('success', 'Optimizing file size...');
       try {
         const options = {

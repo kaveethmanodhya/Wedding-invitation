@@ -16,46 +16,44 @@ export async function POST(req) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    const isGif = file.type === 'image/gif' || file.name.toLowerCase().endsWith('.gif');
+
+    if (isGif) {
+      // Save original GIF to preserve animation
+      const baseName = file.name.replace(/\.[^/.]+$/, '').replace(/\s+/g, '-').toLowerCase();
+      const filename = `${Date.now()}-${baseName}.gif`;
+      const uploadDir = join(process.cwd(), 'public', 'images');
+      
+      try {
+        await mkdir(uploadDir, { recursive: true });
+      } catch {}
+
+      const filePath = join(uploadDir, filename);
+      await writeFile(filePath, buffer);
+
+      const imageUrl = `/images/${filename}`;
+      return NextResponse.json({ success: true, url: imageUrl });
+    }
+
     // ── Image Optimization with Sharp ─────────────────────────────
     let pipeline = sharp(buffer);
 
     if (type === 'hero') {
-      // Hero image: Max width 1920px (already cropped to ~16:9)
-      pipeline = pipeline
-        .resize({
-          width: 1920,
-          withoutEnlargement: true,
-          fit: 'inside'
-        });
+      pipeline = pipeline.resize({ width: 1920, withoutEnlargement: true, fit: 'inside' });
     } else if (type === 'gallery') {
-      // Gallery: Max width 1200px (already cropped if needed)
-      pipeline = pipeline
-        .resize({
-          width: 1200,
-          withoutEnlargement: true,
-          fit: 'inside'
-        });
+      pipeline = pipeline.resize({ width: 1200, withoutEnlargement: true, fit: 'inside' });
     } else {
-      // General/Default optimization
-      pipeline = pipeline
-        .resize({
-          width: 1200,
-          withoutEnlargement: true,
-          fit: 'inside'
-        });
+      pipeline = pipeline.resize({ width: 1200, withoutEnlargement: true, fit: 'inside' });
     }
 
-    // Convert to WebP for maximum performance
     const optimizedBuffer = await pipeline
       .webp({ quality: 85 })
       .toBuffer();
 
-    // Create a safe unique filename with .webp extension
     const baseName = file.name.replace(/\.[^/.]+$/, '').replace(/\s+/g, '-').toLowerCase();
     const filename = `${Date.now()}-${baseName}.webp`;
     const uploadDir = join(process.cwd(), 'public', 'images');
     
-    // Ensure dir exists
     try {
       await mkdir(uploadDir, { recursive: true });
     } catch {}
