@@ -1082,6 +1082,50 @@ function AdminDashboard() {
               </SectionCard>
 
               <SectionCard title="Envelope Cover" icon="✉️">
+                <FieldGroup label="Inner Card Background Image" hint="Upload directly or enter a URL">
+                  <div className="flex flex-col gap-3">
+                    {config.envelope?.bgImage && (
+                      <div className="w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                        <img src={config.envelope.bgImage} className="w-full h-full object-cover" alt="Background Preview" />
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="/images/envelope-bg.jpg"
+                        className={inputCls}
+                        value={config.envelope?.bgImage || ''}
+                        onChange={e => setPath('envelope.bgImage', e.target.value)}
+                      />
+                      <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
+                        Upload
+                        <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'envelope.bgImage', 'general')} />
+                      </label>
+                    </div>
+                  </div>
+                </FieldGroup>
+                <FieldGroup label="Outer Background Image" hint="Upload directly or enter a URL">
+                  <div className="flex flex-col gap-3">
+                    {config.envelope?.outerBgImage && (
+                      <div className="w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                        <img src={config.envelope.outerBgImage} className="w-full h-full object-cover" alt="Outer Background Preview" />
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="/images/envelope-outer-bg.jpg"
+                        className={inputCls}
+                        value={config.envelope?.outerBgImage || ''}
+                        onChange={e => setPath('envelope.outerBgImage', e.target.value)}
+                      />
+                      <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
+                        Upload
+                        <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'envelope.outerBgImage', 'general')} />
+                      </label>
+                    </div>
+                  </div>
+                </FieldGroup>
                 <FieldGroup label="Cover Title">
                   <input type="text" className={inputCls} value={config.envelope.title} onChange={e => setPath('envelope.title', e.target.value)} />
                 </FieldGroup>

@@ -60,7 +60,15 @@ export default function Envelope({ config, onOpen }) {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, y: -80, transition: { duration: 0.8, ease: 'easeInOut' } }}
           className="fixed inset-0 z-[100] flex items-center justify-center"
-          style={{ backgroundColor: 'var(--colorBg)', padding: isDesktop ? '32px' : '16px' }}
+          style={{ 
+            backgroundColor: 'var(--colorBg)', 
+            padding: isDesktop ? '32px' : '16px',
+            ...(config.envelope?.outerBgImage ? {
+              backgroundImage: `url(${config.envelope.outerBgImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            } : {})
+          }}
         >
           {/* ════════════════════════════════════════════════════════
                 The Letter / Gift Card
@@ -77,6 +85,11 @@ export default function Envelope({ config, onOpen }) {
               border: '1px solid rgba(0,0,0,0.05)',
               overflow: 'hidden',
               padding: isDesktop ? '3.5% 6%' : '10% 8%', // Reverted desktop padding
+              ...(config.envelope?.bgImage ? {
+                backgroundImage: `url(${config.envelope.bgImage})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              } : {})
             }}
           >
             {/* Paper texture */}
