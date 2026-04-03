@@ -32,7 +32,19 @@ export default function Gallery({ config }) {
   }, [lightbox, gallery.length]);
 
   return (
-    <section id="gallery" className="bg-[var(--colorBg)] py-20 md:py-28 transition-colors duration-500">
+    <section 
+      id="gallery" 
+      className="py-20 md:py-28 transition-colors duration-500"
+      style={{
+        backgroundColor: 'var(--colorBg)',
+        ...(config.sectionBackgrounds?.gallery ? {
+          backgroundImage: `url(${config.sectionBackgrounds.gallery})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        } : {})
+      }}
+    >
       <div className="max-w-5xl mx-auto px-6">
         
         {/* Header Layout 1 */}

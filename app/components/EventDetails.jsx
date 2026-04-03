@@ -170,7 +170,19 @@ export default function EventDetails({ config }) {
   const layout = config?.heroLayout ?? 1;
 
   return (
-    <section id="events" className="overflow-hidden bg-[var(--colorBg)] transition-colors duration-500">
+    <section 
+      id="events" 
+      className="overflow-hidden transition-colors duration-500"
+      style={{
+        backgroundColor: 'var(--colorBg)',
+        ...(config.sectionBackgrounds?.events ? {
+          backgroundImage: `url(${config.sectionBackgrounds.events})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        } : {})
+      }}
+    >
       {layout === 3 ? <Layout3 config={config} /> : layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
     </section>
   );

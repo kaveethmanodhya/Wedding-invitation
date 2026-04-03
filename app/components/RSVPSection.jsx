@@ -84,7 +84,19 @@ export default function RSVPSection({ config }) {
 
   if (status === 'success') {
     return (
-      <section id="rsvp" className={`${bgClass} py-20 md:py-28 transition-colors duration-500`}>
+      <section 
+        id="rsvp" 
+        className="py-20 md:py-28 transition-colors duration-500"
+        style={{
+          backgroundColor: 'var(--colorBg)',
+          ...(config.sectionBackgrounds?.rsvp ? {
+            backgroundImage: `url(${config.sectionBackgrounds.rsvp})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+          } : {})
+        }}
+      >
         <div className="max-w-lg mx-auto px-6 text-center">
           <div className="bg-[var(--colorPrimary)]/10 border border-[var(--colorPrimary)]/25 rounded-2xl p-10">
             <p className="text-4xl mb-4 text-[var(--colorPrimary)] drop-shadow-sm">💌</p>
@@ -98,7 +110,19 @@ export default function RSVPSection({ config }) {
   }
 
   return (
-    <section id="rsvp" className={`${bgClass} py-20 md:py-32 relative overflow-hidden transition-colors duration-500`}>
+    <section 
+      id="rsvp" 
+      className="py-20 md:py-32 relative overflow-hidden transition-colors duration-500"
+      style={{
+        backgroundColor: 'var(--colorBg)',
+        ...(config.sectionBackgrounds?.rsvp ? {
+          backgroundImage: `url(${config.sectionBackgrounds.rsvp})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        } : {})
+      }}
+    >
       {layout === 1 && (
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 20% 80%, var(--colorPrimary) 0%, transparent 55%), radial-gradient(circle at 80% 20%, var(--colorPrimary) 0%, transparent 55%)', opacity: 0.05 }} />
       )}

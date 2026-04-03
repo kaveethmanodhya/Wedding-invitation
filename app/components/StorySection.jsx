@@ -150,7 +150,19 @@ export default function StorySection({ config }) {
 
   // The background color is handled globally by var(--colorBg)
   return (
-    <section id="story" className="overflow-hidden bg-[var(--colorBg)] transition-colors duration-500">
+    <section 
+      id="story" 
+      className="overflow-hidden transition-colors duration-500"
+      style={{
+        backgroundColor: 'var(--colorBg)',
+        ...(config.sectionBackgrounds?.story ? {
+          backgroundImage: `url(${config.sectionBackgrounds.story})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        } : {})
+      }}
+    >
       {layout === 3 ? (
         <Layout3 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
       ) : layout === 2 ? (

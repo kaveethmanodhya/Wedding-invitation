@@ -284,13 +284,19 @@ export default function Hero({ config }) {
   return (
     <section
       id="hero"
-      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
+      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden transition-all duration-500"
       style={{
         backgroundColor: 'var(--colorBg)',
         paddingTop: 'clamp(80px, 12vw, 120px)',
         paddingBottom: 'clamp(48px, 8vw, 80px)',
         paddingLeft: '16px',
         paddingRight: '16px',
+        ...(config.sectionBackgrounds?.hero ? {
+          backgroundImage: `url(${config.sectionBackgrounds.hero})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        } : {})
       }}
     >
       <div className="absolute inset-0 pointer-events-none z-0" style={{ background: 'radial-gradient(circle at 50% 50%, var(--colorPrimary) 0%, transparent 60%)', opacity: 0.03 }} />

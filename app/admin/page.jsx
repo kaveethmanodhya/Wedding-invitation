@@ -612,6 +612,7 @@ function AdminDashboard() {
     { id: 'rsvp', label: '✉️ RSVP' },
     { id: 'theme', label: '🎨 Theme' },
     { id: 'meta', label: '🔍 SEO' },
+    { id: 'backgrounds', label: '🖼️ Backgrounds' },
   ];
 
   return (
@@ -1227,6 +1228,35 @@ function AdminDashboard() {
               <FieldGroup label="OG Image">
                 <input type="text" className={inputCls} value={config.meta.ogImage} onChange={e => setPath('meta.ogImage', e.target.value)} />
               </FieldGroup>
+            </SectionCard>
+          )}
+
+          {activeTab === 'backgrounds' && (
+            <SectionCard title="Section Backgrounds" icon="🖼️">
+              {['hero', 'story', 'events', 'gallery', 'rsvp'].map(sec => (
+                <FieldGroup key={sec} label={`${sec.charAt(0).toUpperCase() + sec.slice(1)} Background Image`} hint="Upload directly or enter a URL">
+                  <div className="flex flex-col gap-3">
+                    {config.sectionBackgrounds?.[sec] && (
+                      <div className="w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                        <img src={config.sectionBackgrounds[sec]} className="w-full h-full object-cover" alt={`${sec} Background Preview`} />
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder={`/images/${sec}-bg.jpg`}
+                        className={inputCls}
+                        value={config.sectionBackgrounds?.[sec] || ''}
+                        onChange={e => setPath(`sectionBackgrounds.${sec}`, e.target.value)}
+                      />
+                      <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
+                        Upload
+                        <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], `sectionBackgrounds.${sec}`, 'general')} />
+                      </label>
+                    </div>
+                  </div>
+                </FieldGroup>
+              ))}
             </SectionCard>
           )}
 
