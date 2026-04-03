@@ -22,7 +22,7 @@
     "invitationText": "Together with their families, Amara Silva and Kaveen Fernando invite you to celebrate their joyful union. Your presence will make this day even more special and memorable for us both.",
     "paragraphs": [
       "We met on a rainy Tuesday in October — unexpectedly, the way the best things in life always seem to happen. What started as a chance encounter soon blossomed into the most beautiful chapter of our lives.",
-      "Through adventures big and small, laughter and tears, we found in each other a home. Today, we take another step forward — this time, together, forever."
+      "hello sunakajnfa vdcjkancjka"
     ]
   },
   "events": {
@@ -54,7 +54,7 @@
       "alt": "Beach walk"
     }
   ],
-  "heroImage": "/images/1775245725492-blob.webp",
+  "heroImage": "/images/1775250289221-blob.webp",
   "heroLayout": 1,
   "rsvp": {
     "whatsappNumber": "94711690138",
@@ -68,21 +68,21 @@
     "bgImage": "/images/1775246769611-chjpdmf0zs9sci9pbwfnzxmvd2vic2l0zs8ymdi0ltayl3jhd3bpegvsx29mzmljzv81ml9ozwfydf9wyxr0zxjux2jva2vox2vmzmvjdf9iywnrz3jvdw5kx19pbl90af82ntczmzjjys1howeyltqyodktogm5ys0zmdzjzdazyjhhmjbfms5qcgc.webp"
   },
   "theme": {
-    "colorPrimary": "#C08081",
-    "colorSecondary": "#E6C7C7",
-    "colorTextLight": "#875152",
-    "colorTextDark": "#3A1F20",
-    "colorBg": "#FDF7F7",
+    "colorPrimary": "#C9956A",
+    "colorSecondary": "#E8D5B7",
+    "colorTextLight": "#8A7F6A",
+    "colorTextDark": "#2C2018",
+    "colorBg": "#FAF7F2",
     "colorSurface": "#FFFFFF",
-    "heroOverlayStart": "rgba(58, 31, 32, 0.55)",
-    "heroOverlayEnd": "rgba(58, 31, 32, 0.25)"
+    "heroOverlayStart": "rgba(18, 12, 6, 0.55)",
+    "heroOverlayEnd": "rgba(18, 12, 6, 0.25)"
   },
   "meta": {
     "title": "Kaveeth & Pramudi — Wedding Invitation",
     "description": "Join us as we celebrate the union of Amara Silva and Kaveen Fernando on December 19, 2026.",
     "ogImage": "/images/gallery-1.png"
   },
-  "revealStyle": "envelope",
+  "revealStyle": "couple",
   "coupleImages": {
     "groom": "/images/1775222506702-0403(1).gif",
     "bride": "/images/1775222510611-0403.gif"

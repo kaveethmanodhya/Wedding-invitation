@@ -28,33 +28,40 @@ export default function ClientHome({ config }) {
 
   if (!mounted) return null;
 
+  const mainContent = (
+    <main className={!hasOpened ? 'h-screen overflow-hidden' : 'bg-[var(--colorBg)]'}>
+      <Navbar config={config} />
+      <Hero config={config} />
+      <Countdown config={config} />
+      <StorySection config={config} />
+      <EventDetails config={config} />
+      <Gallery config={config} />
+      <RSVPSection config={config} />
+      <Footer config={config} />
+    </main>
+  );
+
   return (
     <>
-      <AnimatePresence>
-        {!hasOpened && (
-          revealStyle === 'couple' ? (
-            <CoupleReveal key="couple-reveal" config={config} onOpen={handleOpen} />
-          ) : (
-            <Envelope key="envelope-layer" config={config} onOpen={handleOpen} />
-          )
+      <AnimatePresence mode="wait">
+        {!hasOpened && revealStyle === 'envelope' && (
+          <Envelope key="envelope-layer" config={config} onOpen={handleOpen} />
         )}
       </AnimatePresence>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: hasOpened ? 1 : 0 }}
-        transition={{ duration: 1, delay: 0.5 }}
-      >
-        <main className={!hasOpened ? 'h-screen overflow-hidden' : 'bg-[var(--colorBg)]'}>
-          <Navbar config={config} />
-          <Hero config={config} />
-          <Countdown config={config} />
-          <StorySection config={config} />
-          <EventDetails config={config} />
-          <RSVPSection config={config} />
-          <Footer config={config} />
-        </main>
-      </motion.div>
+      {revealStyle === 'couple' && !hasOpened ? (
+        <CoupleReveal config={config} onOpen={handleOpen}>
+          {mainContent}
+        </CoupleReveal>
+      ) : (
+        <motion.div
+          initial={{ opacity: revealStyle === 'couple' ? 1 : 0 }}
+          animate={{ opacity: hasOpened || revealStyle === 'couple' ? 1 : 0 }}
+          transition={{ duration: 1, delay: revealStyle === 'couple' ? 0 : 0.5 }}
+        >
+          {mainContent}
+        </motion.div>
+      )}
     </>
   );
 }
