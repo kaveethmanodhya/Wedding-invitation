@@ -58,7 +58,7 @@ function Layout1({ config }) {
           width: '100%',
           maxWidth: 'clamp(320px, 90vw, 640px)',
           boxShadow: '0 30px 80px rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.08)',
-          backgroundColor: '#fff',
+
           position: 'relative',
           overflow: 'visible',
         }}
