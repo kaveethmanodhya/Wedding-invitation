@@ -1,7 +1,8 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Envelope from './components/Envelope';
+import CoupleReveal from './components/CoupleReveal';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Countdown from './components/Countdown';
@@ -13,12 +14,34 @@ import Footer from './components/Footer';
 
 export default function ClientHome({ config }) {
   const [hasOpened, setHasOpened] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const opened = sessionStorage.getItem('wedding_invitation_opened');
+    if (opened) {
+      setHasOpened(true);
+    }
+  }, []);
+
+  const handleOpen = () => {
+    setHasOpened(true);
+    sessionStorage.setItem('wedding_invitation_opened', 'true');
+  };
+
+  const revealStyle = config.revealStyle || 'envelope';
+
+  if (!mounted) return null;
 
   return (
     <>
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {!hasOpened && (
-          <Envelope key="envelope-layer" config={config} onOpen={() => setHasOpened(true)} />
+          revealStyle === 'couple' ? (
+            <CoupleReveal key="couple-reveal" config={config} onOpen={handleOpen} />
+          ) : (
+            <Envelope key="envelope-layer" config={config} onOpen={handleOpen} />
+          )
         )}
       </AnimatePresence>
 

@@ -789,6 +789,93 @@ function AdminDashboard() {
                 </FieldGroup>
               </SectionCard>
 
+              <SectionCard title="Opening Animation" icon="✨">
+                <FieldGroup label="Animation Style" hint="Choose how guests first see your invitation">
+                  <div className="flex gap-6 mt-1">
+                    <label className="flex items-center gap-2.5 cursor-pointer group">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${config.revealStyle === 'envelope' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
+                        {config.revealStyle === 'envelope' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
+                      </div>
+                      <input 
+                        type="radio" 
+                        className="hidden"
+                        name="revealStyle" 
+                        value="envelope" 
+                        checked={config.revealStyle === 'envelope'} 
+                        onChange={() => setPath('revealStyle', 'envelope')} 
+                      />
+                      <span className={`text-sm font-medium ${config.revealStyle === 'envelope' ? 'text-slate-900' : 'text-slate-500'}`}>Envelope Reveal</span>
+                    </label>
+                    <label className="flex items-center gap-2.5 cursor-pointer group">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${config.revealStyle === 'couple' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
+                        {config.revealStyle === 'couple' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
+                      </div>
+                      <input 
+                        type="radio" 
+                        className="hidden"
+                        name="revealStyle" 
+                        value="couple" 
+                        checked={config.revealStyle === 'couple'} 
+                        onChange={() => setPath('revealStyle', 'couple')} 
+                      />
+                      <span className={`text-sm font-medium ${config.revealStyle === 'couple' ? 'text-slate-900' : 'text-slate-500'}`}>Animated Couple</span>
+                    </label>
+                  </div>
+                </FieldGroup>
+                
+                <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 pt-6 border-t border-slate-50">
+                  <FieldGroup label="Groom Cartoon (Running)" hint="Transparent PNG recommended">
+                    <div className="flex flex-col gap-3">
+                      <div className="w-24 h-24 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden">
+                        {config.coupleImages?.groom ? (
+                          <img src={config.coupleImages.groom} className="w-full h-full object-contain p-2" alt="Groom Preview" />
+                        ) : (
+                          <span className="text-4xl">🏃‍♂️</span>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="/images/groom.png"
+                          className={inputCls}
+                          value={config.coupleImages?.groom || ''}
+                          onChange={e => setPath('coupleImages.groom', e.target.value)}
+                        />
+                        <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
+                          Upload
+                          <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'coupleImages.groom', 'general')} />
+                        </label>
+                      </div>
+                    </div>
+                  </FieldGroup>
+
+                  <FieldGroup label="Bride Cartoon (Running)" hint="Transparent PNG recommended">
+                    <div className="flex flex-col gap-3">
+                      <div className="w-24 h-24 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden">
+                        {config.coupleImages?.bride ? (
+                          <img src={config.coupleImages.bride} className="w-full h-full object-contain p-2" alt="Bride Preview" />
+                        ) : (
+                          <span className="text-4xl">🏃‍♀️</span>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="/images/bride.png"
+                          className={inputCls}
+                          value={config.coupleImages?.bride || ''}
+                          onChange={e => setPath('coupleImages.bride', e.target.value)}
+                        />
+                        <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
+                          Upload
+                          <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'coupleImages.bride', 'general')} />
+                        </label>
+                      </div>
+                    </div>
+                  </FieldGroup>
+                </div>
+              </SectionCard>
+
               <SectionCard title="Envelope Cover" icon="✉️">
                 <FieldGroup label="Cover Title">
                   <input type="text" className={inputCls} value={config.envelope.title} onChange={e => setPath('envelope.title', e.target.value)} />
