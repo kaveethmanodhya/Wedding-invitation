@@ -28,7 +28,7 @@ function CountdownBlock({ value, unit }) {
         {formatted}
       </span>
       <span className="font-sans text-[0.58rem] tracking-[0.2em] uppercase
-        text-[var(--colorTextLight)]/40 mt-2"
+        text-white/90 mt-2"
       >
         {unit}
       </span>
@@ -70,7 +70,7 @@ export default function Countdown({ config }) {
   // to avoid layout shift while preventing hydration mismatch
   if (!isMounted) {
     return (
-      <section id="countdown" className="bg-[var(--colorTextDark)] text-[var(--colorTextLight)] py-16 md:py-20 text-center">
+      <section id="countdown" className="relative z-10 text-[var(--colorTextLight)] py-16 md:py-20 text-center" style={{ backgroundColor: 'color-mix(in srgb, var(--colorTextDark) 60%, transparent)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}>
         <p className="font-serif text-xs tracking-[0.24em] uppercase text-[var(--colorSecondary)] mb-8 invisible">
           Counting down to the big day
         </p>
@@ -87,7 +87,8 @@ export default function Countdown({ config }) {
   return (
     <section
       id="countdown"
-      className="bg-[var(--colorTextDark)] text-[var(--colorTextLight)] py-16 md:py-20 text-center"
+      className="relative z-10 text-[var(--colorTextLight)] py-16 md:py-20 text-center"
+      style={{ backgroundColor: 'color-mix(in srgb, var(--colorTextDark) 60%, transparent)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}
     >
       <p className="font-serif text-xs tracking-[0.24em] uppercase text-[var(--colorSecondary)] mb-8">
         Counting down to the big day

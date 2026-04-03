@@ -22,7 +22,7 @@ export default function Envelope({ config, onOpen }) {
 
   /* ── Responsive values ── */
   const cardAspect   = isDesktop ? '16 / 9'  : '3 / 4.2';
-  const cardMaxWidth = isDesktop ? 'min(860px, calc(100vw - 64px))' : 'min(440px, calc(100vw - 32px))';
+  const cardMaxWidth = isDesktop ? 'min(1080px, calc(100vw - 64px))' : 'min(480px, calc(100vw - 32px))';
   const nameFontSize = isDesktop ? 'clamp(28px, 4.5vw, 52px)' : 'clamp(32px, 8.5vw, 56px)';
   const labelSize   = isDesktop ? 'clamp(8px, 1vw, 11px)' : 'clamp(8px, 1.8vw, 11px)';
 
@@ -59,22 +59,19 @@ export default function Envelope({ config, onOpen }) {
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, y: -80, transition: { duration: 0.8, ease: 'easeInOut' } }}
-          className="fixed inset-0 z-[100] flex items-center justify-center"
-          style={{ backgroundColor: 'var(--colorBg)', padding: isDesktop ? '32px' : '16px' }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
+          style={{ backgroundColor: 'transparent' }}
         >
           {/* ════════════════════════════════════════════════════════
                 The Letter / Gift Card
                 overflow:hidden ensures ribbons are clipped to card
           ════════════════════════════════════════════════════════ */}
           <div
-            className="relative flex flex-col items-center justify-between text-center"
+            className="relative flex flex-col items-center justify-between text-center glass-panel"
             style={{
               width: '100%',
               maxWidth: cardMaxWidth,
               aspectRatio: cardAspect,
-              backgroundColor: 'var(--colorSurface)',
-              boxShadow: '0 24px 70px rgba(0,0,0,0.14), 0 6px 20px rgba(0,0,0,0.08)',
-              border: '1px solid rgba(0,0,0,0.05)',
               overflow: 'hidden',
               padding: isDesktop ? '3.5% 6%' : '10% 8%', // Reverted desktop padding
             }}
@@ -183,7 +180,7 @@ export default function Envelope({ config, onOpen }) {
                   fontFamily: 'var(--font-script, cursive)',
                   fontSize: nameFontSize,
                   lineHeight: 1.15,
-                  color: 'var(--colorTextDark)',
+                  color: '#ffffff',
                   fontWeight: 700,
                   textShadow: '0 2px 14px rgba(0,0,0,0.10)',
                   marginBottom: isDesktop ? '2%' : '3%',
@@ -276,8 +273,8 @@ export default function Envelope({ config, onOpen }) {
                   fontSize: labelSize,
                   letterSpacing: '0.22em',
                   textTransform: 'uppercase',
-                  color: 'var(--colorTextDark)',
-                  opacity: 0.7,
+                  color: '#ffffff',
+                  opacity: 0.8,
                   fontWeight: 500,
                 }}
               >

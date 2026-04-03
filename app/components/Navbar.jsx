@@ -32,7 +32,7 @@ export default function Navbar({ config }) {
         {/* Logo / Names */}
         <span
           className={`font-script text-2xl tracking-wide transition-colors duration-300
-            ${scrolled ? 'text-[var(--colorPrimary)]' : 'text-[var(--colorTextDark)]'}`}
+            ${scrolled ? 'text-[var(--colorTextLight)]' : 'text-white'}`}
         >
           {config.couple.displayNames}
         </span>
@@ -45,8 +45,8 @@ export default function Navbar({ config }) {
                 href={l.href}
                 className={`font-sans text-xs font-semibold tracking-[0.15em] uppercase
                   relative group transition-colors duration-300
-                  text-[var(--colorTextDark)]/70
-                  hover:text-[var(--colorPrimary)]`}
+                  text-[var(--colorTextLight)]/90
+                  hover:text-white`}
               >
                 {l.label}
                 <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-[var(--colorPrimary)] transition-all duration-300 group-hover:w-full" />
@@ -65,7 +65,7 @@ export default function Navbar({ config }) {
             <span
               key={i}
               className={`block w-6 h-px transition-all duration-300
-                bg-[var(--colorTextDark)]
+                bg-white
                 ${menuOpen && i === 0 ? 'rotate-45 translate-y-2' : ''}
                 ${menuOpen && i === 1 ? 'opacity-0' : ''}
                 ${menuOpen && i === 2 ? '-rotate-45 -translate-y-2' : ''}

@@ -2,14 +2,23 @@
 
 @theme {
   --font-script: var(--font-script), cursive;
-  --font-serif:  var(--font-serif), 'Georgia', serif;
-  --font-sans:   var(--font-sans), system-ui, sans-serif;
+  --font-serif: var(--font-serif), 'Georgia', serif;
+  --font-sans: var(--font-sans), system-ui, sans-serif;
 
   --animate-ribbon-breath: ribbon-breath 3s ease-in-out infinite;
 
   @keyframes ribbon-breath {
-    0%, 100% { transform: scale(1); opacity: 0.8; }
-    50%       { transform: scale(1.05); opacity: 1; }
+
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.8;
+    }
+
+    50% {
+      transform: scale(1.05);
+      opacity: 1;
+    }
   }
 }
 
@@ -18,10 +27,26 @@
 }
 
 body {
-  background: var(--background);
+  background: transparent;
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  z-index: 0;
+}
+
+/* ── Image Wallpaper Background ── */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20px;
+  z-index: -1;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(10, 10, 14, 0.2), rgba(10, 10, 14, 0.2)), url('/images/wallpaper.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(25px);
 }
 
 /* Scroll behaviour */
@@ -30,34 +55,80 @@ html {
 }
 
 /* ── Custom scrollbar ── */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #FBF8F4; }
-::-webkit-scrollbar-thumb { background: #C9956A; border-radius: 99px; }
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--colorBg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--colorPrimary);
+  border-radius: 99px;
+}
 
 /* ── Reveal animation base ── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 .animate-fade-up {
   animation: fadeUp 0.85s ease both;
 }
 
 /* ── Countdown flip ── */
 @keyframes numFlip {
-  0%   { transform: scaleY(1); }
-  50%  { transform: scaleY(0.5); }
-  100% { transform: scaleY(1); }
+  0% {
+    transform: scaleY(1);
+  }
+
+  50% {
+    transform: scaleY(0.5);
+  }
+
+  100% {
+    transform: scaleY(1);
+  }
 }
+
 .flip {
   animation: numFlip 0.35s ease;
 }
 
 /* ── Bounce scroll cue ── */
 @keyframes scrollBounce {
-  0%, 100% { transform: translateX(-50%) translateY(0);   opacity: 0.65; }
-  50%       { transform: translateX(-50%) translateY(8px); opacity: 1; }
+
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 0.65;
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(8px);
+    opacity: 1;
+  }
 }
+
 .animate-scroll-bounce {
   animation: scrollBounce 2s ease-in-out infinite;
+}
+
+/* ── Glassmorphism Utility Class ── */
+.glass-panel {
+  background-color: color-mix(in srgb, var(--colorTextDark) 80%, rgba(0, 0, 0, 0.6));
+  backdrop-filter: blur(48px);
+  -webkit-backdrop-filter: blur(48px);
+  border: 1px solid color-mix(in srgb, var(--colorTextLight) 25%, rgba(255, 255, 255, 0.15));
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  color: #fff;
 }

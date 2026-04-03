@@ -27,7 +27,7 @@ export default function ClientHome({ config }) {
         animate={{ opacity: hasOpened ? 1 : 0 }}
         transition={{ duration: 1, delay: 0.5 }}
       >
-        <main className={!hasOpened ? 'h-screen overflow-hidden' : 'bg-[var(--colorBg)]'}>
+        <main className={!hasOpened ? 'h-screen overflow-hidden' : 'relative z-10'}>
           <Navbar config={config} />
           <Hero config={config} />
           <Countdown config={config} />

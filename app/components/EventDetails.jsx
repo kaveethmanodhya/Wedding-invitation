@@ -28,14 +28,14 @@ function EventCard({ event, delay }) {
     <article
       ref={ref}
       className="opacity-0 translate-y-8 transition-all duration-700
-        bg-[var(--colorBg)] border border-[var(--colorPrimary)]/20 rounded-3xl
+        glass-panel rounded-3xl
         px-8 py-10 flex flex-col items-center text-center gap-3
         shadow-[0_8px_40px_rgba(var(--colorTextDarkRGB,44,32,24),0.09)]
         hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(var(--colorTextDarkRGB,44,32,24),0.14)]
         transition-[transform,box-shadow] duration-300"
     >
       <span className="text-4xl mb-1">{event.icon}</span>
-      <h3 className="font-serif text-2xl md:text-3xl font-medium text-[var(--colorTextDark)]">
+      <h3 className="font-serif text-2xl md:text-3xl font-medium text-white">
         {event.title}
       </h3>
       <div className="w-10 h-px bg-[var(--colorPrimary)]/60 my-1" />
@@ -54,7 +54,7 @@ function EventCard({ event, delay }) {
             {icon === 'pin'    && <PinIcon />}
             {icon === 'heart'  && <HeartIcon />}
           </span>
-          <span className="font-sans text-sm text-[var(--colorTextDark)]/75">{label}</span>
+          <span className="font-sans font-medium text-sm text-white/90">{label}</span>
         </div>
       ))}
 
@@ -80,7 +80,7 @@ export default function EventDetails({ config }) {
   const { events } = config;
 
   return (
-    <section id="events" className="bg-white py-20 md:py-28">
+    <section id="events" className="relative z-10 py-20 md:py-28">
       <div className="max-w-5xl mx-auto px-6">
 
         {/* Header */}
@@ -91,7 +91,7 @@ export default function EventDetails({ config }) {
           <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">
             Mark Your Calendar
           </p>
-          <h2 className="font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3">
+          <h2 className="font-serif text-4xl md:text-5xl font-normal text-white mb-3">
             Event Details
           </h2>
           <span className="text-[var(--colorPrimary)]/60 text-2xl">❧</span>
@@ -101,7 +101,7 @@ export default function EventDetails({ config }) {
         {/* Gallery Images in Events */}
         <div className="grid grid-cols-2 gap-4 mb-20">
           {config.gallery?.slice(2, 4).map((img, i) => (
-            <div key={i} className={`rounded-3xl overflow-hidden shadow-lg aspect-video ${i === 1 ? 'md:mt-12' : ''}`}>
+            <div key={i} className={`rounded-3xl overflow-hidden glass-panel aspect-video ${i === 1 ? 'md:mt-12' : ''}`}>
               <img src={img.src} alt={img.alt} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
             </div>
           ))}

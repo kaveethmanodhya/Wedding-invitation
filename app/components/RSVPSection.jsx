@@ -69,22 +69,22 @@ export default function RSVPSection({ config }) {
   }
 
   const inputCls = `w-full px-4 py-3 rounded-lg font-serif text-base
-    bg-[var(--colorBg)] text-[var(--colorTextDark)] placeholder:text-[var(--colorTextDark)]/35 placeholder:italic
+    bg-transparent text-white placeholder:text-white/50 placeholder:italic
     border-[1.5px] border-[var(--colorPrimary)]/25 outline-none
     focus:border-[var(--colorPrimary)] focus:ring-2 focus:ring-[var(--colorPrimary)]/15
     transition-all duration-200`;
 
-  const labelCls = 'block font-sans text-xs font-semibold tracking-[0.1em] uppercase text-[var(--colorTextDark)]/60 mb-1.5';
+  const labelCls = 'block font-sans text-xs font-semibold tracking-[0.1em] uppercase text-white/80 mb-1.5';
 
   const guestOptions = Array.from({ length: rsvp.maxGuests }, (_, i) => i + 1);
 
   if (status === 'success') {
     return (
-      <section id="rsvp" className="bg-[var(--colorBg)] py-20 md:py-28">
+      <section id="rsvp" className="relative z-10 py-20 md:py-28">
         <div className="max-w-lg mx-auto px-6 text-center">
-          <div className="bg-[var(--colorPrimary)]/10 border border-[var(--colorPrimary)]/25 rounded-2xl p-10">
+          <div className="glass-panel border-none rounded-2xl p-10">
             <p className="text-4xl mb-4">💌</p>
-            <p className="font-serif text-xl text-[var(--colorTextDark)] leading-relaxed">
+            <p className="font-serif text-xl text-white leading-relaxed">
               Thank you! Your Reply has been received.
               <br />We look forward to celebrating with you!
             </p>
@@ -95,11 +95,9 @@ export default function RSVPSection({ config }) {
   }
 
   return (
-    <section id="rsvp" className="bg-[var(--colorBg)] py-20 md:py-28 relative overflow-hidden">
+    <section id="rsvp" className="relative z-10 py-20 md:py-28 overflow-hidden">
       {/* Subtle radial bg tints */}
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(circle at 20% 80%, var(--colorPrimary) 0%, transparent 55%), radial-gradient(circle at 80% 20%, var(--colorPrimary) 0%, transparent 55%)', opacity: 0.05 }}
-      />
+      {/* Subtle radial bg tints - disabled since we have liquid background */}
 
       <div className="relative max-w-xl mx-auto px-6">
         {/* Header */}
@@ -110,14 +108,14 @@ export default function RSVPSection({ config }) {
           <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">
             We Hope to See You
           </p>
-          <h2 className="font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3">Please Respond</h2>
+          <h2 className="font-serif text-4xl md:text-5xl font-normal text-white mb-3">Please Respond</h2>
           <span className="text-[var(--colorPrimary)]/60 text-2xl">❧</span>
-          <p className="font-sans text-sm text-[var(--colorTextDark)]/55 mt-3">
+          <p className="font-sans text-sm text-white/90 mt-3">
             Kindly respond by <strong>{rsvp.deadline}</strong>
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5 glass-panel p-6 md:p-10 rounded-3xl mt-4">
           {/* Name */}
           <div>
             <label className={labelCls}>Name *</label>
@@ -150,8 +148,8 @@ export default function RSVPSection({ config }) {
                   className={`flex items-center gap-2.5 cursor-pointer font-serif text-base
                     px-4 py-2.5 rounded-xl border-[1.5px] transition-all duration-200
                     ${formData.attendance === value
-                      ? 'bg-[var(--colorPrimary)]/10 border-[var(--colorPrimary)] text-[var(--colorTextDark)]'
-                      : 'bg-[var(--colorBg)] border-[var(--colorPrimary)]/25 text-[var(--colorTextDark)]/70'}`}
+                      ? 'bg-[var(--colorPrimary)]/30 border-[var(--colorPrimary)] text-white'
+                      : 'bg-transparent border-[var(--colorPrimary)]/25 text-white/80'}`}
                 >
                   <input type="radio" name="attendance" value={value} className="sr-only"
                     checked={formData.attendance === value}
@@ -187,8 +185,8 @@ export default function RSVPSection({ config }) {
                       className={`flex items-center gap-2 cursor-pointer font-serif text-base
                         px-4 py-2.5 rounded-xl border-[1.5px] transition-all duration-200
                         ${formData.events[key]
-                      ? 'bg-[var(--colorPrimary)]/10 border-[var(--colorPrimary)] text-[var(--colorTextDark)]'
-                      : 'bg-[var(--colorBg)] border-[var(--colorPrimary)]/25 text-[var(--colorTextDark)]/70'}`}
+                      ? 'bg-[var(--colorPrimary)]/30 border-[var(--colorPrimary)] text-white'
+                      : 'bg-transparent border-[var(--colorPrimary)]/40 text-white/80'}`}
                 >
                   <input type="checkbox" className="sr-only"
                     checked={formData.events[key]}

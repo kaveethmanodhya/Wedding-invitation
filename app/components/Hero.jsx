@@ -51,14 +51,13 @@ function Layout1({ config }) {
   return (
     <div className="flex flex-col items-center w-full">
       <motion.div
+        className="glass-panel"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: 'easeOut' }}
         style={{
           width: '100%',
           maxWidth: 'clamp(320px, 90vw, 640px)',
-          boxShadow: '0 30px 80px rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.08)',
-          backgroundColor: '#fff',
           position: 'relative',
           overflow: 'visible',
         }}
@@ -110,7 +109,7 @@ function Layout1({ config }) {
 
         {/* Text section */}
         <div
-          className="bg-white text-center"
+          className="text-center"
           style={{
             paddingTop: 'clamp(48px, 11vw, 80px)',
             paddingBottom: '36px',
@@ -155,14 +154,13 @@ function Layout2({ config }) {
   return (
     <div className="flex flex-col items-center w-full">
       <motion.div
+        className="glass-panel"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: 'easeOut' }}
         style={{
           width: '100%',
           maxWidth: 'clamp(320px, 90vw, 640px)',
-          boxShadow: '0 30px 80px rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.08)',
-          backgroundColor: '#fff',
           position: 'relative',
           overflow: 'hidden',
         }}
@@ -189,7 +187,7 @@ function Layout2({ config }) {
               left: 0,
               right: 0,
               height: '45%',
-              background: 'linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.7) 60%, #ffffff 100%)',
+              background: 'linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--colorBg) 40%, transparent) 60%, color-mix(in srgb, var(--colorBg) 90%, transparent) 100%)',
               pointerEvents: 'none',
             }}
           />
@@ -216,7 +214,7 @@ function Layout2({ config }) {
 
         {/* Text section below */}
         <div
-          className="text-center bg-white"
+          className="text-center"
           style={{ paddingTop: '8px', paddingBottom: '36px', paddingLeft: '28px', paddingRight: '28px' }}
         >
           {/* Invite text */}
@@ -238,7 +236,7 @@ function Layout2({ config }) {
             style={{
               fontSize: 'clamp(36px, 10vw, 72px)',
               fontWeight: 400,
-              color: '#1a1a1a',
+              color: '#ffffff',
               letterSpacing: '0.04em',
               lineHeight: 1,
               marginBottom: '20px',
@@ -256,7 +254,8 @@ function Layout2({ config }) {
             style={{
               fontSize: 'clamp(9px, 1.8vw, 11px)',
               fontStyle: 'italic',
-              color: '#888',
+              color: '#ffffff',
+              opacity: 0.8,
               letterSpacing: '0.04em',
               lineHeight: 1.7,
             }}
@@ -279,9 +278,9 @@ export default function Hero({ config }) {
   return (
     <section
       id="hero"
-      className="min-h-screen flex flex-col items-center justify-center"
+      className="min-h-screen flex flex-col items-center justify-center relative z-10"
       style={{
-        backgroundColor: 'var(--colorBg)',
+        backgroundColor: 'transparent',
         paddingTop: 'clamp(80px, 12vw, 120px)',
         paddingBottom: 'clamp(48px, 8vw, 80px)',
         paddingLeft: '16px',
@@ -310,7 +309,7 @@ const names = {
   fontSize: 'clamp(12px, 2.8vw, 17px)',
   letterSpacing: '0.2em',
   fontWeight: 700,
-  color: 'var(--colorTextDark)',
+  color: '#ffffff',
   textTransform: 'uppercase',
   marginBottom: '14px',
   lineHeight: 1.35,
@@ -327,7 +326,7 @@ const detail = {
   fontFamily: 'var(--font-sans, sans-serif)',
   fontSize: 'clamp(9px, 1.8vw, 11px)',
   letterSpacing: '0.2em',
-  color: 'var(--colorTextDark)',
+  color: '#ffffff',
   textTransform: 'uppercase',
   marginBottom: '8px',
   fontWeight: 400,
@@ -338,7 +337,7 @@ const reception = {
   fontFamily: 'var(--font-serif, serif)',
   fontSize: '11px',
   letterSpacing: '0.05em',
-  color: 'var(--colorTextDark)',
+  color: '#ffffff',
   fontStyle: 'italic',
   fontWeight: 400,
   opacity: 0.5,

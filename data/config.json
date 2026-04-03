@@ -67,14 +67,14 @@
     "buttonText": "Open Invitation"
   },
   "theme": {
-    "colorPrimary": "#1A365D",
-    "colorSecondary": "#C9956A",
-    "colorTextLight": "#4A5568",
-    "colorTextDark": "#171923",
-    "colorBg": "#F7FAFC",
+    "colorPrimary": "#D4A5A5",
+    "colorSecondary": "#E9D5D5",
+    "colorTextLight": "#9A7F7F",
+    "colorTextDark": "#3A2828",
+    "colorBg": "#FAF5F5",
     "colorSurface": "#FFFFFF",
-    "heroOverlayStart": "rgba(10, 20, 40, 0.6)",
-    "heroOverlayEnd": "rgba(10, 20, 40, 0.3)"
+    "heroOverlayStart": "rgba(40, 20, 20, 0.55)",
+    "heroOverlayEnd": "rgba(40, 20, 20, 0.25)"
   },
   "meta": {
     "title": "Kaveeth & Pramudi — Wedding Invitation",

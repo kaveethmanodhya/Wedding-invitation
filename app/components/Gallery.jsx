@@ -33,7 +33,7 @@ export default function Gallery({ config }) {
   }, [lightbox, gallery.length]);
 
   return (
-    <section id="gallery" className="bg-[var(--colorBg)] py-20 md:py-28">
+    <section id="gallery" className="relative z-10 py-20 md:py-28">
       <div className="max-w-5xl mx-auto px-6">
 
         {/* Header */}
