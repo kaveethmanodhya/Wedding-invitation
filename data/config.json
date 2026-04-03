@@ -33,28 +33,28 @@
       "venueName": "Araliya Gardens",
       "address": "123 Lotus Lane, Colombo 05, Sri Lanka",
       "mapsUrl": "https://maps.google.com/?q=Colombo+05+Sri+Lanka",
-      "dressCode": "Traditional / Semi-Formal"
+      "dressCode": ""
     }
   },
   "gallery": [
     {
-      "src": "/images/gallery-1.png",
+      "src": "/images/1775173916698-blob.webp",
       "alt": "Golden hour"
     },
     {
-      "src": "/images/gallery-2.png",
+      "src": "/images/1775173953697-blob.webp",
       "alt": "Garden stroll"
     },
     {
-      "src": "/images/gallery-3.png",
+      "src": "/images/1775173963028-blob.webp",
       "alt": "Intimate moment"
     },
     {
-      "src": "/images/gallery-4.png",
+      "src": "/images/1775173973278-blob.webp",
       "alt": "Beach walk"
     }
   ],
-  "heroImage": "/images/hero.png",
+  "heroImage": "/images/1775173794342-blob.webp",
   "heroLayout": 1,
   "rsvp": {
     "whatsappNumber": "94711690138",
@@ -67,17 +67,17 @@
     "buttonText": "Open Invitation"
   },
   "theme": {
-    "colorPrimary": "#2D5A27",
-    "colorSecondary": "#A3B18A",
-    "colorTextLight": "#344E41",
-    "colorTextDark": "#1B261B",
-    "colorBg": "#F0F4EF",
+    "colorPrimary": "#1A365D",
+    "colorSecondary": "#C9956A",
+    "colorTextLight": "#4A5568",
+    "colorTextDark": "#171923",
+    "colorBg": "#F7FAFC",
     "colorSurface": "#FFFFFF",
-    "heroOverlayStart": "rgba(15, 30, 15, 0.55)",
-    "heroOverlayEnd": "rgba(15, 30, 15, 0.25)"
+    "heroOverlayStart": "rgba(10, 20, 40, 0.6)",
+    "heroOverlayEnd": "rgba(10, 20, 40, 0.3)"
   },
   "meta": {
-    "title": "Amara & Kaveen — Wedding Invitation",
+    "title": "Kaveeth & Pramudi — Wedding Invitation",
     "description": "Join us as we celebrate the union of Amara Silva and Kaveen Fernando on December 19, 2026.",
     "ogImage": "/images/gallery-1.png"
   }

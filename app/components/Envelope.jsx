@@ -5,8 +5,10 @@ import { useState, useEffect } from 'react';
 export default function Envelope({ config, onOpen }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const check = () => setIsDesktop(window.innerWidth >= 768);
     check();
     window.addEventListener('resize', check);
@@ -15,7 +17,7 @@ export default function Envelope({ config, onOpen }) {
 
   const handleOpen = () => {
     setIsOpen(true);
-    setTimeout(() => onOpen(), 1200);
+    setTimeout(() => onOpen(), 1000); // reduced from 1200
   };
 
   /* ── Responsive values ── */
@@ -159,10 +161,7 @@ export default function Envelope({ config, onOpen }) {
               style={{ zIndex: 10, paddingTop: '0%' }}
             >
               {/* "A Wedding Invitation" */}
-              <motion.p
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
+              <p
                 style={{
                   fontFamily: 'var(--font-sans, sans-serif)',
                   fontSize: labelSize,
@@ -171,16 +170,15 @@ export default function Envelope({ config, onOpen }) {
                   color: 'var(--colorPrimary)',
                   marginBottom: isDesktop ? '3%' : '5%',
                   fontWeight: 600,
+                  // Replaced motion with standard fade-in if JS is slow
+                  opacity: mounted ? 1 : 1, 
                 }}
               >
                 {config.envelope?.title || 'A Wedding Invitation'}
-              </motion.p>
+              </p>
 
               {/* Couple Names — large bold script */}
-              <motion.h1
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4, duration: 0.7 }}
+              <h1
                 style={{
                   fontFamily: 'var(--font-script, cursive)',
                   fontSize: nameFontSize,
@@ -190,18 +188,33 @@ export default function Envelope({ config, onOpen }) {
                   textShadow: '0 2px 14px rgba(0,0,0,0.10)',
                   marginBottom: isDesktop ? '2%' : '3%',
                   wordBreak: 'break-word',
+                  opacity: 1,
                 }}
               >
                 {config.envelope?.subtitle || config.couple.displayNames}
-              </motion.h1>
+              </h1>
             </div>
 
             {/* ═══════════════════════════════════════════════════
                 MIDDLE — Wax Seal at ribbon intersection (z-20)
             ═══════════════════════════════════════════════════ */}
-            <div
-              className="relative flex items-center justify-center group cursor-pointer"
-              style={{ zIndex: 20, width: '108px', height: '108px' }}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="absolute flex items-center justify-center group outline-none"
+              style={{
+                zIndex: 200,
+                left: '50%',
+                top: '58%',
+                x: '-50%',
+                y: '-50%',
+                width: '120px',
+                height: '120px',
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer'
+              }}
               onClick={handleOpen}
             >
               {/*
@@ -241,7 +254,7 @@ export default function Envelope({ config, onOpen }) {
                   {(config.envelope?.buttonText || 'Open Invitation').replace(' ', '\n')}
                 </span>
               </div>
-            </div>
+            </motion.button>
 
             {/* ═══════════════════════════════════════════════════
                 BOTTOM — Click to reveal (z-10)
@@ -257,10 +270,7 @@ export default function Envelope({ config, onOpen }) {
               >
                 <path d="M1 9L8 2L15 9" stroke="var(--colorPrimary)" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.0, duration: 0.6 }}
+              <p
                 style={{
                   fontFamily: 'var(--font-sans, sans-serif)',
                   fontSize: labelSize,
@@ -272,7 +282,7 @@ export default function Envelope({ config, onOpen }) {
                 }}
               >
                 Click to reveal the message
-              </motion.p>
+              </p>
             </div>
           </div>
         </motion.div>

@@ -2,6 +2,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import AdminLogin from './components/AdminLogin';
 import { motion, AnimatePresence } from 'framer-motion';
+import ImageCropper from './components/ImageCropper';
+import imageCompression from 'browser-image-compression';
 
 const PRESET_THEMES = [
   {
@@ -190,7 +192,7 @@ function GalleryEditor({ gallery, onChange, onUpload }) {
                   type="file"
                   className="hidden"
                   accept="image/*"
-                  onChange={e => onUpload(e.target.files[0], `gallery.${i}.src`)}
+                  onChange={e => onUpload(e.target.files[0], `gallery.${i}.src`, 'gallery')}
                 />
               </label>
             </div>
@@ -284,6 +286,9 @@ function AdminDashboard() {
   const [toast, setToast] = useState(null);
   const [activeTab, setActiveTab] = useState('couple');
 
+  // ── Cropper State ──────────────────────────────────────────
+  const [cropping, setCropping] = useState(null); // { file, path, type, aspect }
+
   // Deep setter helper
   const setPath = useCallback((path, value) => {
     setConfig(prev => {
@@ -304,17 +309,55 @@ function AdminDashboard() {
     setTimeout(() => setToast(null), 4000);
   }, []);
 
-  const handleUpload = async (file, path) => {
+  const handleUpload = async (file, path, type = 'general') => {
     if (!file) return;
+
+    // 1. Initial Compression (Reduce huge files before cropping/sending)
+    let processedFile = file;
+    if (file.size > 1024 * 1024) { // > 1MB
+      showToast('success', 'Optimizing file size...');
+      try {
+        const options = {
+          maxSizeMB: 2,
+          maxWidthOrHeight: 2560,
+          useWebWorker: true
+        };
+        processedFile = await imageCompression(file, options);
+      } catch (err) {
+        console.error('Compression error:', err);
+      }
+    }
+
+    // 2. Determine if cropping is needed
+    if (type === 'hero' || type === 'gallery') {
+      const aspect = type === 'hero' ? 16 / 9 : 4 / 5; // Fixed for hero, suggested for gallery
+      setCropping({
+        file: URL.createObjectURL(processedFile),
+        path,
+        type,
+        aspect
+      });
+      return;
+    }
+
+    // 3. Direct upload for other types
+    await performUpload(processedFile, path, type);
+  };
+
+  const performUpload = async (file, path, type) => {
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('type', type);
+
     setLoading(true);
+    showToast('success', 'Uploading to server...');
+
     try {
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
       const data = await res.json();
       if (data.success) {
         setPath(path, data.url);
-        showToast('success', 'Image uploaded!');
+        showToast('success', 'Photo uploaded and saved!');
       } else {
         throw new Error(data.error);
       }
@@ -322,7 +365,13 @@ function AdminDashboard() {
       showToast('error', `Upload failed: ${err.message}`);
     } finally {
       setLoading(false);
+      setCropping(null);
     }
+  };
+
+  const onCropComplete = async (croppedBlob) => {
+    if (!cropping) return;
+    await performUpload(croppedBlob, cropping.path, cropping.type);
   };
 
   const loadConfig = useCallback(async () => {
@@ -389,6 +438,15 @@ function AdminDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
       {toast && <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />}
+
+      {cropping && (
+        <ImageCropper
+          image={cropping.file}
+          aspect={cropping.aspect}
+          onCropComplete={onCropComplete}
+          onCancel={() => setCropping(null)}
+        />
+      )}
 
       <header className="sticky top-0 z-30 bg-white border-b border-slate-100 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
@@ -560,7 +618,7 @@ function AdminDashboard() {
                     />
                     <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
                       Upload
-                      <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'heroImage')} />
+                      <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'heroImage', 'hero')} />
                     </label>
                   </div>
                 </div>

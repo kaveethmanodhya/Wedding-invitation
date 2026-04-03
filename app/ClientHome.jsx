@@ -18,7 +18,7 @@ export default function ClientHome({ config }) {
     <>
       <AnimatePresence>
         {!hasOpened && (
-          <Envelope config={config} onOpen={() => setHasOpened(true)} />
+          <Envelope key="envelope-layer" config={config} onOpen={() => setHasOpened(true)} />
         )}
       </AnimatePresence>
 
