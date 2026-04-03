@@ -483,6 +483,14 @@ function AdminDashboard() {
   const handleUpload = async (file, path, type = 'general') => {
     if (!file) return;
 
+    // Determine oldImage based on path
+    const keys = path.split('.');
+    let currentVal = config;
+    try {
+      for(let k of keys) currentVal = currentVal[k];
+    } catch(e) { currentVal = null; }
+    const oldImage = typeof currentVal === 'string' ? currentVal : null;
+
     // 1. Initial Compression (Reduce huge files before cropping/sending)
     let processedFile = file;
     const isGif = file.type === 'image/gif' || file.name.toLowerCase().endsWith('.gif');
@@ -505,7 +513,7 @@ function AdminDashboard() {
     if (type === 'hero' || type === 'gallery') {
       let aspect = 1.0;
       if (type === 'hero') {
-        aspect = 4 / 3;
+        aspect = 3 / 4;
       } else if (type === 'gallery') {
         aspect = 0.75; // Standard 3:4 Portrait for masonry
       }
@@ -514,19 +522,23 @@ function AdminDashboard() {
         file: URL.createObjectURL(processedFile),
         path,
         type,
-        aspect
+        aspect,
+        oldImage
       });
       return;
     }
 
     // 3. Direct upload for other types
-    await performUpload(processedFile, path, type);
+    await performUpload(processedFile, path, type, oldImage);
   };
 
-  const performUpload = async (file, path, type) => {
+  const performUpload = async (file, path, type, oldImage) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('type', type);
+    if (oldImage) {
+      formData.append('oldImage', oldImage);
+    }
 
     setLoading(true);
     showToast('success', 'Uploading to server...');
@@ -550,7 +562,7 @@ function AdminDashboard() {
 
   const onCropComplete = async (croppedBlob) => {
     if (!cropping) return;
-    await performUpload(croppedBlob, cropping.path, cropping.type);
+    await performUpload(croppedBlob, cropping.path, cropping.type, cropping.oldImage);
   };
 
   const loadConfig = useCallback(async () => {
@@ -757,7 +769,7 @@ function AdminDashboard() {
             <SectionCard title="Hero Style" icon="✨">
               <div 
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden mb-5 transition-all duration-500"
-                style={{ aspectRatio: '4 / 3' }}
+                style={{ aspectRatio: '3 / 4' }}
               >
                 {config.heroImage ? (
                   <img src={config.heroImage} className="w-full h-full object-cover" alt="Hero Preview" />

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, unlink } from 'fs/promises';
 import { join } from 'path';
 import sharp from 'sharp';
 
@@ -8,6 +8,15 @@ export async function POST(req) {
     const formData = await req.formData();
     const file = formData.get('file');
     const type = formData.get('type') || 'general'; // hero | gallery | general
+    const oldImage = formData.get('oldImage');
+
+    if (oldImage && oldImage.startsWith('/images/')) {
+      const oldFilename = oldImage.replace('/images/', '');
+      if (!oldFilename.includes('/') && !oldFilename.includes('\\')) {
+        const oldPath = join(process.cwd(), 'public', 'images', oldFilename);
+        try { await unlink(oldPath); } catch (e) { console.error('Delete old file failed:', e.message); }
+      }
+    }
 
     if (!file) {
       return NextResponse.json({ success: false, error: 'No file uploaded' }, { status: 400 });
