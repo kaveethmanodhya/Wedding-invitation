@@ -21,131 +21,157 @@ function useReveal(delay = 0) {
   return ref;
 }
 
-function EventCard({ event, delay }) {
-  const ref = useReveal(delay);
+const PlaneIcon = () => (<svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 11l19-9-9 19-2-8-8-2z" /></svg>);
 
+// ── LAYOUT 1 — Rectangular Ornate Cards ──
+function EventCard1({ event, delay }) {
+  const ref = useReveal(delay);
   return (
     <article
       ref={ref}
-      className="opacity-0 translate-y-8 transition-all duration-700
-        bg-[var(--colorBg)] border border-[var(--colorPrimary)]/20 rounded-3xl
-        px-8 py-10 flex flex-col items-center text-center gap-3
-        shadow-[0_8px_40px_rgba(var(--colorTextDarkRGB,44,32,24),0.09)]
-        hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(var(--colorTextDarkRGB,44,32,24),0.14)]
-        transition-[transform,box-shadow] duration-300"
+      className="opacity-0 translate-y-8 transition-all duration-700 bg-[var(--colorBg)] border border-[var(--colorPrimary)] rounded-none px-8 py-10 flex flex-col items-center text-center gap-3 w-full max-w-sm relative group"
     >
-      <span className="text-4xl mb-1">{event.icon}</span>
-      <h3 className="font-serif text-2xl md:text-3xl font-medium text-[var(--colorTextDark)]">
-        {event.title}
-      </h3>
-      <div className="w-10 h-px bg-[var(--colorPrimary)]/60 my-1" />
+      <div className="absolute inset-1.5 border border-[var(--colorPrimary)] opacity-40 pointer-events-none" />
+      <span className="text-4xl mb-1 mt-2 text-[var(--colorPrimary)]">❀</span>
+      <h3 className="font-serif text-2xl md:text-3xl font-medium text-[var(--colorTextDark)] tracking-wide">{event.title}</h3>
+      <div className="w-16 h-px bg-[var(--colorPrimary)] my-2 opacity-60" />
+      <span className="font-serif italic text-lg text-[var(--colorPrimary)] mb-2">{event.time}</span>
 
-      {/* Details */}
-      {[
-        { icon: 'clock', label: event.time },
-        { icon: 'home',  label: event.venueName },
-        { icon: 'pin',   label: event.address },
-        { icon: 'heart', label: `Dress Code: ${event.dressCode}` },
-      ].map(({ icon, label }) => (
-        <div key={icon} className="flex items-start gap-2.5 w-full max-w-xs text-left">
-          <span className="mt-0.5 shrink-0">
-            {icon === 'clock'  && <ClockIcon />}
-            {icon === 'home'   && <HomeIcon />}
-            {icon === 'pin'    && <PinIcon />}
-            {icon === 'heart'  && <HeartIcon />}
-          </span>
-          <span className="font-sans text-sm text-[var(--colorTextDark)]/75">{label}</span>
-        </div>
-      ))}
+      <div className="flex flex-col gap-1 w-full max-w-xs text-center mb-6">
+        <span className="font-sans font-bold uppercase tracking-widest text-xs text-[var(--colorTextDark)]">{event.venueName}</span>
+        <span className="font-sans text-sm text-[var(--colorTextDark)]/75 mt-1 leading-relaxed">{event.address}</span>
+        {event.dressCode && event.dressCode !== 'none' && (
+          <span className="font-serif italic text-sm text-[var(--colorTextDark)] opacity-80 mt-3">Dress Code: {event.dressCode}</span>
+        )}
+      </div>
 
-      <a
-        href={event.mapsUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-4 flex items-center gap-2 px-7 py-3 rounded-full
-          bg-[var(--colorPrimary)] text-white font-sans text-xs font-semibold tracking-widest uppercase
-          shadow-[0_4px_18px_var(--colorPrimary)/35]
-          hover:bg-transparent hover:text-[var(--colorPrimary)] border border-[var(--colorPrimary)]
-          transition-all duration-300 w-full max-w-xs justify-center"
-      >
-        <PlaneIcon />
-        Get Directions
+      <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="mt-auto flex items-center gap-2 px-8 py-3 bg-[var(--colorPrimary)] text-white font-sans text-[10px] font-bold tracking-widest uppercase hover:bg-transparent hover:text-[var(--colorPrimary)] border border-[var(--colorPrimary)] transition-all duration-300">
+        <PlaneIcon /> Directions
       </a>
     </article>
   );
 }
 
-export default function EventDetails({ config }) {
+function Layout1({ config }) {
   const headerRef = useReveal(0);
   const { events } = config;
-
   return (
-    <section id="events" className="bg-white py-20 md:py-28">
-      <div className="max-w-5xl mx-auto px-6">
-
-        {/* Header */}
-        <div
-          ref={headerRef}
-          className="text-center mb-14 opacity-0 translate-y-8 transition-all duration-700"
-        >
-          <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">
-            Mark Your Calendar
-          </p>
-          <h2 className="font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3">
-            Event Details
-          </h2>
-          <span className="text-[var(--colorPrimary)]/60 text-2xl">❧</span>
-        </div>
-
-        {/* Cards */}
-        {/* Gallery Images in Events */}
-        <div className="grid grid-cols-2 gap-4 mb-20">
-          {config.gallery?.slice(2, 4).map((img, i) => (
-            <div key={i} className={`rounded-3xl overflow-hidden shadow-lg aspect-video ${i === 1 ? 'md:mt-12' : ''}`}>
-              <img src={img.src} alt={img.alt} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-            </div>
-          ))}
-        </div>
-
-        {/* Cards — Centered if only one */}
-        <div className={`flex flex-wrap justify-center gap-6 md:gap-8 ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
-          {Object.entries(events).map(([key, event], idx) => (
-            <div key={key} className="w-full max-w-sm">
-              <EventCard event={event} delay={idx * 150} />
-            </div>
-          ))}
-        </div>
+    <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
+      <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
+        <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">Mark Your Calendar</p>
+        <h2 className="font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-4 tracking-wide">Event Details</h2>
+        <div className="w-24 h-px bg-[var(--colorPrimary)] opacity-50 mx-auto" />
       </div>
-    </section>
+
+      <div className={`flex flex-wrap justify-center gap-8 md:gap-12 ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
+        {Object.entries(events).map(([key, event], idx) => (
+          <EventCard1 key={key} event={event} delay={idx * 150} />
+        ))}
+      </div>
+    </div>
   );
 }
 
-// ── Inline SVG icons ──────────────────────────────────────────
-const iconClass = 'w-4 h-4 shrink-0 text-[var(--colorPrimary)]';
-const ClockIcon = () => (
-  <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
-  </svg>
-);
-const HomeIcon = () => (
-  <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-    <polyline points="9 22 9 12 15 12 15 22"/>
-  </svg>
-);
-const PinIcon = () => (
-  <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/>
-    <circle cx="12" cy="10" r="3"/>
-  </svg>
-);
-const HeartIcon = () => (
-  <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-  </svg>
-);
-const PlaneIcon = () => (
-  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M3 11l19-9-9 19-2-8-8-2z"/>
-  </svg>
-);
+// ── LAYOUT 2 — Floating Elegant Cards ──
+function EventCard2({ event, delay }) {
+  const ref = useReveal(delay);
+  return (
+    <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 w-full md:w-[48%] bg-white/70 backdrop-blur-md shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white/60 relative group hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] p-10 rounded-[32px]">
+      <h3 className="font-script text-4xl text-[var(--colorPrimary)] mb-2 drop-shadow-sm">{event.title}</h3>
+      <p className="font-serif text-[var(--colorTextDark)] opacity-80 text-lg mb-6 tracking-wide">{event.time}</p>
+
+      <div className="space-y-4 mb-8">
+        <p className="font-sans font-light text-sm uppercase tracking-widest text-[var(--colorTextDark)] opacity-90"><span className="font-bold border-b border-[var(--colorPrimary)]/50 mr-2">Venue</span> {event.venueName}</p>
+        <p className="font-sans font-light text-sm uppercase tracking-widest text-[var(--colorTextDark)] opacity-90"><span className="font-bold border-b border-[var(--colorPrimary)]/50 mr-2">Loc</span> {event.address}</p>
+        {event.dressCode && event.dressCode !== 'none' && (
+          <p className="font-sans font-light text-sm uppercase tracking-widest text-[var(--colorTextDark)] opacity-90"><span className="font-bold border-b border-[var(--colorPrimary)]/50 mr-2">Attire</span> {event.dressCode}</p>
+        )}
+      </div>
+
+      <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 border border-[var(--colorTextDark)] text-[var(--colorTextDark)] font-sans text-xs font-bold tracking-widest uppercase hover:text-[var(--colorPrimary)] hover:border-[var(--colorPrimary)] transition-colors px-6 py-2 rounded-full">
+        <PlaneIcon /> Map
+      </a>
+    </div>
+  );
+}
+
+function Layout2({ config }) {
+  const headerRef = useReveal(0);
+  const { events } = config;
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-24 md:py-32 relative">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[var(--colorPrimary)] opacity-5 rounded-full blur-3xl pointer-events-none" />
+      <div ref={headerRef} className="opacity-0 translate-y-8 transition-all duration-700 mb-20 text-center relative z-10 w-full">
+        <h2 className="font-script text-5xl md:text-6xl text-[var(--colorTextDark)] mb-6 leading-none drop-shadow-sm tracking-widest uppercase drop-shadow-sm">
+          Celebrations
+        </h2>
+      </div>
+      <div className={`flex flex-wrap justify-center gap-12 relative z-10 w-full ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
+        {Object.entries(events).map(([key, event], idx) => (
+          <EventCard2 key={key} event={event} delay={idx * 150} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── LAYOUT 3 — Royal Arch / Solid block ──
+function EventCard3({ event, delay }) {
+  const ref = useReveal(delay);
+  return (
+    <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 relative bg-[var(--colorPrimary)]/5 border border-[var(--colorPrimary)]/50 p-8 md:p-10 w-full max-w-md mx-auto text-center shadow-lg group hover:bg-[var(--colorPrimary)]/10 transition-colors">
+      <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[var(--colorPrimary)] m-2 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[var(--colorPrimary)] m-2 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[var(--colorPrimary)] m-2 pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[var(--colorPrimary)] m-2 pointer-events-none" />
+
+      <h3 className="font-serif text-3xl md:text-4xl text-[var(--colorTextDark)] mb-2 tracking-wide">{event.title}</h3>
+      <p className="font-script text-3xl text-[var(--colorPrimary)] mb-6 drop-shadow-sm">{event.time}</p>
+
+      <div className="w-16 h-[1px] bg-[var(--colorPrimary)] mx-auto mb-6 opacity-60" />
+
+      <p className="font-sans text-xs tracking-widest uppercase font-bold text-[var(--colorTextDark)] mb-1">{event.venueName}</p>
+      <p className="font-sans text-sm tracking-wide text-[var(--colorTextDark)]/80 mb-6 max-w-[200px] mx-auto leading-relaxed">{event.address}</p>
+
+      {event.dressCode && event.dressCode !== 'none' && (
+        <p className="font-serif italic text-sm text-[var(--colorTextDark)] opacity-90 mb-8">Dress Code: {event.dressCode}</p>
+      )}
+
+      <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-block px-8 py-3 bg-[var(--colorTextDark)] text-[var(--colorBg)] font-sans text-xs tracking-widest uppercase hover:bg-[var(--colorPrimary)] transition-colors shadow-md">
+        View Map
+      </a>
+    </div>
+  );
+}
+
+function Layout3({ config }) {
+  const headerRef = useReveal(0);
+  const { events } = config;
+  return (
+    <div className="max-w-5xl mx-auto px-6 py-28 md:py-36">
+      <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
+        <span className="text-3xl text-[var(--colorPrimary)] mb-4 block">❀</span>
+        <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 tracking-wide">Celebrations</h2>
+        <div className="w-24 h-0.5 bg-[var(--colorPrimary)] mx-auto opacity-60" />
+      </div>
+
+      <div className={`grid md:grid-cols-2 gap-10 md:gap-14 justify-center ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
+        {Object.entries(events).map(([key, event], idx) => (
+          <div key={key} className={Object.keys(events).length === 1 ? 'md:col-span-2' : ''}>
+            <EventCard3 event={event} delay={idx * 150} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function EventDetails({ config }) {
+  const layout = config?.heroLayout ?? 1;
+
+  return (
+    <section id="events" className="overflow-hidden bg-[var(--colorBg)] transition-colors duration-500">
+      {layout === 3 ? <Layout3 config={config} /> : layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
+    </section>
+  );
+}

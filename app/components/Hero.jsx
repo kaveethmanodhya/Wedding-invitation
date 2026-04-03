@@ -1,9 +1,6 @@
 'use client';
 import { motion } from 'framer-motion';
 
-/* ─────────────────────────────────────────────────────────
-   Shared helpers
-───────────────────────────────────────────────────────── */
 function numericDate(isoString) {
   if (!isoString) return '';
   const d = new Date(isoString);
@@ -26,7 +23,7 @@ const ScrollCue = () => (
     href="#story"
     aria-label="Scroll"
     className="flex flex-col items-center gap-1 mt-8 mx-auto w-fit"
-    style={{ opacity: 0.3, color: 'var(--colorTextDark)' }}
+    style={{ opacity: 0.5, color: 'var(--colorTextDark)' }}
   >
     <span style={{ fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)' }}>
       Scroll
@@ -38,15 +35,12 @@ const ScrollCue = () => (
 );
 
 /* ─────────────────────────────────────────────────────────
-   LAYOUT 1 — "forever" script overlay card
-   (portrait card, photo top half, script straddles, details below)
+   LAYOUT 1 — Rectangular Ornate Frame
 ───────────────────────────────────────────────────────── */
 function Layout1({ config }) {
   const { couple, wedding, events, heroImage } = config;
   const ceremony = events?.ceremony || {};
-
-  /* The photo height as a CSS string — used in both the clipped container and the absolute overlay positioning */
-  const photoH = 'clamp(280px, 55vw, 520px)';
+  const dayLabel = dayName(wedding?.dateTimeISO);
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -56,77 +50,49 @@ function Layout1({ config }) {
         transition={{ duration: 1, ease: 'easeOut' }}
         style={{
           width: '100%',
-          maxWidth: 'clamp(320px, 90vw, 640px)',
-          boxShadow: '0 30px 80px rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.08)',
-          backgroundColor: '#fff',
+          maxWidth: 'clamp(320px, 90vw, 540px)',
+          minHeight: 'clamp(600px, 80vh, 850px)',
+          boxShadow: '0 30px 80px rgba(0,0,0,0.15)',
+          backgroundColor: 'var(--colorBg)',
           position: 'relative',
-          overflow: 'visible',
+          overflow: 'hidden',
+          padding: '16px',
         }}
       >
-        {/* Photo — clipped */}
-        <div style={{ height: photoH, overflow: 'hidden', lineHeight: 0 }}>
-          <img
-            src={heroImage || '/images/hero.png'}
-            alt={couple?.displayNames || 'Wedding Photo'}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'center top',
-              filter: 'grayscale(45%) brightness(1.05) contrast(0.95) saturate(0.75)',
-              display: 'block',
-            }}
-          />
+        {/* Double Rectangular Border */}
+        <div style={{ position: 'absolute', inset: '16px', border: '2px solid var(--colorPrimary)', pointerEvents: 'none', zIndex: 10 }} />
+        <div style={{ position: 'absolute', inset: '22px', border: '1px solid var(--colorPrimary)', opacity: 0.5, pointerEvents: 'none', zIndex: 10 }} />
+
+        {/* Hero BG Image Area - Top Half */}
+        <div style={{ position: 'absolute', top: '24px', left: '24px', right: '24px', height: '45%' }}>
+          <img src={heroImage || '/images/hero.png'} alt="Hero Background" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, var(--colorBg) 95%)' }} />
         </div>
 
-        {/* "forever" — straddles photo/text boundary */}
-        <div
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: `calc(${photoH} * 0.60)`,
-            zIndex: 20,
-            display: 'flex',
-            justifyContent: 'center',
-            pointerEvents: 'none',
-          }}
-        >
-          <span
-            className="font-script"
-            style={{
-              fontSize: 'clamp(80px, 20vw, 148px)',
-              lineHeight: 1,
-              color: '#ffffff',
-              textShadow: '0 2px 30px rgba(0,0,0,0.07)',
-              letterSpacing: '-0.01em',
-              userSelect: 'none',
-              display: 'block',
-            }}
-          >
-            forever
-          </span>
-        </div>
+        {/* Content Box */}
+        <div className="relative z-20 flex flex-col items-center justify-end pt-[50%] h-full text-center px-8 pb-16">
+          <p style={{ ...eyebrow, marginBottom: '24px' }}>Wedding Celebration</p>
+          
+          <h1 className="font-serif tracking-widest leading-tight" style={{ fontSize: 'clamp(32px, 8vw, 42px)', color: 'var(--colorTextDark)' }}>
+            {(couple?.groom?.firstName || 'Groom').toUpperCase()}
+          </h1>
+          <span className="font-script my-2" style={{ fontSize: '32px', color: 'var(--colorPrimary)' }}>&</span>
+          <h1 className="font-serif tracking-widest leading-tight" style={{ fontSize: 'clamp(32px, 8vw, 42px)', color: 'var(--colorTextDark)' }}>
+            {(couple?.bride?.firstName || 'Bride').toUpperCase()}
+          </h1>
 
-        {/* Text section */}
-        <div
-          className="bg-white text-center"
-          style={{
-            paddingTop: 'clamp(48px, 11vw, 80px)',
-            paddingBottom: '36px',
-            paddingLeft: '28px',
-            paddingRight: '28px',
-          }}
-        >
-          <p style={{ ...eyebrow, color: 'var(--colorPrimary)' }}>With Love</p>
-          <h1 style={names}>{couple?.displayNames || 'Kaveeth & Pramudi'}</h1>
-          <div style={divider} />
-          <p style={detail}>Invite You to Their Wedding</p>
-          <p style={detail}>{wedding?.displayDate}{ceremony?.time ? ` at ${ceremony.time}` : ''}</p>
-          <p style={{ ...detail, marginBottom: '16px' }}>
-            {[ceremony?.venueName, ceremony?.address].filter(Boolean).join(', ')}
-          </p>
-          <p style={reception}>reception to follow ceremony</p>
+          <div style={{ width: '60px', height: '1.5px', background: 'var(--colorPrimary)', margin: '32px 0', opacity: 0.8 }} />
+
+          <p style={detail}>{dayLabel ? dayLabel + ', ' : ''} {wedding?.displayDate}</p>
+          {ceremony?.time && <p style={{...detail, marginTop: '4px'}}>{ceremony.time}</p>}
+          
+          {ceremony?.venueName && (
+            <>
+              <p className="font-script mt-6" style={{ fontSize: '20px', color: 'var(--colorPrimary)' }}>Venue</p>
+              <p style={{...detail, marginTop: '4px'}}>{ceremony?.venueName}</p>
+            </>
+          )}
+
         </div>
       </motion.div>
       <ScrollCue />
@@ -135,22 +101,12 @@ function Layout1({ config }) {
 }
 
 /* ─────────────────────────────────────────────────────────
-   LAYOUT 2 — Names-on-photo, big numeric date card
-   (full-bleed photo fading to white, names on photo, large date below)
+   LAYOUT 2 — Oval Ornate Frame inside Card
 ───────────────────────────────────────────────────────── */
 function Layout2({ config }) {
   const { couple, wedding, events, heroImage } = config;
   const ceremony = events?.ceremony || {};
-  const bride = couple?.bride?.fullName || couple?.displayNames?.split('&')[1]?.trim() || '';
-  const groom = couple?.groom?.fullName || couple?.displayNames?.split('&')[0]?.trim() || '';
-  const dateNumeric = numericDate(wedding?.dateTimeISO);
   const dayLabel = dayName(wedding?.dateTimeISO);
-
-  const pipeDetails = [
-    ceremony?.time,
-    ceremony?.venueName ? `${ceremony.venueName}${ceremony?.address ? ', ' + ceremony.address : ''}` : null,
-    'Reception to follow',
-  ].filter(Boolean).join(' | ');
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -160,109 +116,158 @@ function Layout2({ config }) {
         transition={{ duration: 1, ease: 'easeOut' }}
         style={{
           width: '100%',
-          maxWidth: 'clamp(320px, 90vw, 640px)',
-          boxShadow: '0 30px 80px rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.08)',
-          backgroundColor: '#fff',
+          maxWidth: 'clamp(320px, 90vw, 540px)',
+          minHeight: 'clamp(600px, 80vh, 850px)',
+          boxShadow: '0 30px 80px rgba(0,0,0,0.15)',
+          backgroundColor: 'var(--colorBg)',
           position: 'relative',
           overflow: 'hidden',
+          padding: '24px',
+          borderRadius: '24px',
         }}
       >
-        {/* Photo with gradient fade at bottom */}
-        <div style={{ position: 'relative', lineHeight: 0 }}>
-          <img
-            src={heroImage || '/images/hero.png'}
-            alt={couple?.displayNames || 'Wedding Photo'}
-            style={{
-              width: '100%',
-              height: 'clamp(300px, 60vw, 540px)',
-              objectFit: 'cover',
-              objectPosition: 'center top',
-              filter: 'grayscale(55%) brightness(1.0) contrast(0.92) saturate(0.6)',
-              display: 'block',
-            }}
-          />
-          {/* Gradient fade from photo into white */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: '45%',
-              background: 'linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.7) 60%, #ffffff 100%)',
-              pointerEvents: 'none',
-            }}
-          />
-          {/* Names overlaid on photo — upper area */}
-          <div
-            style={{
-              position: 'absolute',
-              top: 'clamp(20px, 5vw, 40px)',
-              left: 0,
-              right: 0,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: 'clamp(12px, 3vw, 24px)',
-              padding: '0 24px',
-              pointerEvents: 'none',
-            }}
-          >
-            <span style={photoName}>{groom}</span>
-            <span style={{ color: '#fff', fontSize: 'clamp(12px, 2.5vw, 18px)', fontFamily: 'var(--font-serif)', opacity: 0.9 }}>&amp;</span>
-            <span style={photoName}>{bride}</span>
-          </div>
+        {/* Floating Oval Window */}
+        <div style={{ position: 'absolute', top: '16px', left: '16px', right: '16px', bottom: '16px', border: '1px solid var(--colorPrimary)', opacity: 0.4, borderRadius: '50% 50% / 10% 10%', pointerEvents: 'none' }} />
+
+        <div style={{
+           margin: '0 auto 24px', width: 'clamp(200px, 60vw, 300px)', height: 'clamp(280px, 80vw, 400px)',
+           borderRadius: '50%',
+           overflow: 'hidden',
+           border: '4px solid var(--colorPrimary)',
+           padding: '4px',
+           position: 'relative'
+        }}>
+           <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden' }}>
+             <img src={heroImage || '/images/hero.png'} alt="Hero" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+           </div>
         </div>
 
-        {/* Text section below */}
-        <div
-          className="text-center bg-white"
-          style={{ paddingTop: '8px', paddingBottom: '36px', paddingLeft: '28px', paddingRight: '28px' }}
-        >
-          {/* Invite text */}
-          <p style={{ ...detail, fontStyle: 'italic', fontSize: 'clamp(10px, 2vw, 12px)', marginBottom: '4px' }}>
-            Invite You to
-          </p>
-          <p style={{ ...detail, fontStyle: 'italic', fontSize: 'clamp(10px, 2vw, 12px)', marginBottom: '20px' }}>
-            Celebrate Their Marriage
-          </p>
+        {/* Content */}
+        <div className="relative z-20 flex flex-col items-center text-center px-4 w-full">
+          <p className="font-script text-[var(--colorPrimary)] mb-2" style={{ fontSize: 'clamp(28px, 6vw, 40px)' }}>We Are Getting Married</p>
+          
+          <h1 className="font-serif" style={{ fontSize: 'clamp(24px, 5vw, 32px)', color: 'var(--colorTextDark)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+            {couple?.groom?.firstName || 'Groom'}
+          </h1>
+          <div style={{ height: '40px', width: '1px', background: 'var(--colorSecondary)', margin: '12px 0' }} />
+          <h1 className="font-serif" style={{ fontSize: 'clamp(24px, 5vw, 32px)', color: 'var(--colorTextDark)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+            {couple?.bride?.firstName || 'Bride'}
+          </h1>
 
-          {/* Day name */}
-          {dayLabel && (
-            <p style={{ ...eyebrow, marginBottom: '4px' }}>{dayLabel}</p>
+          <div className="flex gap-4 mt-8 items-center text-[var(--colorTextDark)] opacity-80 uppercase tracking-widest font-sans text-xs">
+             <span>{dayLabel}</span>
+             <span className="w-1.5 h-1.5 bg-[var(--colorPrimary)] rounded-full"/>
+             <span>{wedding?.displayDate}</span>
+          </div>
+          
+          {ceremony?.venueName && (
+             <p className="font-sans text-[0.65rem] tracking-widest uppercase mt-4 text-[var(--colorTextDark)]/70 max-w-[200px]">
+               {ceremony?.venueName}
+             </p>
           )}
 
-          {/* Big numeric date */}
-          <p
-            className="font-serif"
-            style={{
-              fontSize: 'clamp(36px, 10vw, 72px)',
-              fontWeight: 400,
-              color: '#1a1a1a',
-              letterSpacing: '0.04em',
-              lineHeight: 1,
-              marginBottom: '20px',
-            }}
-          >
-            {dateNumeric || wedding?.displayDate}
+        </div>
+      </motion.div>
+      <ScrollCue />
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   LAYOUT 3 — Royal Arch & Peacocks (Indian Style)
+───────────────────────────────────────────────────────── */
+function Layout3({ config }) {
+  const { couple, wedding, events, heroImage } = config;
+  const ceremony = events?.ceremony || {};
+  const dayLabel = dayName(wedding?.dateTimeISO);
+
+  return (
+    <div className="flex flex-col items-center w-full">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: 'easeOut' }}
+        style={{
+          width: '100%',
+          maxWidth: 'clamp(320px, 90vw, 540px)',
+          minHeight: 'clamp(600px, 80vh, 850px)',
+          boxShadow: '0 30px 80px rgba(0,0,0,0.2)',
+          background: 'var(--colorBg)',
+          position: 'relative',
+          overflow: 'hidden',
+          borderRadius: '16px',
+        }}
+      >
+        {/* Full Image Background wrapped by Arch */}
+        {heroImage && (
+          <div className="absolute inset-0 opacity-40 pointer-events-none z-0">
+             <img src={heroImage} className="w-full h-full object-cover grayscale mix-blend-multiply filter saturate-50" />
+             <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 40%, var(--colorBg) 100%)' }} />
+          </div>
+        )}
+
+        {/* Ornate Arch Outline */}
+        <div style={{
+          position: 'absolute',
+          inset: '16px',
+          border: '2px solid var(--colorPrimary)',
+          borderRadius: '350px 350px 0 0',
+          pointerEvents: 'none',
+          boxShadow: 'inset 0 0 20px var(--colorPrimary)',
+          opacity: 0.8,
+          zIndex: 1
+        }}>
+          {/* Inner border */}
+          <div style={{ position: 'absolute', inset: '6px', border: '1px solid var(--colorPrimary)', opacity: 0.5, borderRadius: '344px 344px 0 0' }}/>
+        </div>
+
+        {/* Top floral decoration placeholder */}
+        <div className="absolute top-0 left-0 right-0 h-32 opacity-20 pointer-events-none z-0" 
+             style={{ background: 'radial-gradient(circle at top, var(--colorPrimary) 0%, transparent 70%)' }} />
+
+        {/* Content Box */}
+        <div className="relative z-20 flex flex-col items-center pt-[15vh] px-8 pb-32 text-center h-full">
+          <p className="font-script text-3xl md:text-5xl mb-6 drop-shadow-sm" style={{ color: 'var(--colorTextDark)' }}>
+            Wedding Invitation
           </p>
 
-          {/* Thin rule */}
-          <div style={{ ...divider, marginBottom: '16px' }} />
-
-          {/* Pipe-separated details */}
-          <p
-            className="font-serif"
-            style={{
-              fontSize: 'clamp(9px, 1.8vw, 11px)',
-              fontStyle: 'italic',
-              color: '#888',
-              letterSpacing: '0.04em',
-              lineHeight: 1.7,
-            }}
-          >
-            {pipeDetails}
+          <p className="font-sans text-[0.65rem] md:text-xs tracking-widest uppercase mb-4 leading-relaxed max-w-[280px]" style={{ color: 'var(--colorTextDark)', opacity: 0.8 }}>
+            You Are Cordially Invited To<br/>
+            Celebrate the marriage of
           </p>
+
+          <h1 className="font-serif text-4xl md:text-5xl my-4 tracking-widest drop-shadow-sm" style={{ color: 'var(--colorPrimary)' }}>
+            {(couple?.groom?.firstName || 'Groom').toUpperCase()}
+          </h1>
+          <span className="font-sans text-[0.6rem] uppercase tracking-[0.3em] my-1" style={{ color: 'var(--colorTextDark)', opacity: 0.6 }}>With</span>
+          <h1 className="font-serif text-4xl md:text-5xl my-4 tracking-widest drop-shadow-sm" style={{ color: 'var(--colorPrimary)' }}>
+            {(couple?.bride?.firstName || 'Bride').toUpperCase()}
+          </h1>
+
+          <div style={{ width: '80px', height: '1.5px', background: 'var(--colorPrimary)', margin: '24px 0', opacity: 0.8 }} />
+
+          <p className="font-sans text-xs tracking-wider" style={{ color: 'var(--colorTextDark)' }}>
+            {dayLabel ? dayLabel + ', ' : ''} {wedding?.displayDate}
+          </p>
+          {ceremony?.time && (
+            <p className="font-sans text-xs tracking-wider mt-1" style={{ color: 'var(--colorTextDark)' }}>
+              Time {ceremony.time}
+            </p>
+          )}
+
+          <div style={{ width: '40px', height: '1px', background: 'var(--colorPrimary)', margin: '16px 0', opacity: 0.5 }} />
+
+          <p className="font-script text-2xl mb-1" style={{ color: 'var(--colorSecondary)' }}>Venue</p>
+          <p className="font-sans text-[0.65rem] tracking-widest uppercase leading-snug max-w-[200px]" style={{ color: 'var(--colorTextDark)', opacity: 0.8 }}>
+            {ceremony?.venueName}<br/>
+            {ceremony?.address}
+          </p>
+        </div>
+
+        {/* Decorative Peacocks */}
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-8 pointer-events-none opacity-60 z-10">
+          <span className="text-4xl filter saturate-50 drop-shadow-lg" style={{ color: 'var(--colorPrimary)' }}>🦚</span>
+          <span className="text-4xl filter saturate-50 drop-shadow-lg" style={{ transform: 'scaleX(-1)', color: 'var(--colorPrimary)' }}>🦚</span>
         </div>
       </motion.div>
       <ScrollCue />
@@ -279,7 +284,7 @@ export default function Hero({ config }) {
   return (
     <section
       id="hero"
-      className="min-h-screen flex flex-col items-center justify-center"
+      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
       style={{
         backgroundColor: 'var(--colorBg)',
         paddingTop: 'clamp(80px, 12vw, 120px)',
@@ -288,7 +293,10 @@ export default function Hero({ config }) {
         paddingRight: '16px',
       }}
     >
-      {layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
+      <div className="absolute inset-0 pointer-events-none z-0" style={{ background: 'radial-gradient(circle at 50% 50%, var(--colorPrimary) 0%, transparent 60%)', opacity: 0.03 }} />
+      <div className="relative z-10 w-full flex justify-center">
+        {layout === 3 ? <Layout3 config={config} /> : layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
+      </div>
     </section>
   );
 }
@@ -300,20 +308,8 @@ const eyebrow = {
   letterSpacing: '0.24em',
   color: 'var(--colorPrimary)',
   textTransform: 'uppercase',
-  marginBottom: '10px',
   fontWeight: 400,
-  opacity: 0.8,
-};
-
-const names = {
-  fontFamily: 'var(--font-sans, sans-serif)',
-  fontSize: 'clamp(12px, 2.8vw, 17px)',
-  letterSpacing: '0.2em',
-  fontWeight: 700,
-  color: 'var(--colorTextDark)',
-  textTransform: 'uppercase',
-  marginBottom: '14px',
-  lineHeight: 1.35,
+  opacity: 0.9,
 };
 
 const divider = {
@@ -329,27 +325,6 @@ const detail = {
   letterSpacing: '0.2em',
   color: 'var(--colorTextDark)',
   textTransform: 'uppercase',
-  marginBottom: '8px',
   fontWeight: 400,
-  opacity: 0.7,
-};
-
-const reception = {
-  fontFamily: 'var(--font-serif, serif)',
-  fontSize: '11px',
-  letterSpacing: '0.05em',
-  color: 'var(--colorTextDark)',
-  fontStyle: 'italic',
-  fontWeight: 400,
-  opacity: 0.5,
-};
-
-const photoName = {
-  fontFamily: 'var(--font-sans, sans-serif)',
-  fontSize: 'clamp(11px, 2.5vw, 16px)',
-  letterSpacing: '0.2em',
-  fontWeight: 700,
-  textTransform: 'uppercase',
-  color: '#ffffff',
-  textShadow: '0 1px 12px rgba(0,0,0,0.5)',
+  opacity: 0.8,
 };

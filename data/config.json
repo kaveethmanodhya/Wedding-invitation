@@ -54,8 +54,8 @@
       "alt": "Beach walk"
     }
   ],
-  "heroImage": "/images/1775223842431-blob.webp",
-  "heroLayout": 1,
+  "heroImage": "/images/1775245725492-blob.webp",
+  "heroLayout": 2,
   "rsvp": {
     "whatsappNumber": "94711690138",
     "deadline": "December 1, 2026",
@@ -67,21 +67,21 @@
     "buttonText": "Open Invitation"
   },
   "theme": {
-    "colorPrimary": "#2D5A27",
-    "colorSecondary": "#A3B18A",
-    "colorTextLight": "#344E41",
-    "colorTextDark": "#1B261B",
-    "colorBg": "#F0F4EF",
+    "colorPrimary": "#232323",
+    "colorSecondary": "#E6D3A8",
+    "colorTextLight": "#947842",
+    "colorTextDark": "#3A2E17",
+    "colorBg": "#FDFCF6",
     "colorSurface": "#FFFFFF",
-    "heroOverlayStart": "rgba(15, 30, 15, 0.55)",
-    "heroOverlayEnd": "rgba(15, 30, 15, 0.25)"
+    "heroOverlayStart": "rgba(58, 46, 23, 0.55)",
+    "heroOverlayEnd": "rgba(58, 46, 23, 0.25)"
   },
   "meta": {
     "title": "Kaveeth & Pramudi — Wedding Invitation",
     "description": "Join us as we celebrate the union of Amara Silva and Kaveen Fernando on December 19, 2026.",
     "ogImage": "/images/gallery-1.png"
   },
-  "revealStyle": "couple",
+  "revealStyle": "envelope",
   "coupleImages": {
     "groom": "/images/1775222506702-0403(1).gif",
     "bride": "/images/1775222510611-0403.gif"

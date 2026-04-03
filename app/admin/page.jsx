@@ -89,6 +89,174 @@ const PRESET_THEMES = [
       heroOverlayStart: 'rgba(40, 20, 0, 0.5)',
       heroOverlayEnd: 'rgba(40, 20, 0, 0.2)'
     }
+  },
+  {
+    id: 'kandyan-gold',
+    name: 'Royal Kandyan Gold',
+    colors: {
+      colorPrimary: '#D4AF37',
+      colorSecondary: '#F3E5AB',
+      colorTextLight: '#8C7423',
+      colorTextDark: '#4A3B0D',
+      colorBg: '#FCFBF6',
+      colorSurface: '#FFFFFF',
+      heroOverlayStart: 'rgba(74, 59, 13, 0.55)',
+      heroOverlayEnd: 'rgba(74, 59, 13, 0.25)'
+    }
+  },
+  {
+    id: 'regal-ivory',
+    name: 'Regal Ivory',
+    colors: {
+      colorPrimary: '#8B8682',
+      colorSecondary: '#EEDDCC',
+      colorTextLight: '#696460',
+      colorTextDark: '#383431',
+      colorBg: '#FFFFF0',
+      colorSurface: '#FFFFFF',
+      heroOverlayStart: 'rgba(56, 52, 49, 0.55)',
+      heroOverlayEnd: 'rgba(56, 52, 49, 0.25)'
+    }
+  },
+  {
+    id: 'champagne-blush',
+    name: 'Champagne Blush',
+    colors: {
+      colorPrimary: '#E6C298',
+      colorSecondary: '#FAD6A5',
+      colorTextLight: '#A3845E',
+      colorTextDark: '#4F3A22',
+      colorBg: '#FFFDFC',
+      colorSurface: '#FFFFFF',
+      heroOverlayStart: 'rgba(79, 58, 34, 0.55)',
+      heroOverlayEnd: 'rgba(79, 58, 34, 0.25)'
+    }
+  },
+  {
+    id: 'velvet-noir',
+    name: 'Velvet Noir',
+    colors: {
+      colorPrimary: '#1A1A1A',
+      colorSecondary: '#A94442',
+      colorTextLight: '#444444',
+      colorTextDark: '#0A0A0A',
+      colorBg: '#F8F8F8',
+      colorSurface: '#FFFFFF',
+      heroOverlayStart: 'rgba(10, 10, 10, 0.65)',
+      heroOverlayEnd: 'rgba(10, 10, 10, 0.35)'
+    }
+  },
+  {
+    id: 'golden-dynasty',
+    name: 'Golden Dynasty',
+    colors: {
+      colorPrimary: '#DAA520',
+      colorSecondary: '#B8860B',
+      colorTextLight: '#8E6B15',
+      colorTextDark: '#3A2C09',
+      colorBg: '#FDFCF7',
+      colorSurface: '#FFFFFF',
+      heroOverlayStart: 'rgba(58, 44, 9, 0.55)',
+      heroOverlayEnd: 'rgba(58, 44, 9, 0.25)'
+    }
+  },
+  {
+    id: 'crystal-opulence',
+    name: 'Crystal Opulence',
+    colors: {
+      colorPrimary: '#A9C9CB',
+      colorSecondary: '#E0F0F0',
+      colorTextLight: '#6B8E90',
+      colorTextDark: '#2B4042',
+      colorBg: '#F9FCFC',
+      colorSurface: '#FFFFFF',
+      heroOverlayStart: 'rgba(43, 64, 66, 0.55)',
+      heroOverlayEnd: 'rgba(43, 64, 66, 0.25)'
+    }
+  },
+  {
+    id: 'rose-garden',
+    name: 'Rose Garden Bliss',
+    colors: {
+      colorPrimary: '#C08081',
+      colorSecondary: '#E6C7C7',
+      colorTextLight: '#875152',
+      colorTextDark: '#3A1F20',
+      colorBg: '#FDF7F7',
+      colorSurface: '#FFFFFF',
+      heroOverlayStart: 'rgba(58, 31, 32, 0.55)',
+      heroOverlayEnd: 'rgba(58, 31, 32, 0.25)'
+    }
+  },
+  {
+    id: 'lotus-harmony',
+    name: 'Lotus Harmony',
+    colors: {
+      colorPrimary: '#E899B8',
+      colorSecondary: '#F5D0E0',
+      colorTextLight: '#A3607E',
+      colorTextDark: '#4A2335',
+      colorBg: '#FCF8FA',
+      colorSurface: '#FFFFFF',
+      heroOverlayStart: 'rgba(74, 35, 53, 0.55)',
+      heroOverlayEnd: 'rgba(74, 35, 53, 0.25)'
+    }
+  },
+  {
+    id: 'platinum-grace',
+    name: 'Platinum Grace',
+    colors: {
+      colorPrimary: '#A0A0A0',
+      colorSecondary: '#E5E4E2',
+      colorTextLight: '#696969',
+      colorTextDark: '#212121',
+      colorBg: '#F8F9FA',
+      colorSurface: '#FFFFFF',
+      heroOverlayStart: 'rgba(33, 33, 33, 0.55)',
+      heroOverlayEnd: 'rgba(33, 33, 33, 0.25)'
+    }
+  },
+  {
+    id: 'timeless-elegance',
+    name: 'Timeless Elegance',
+    colors: {
+      colorPrimary: '#2F4F4F',
+      colorSecondary: '#708090',
+      colorTextLight: '#1C3131',
+      colorTextDark: '#0A1414',
+      colorBg: '#F4F6F6',
+      colorSurface: '#FFFFFF',
+      heroOverlayStart: 'rgba(10, 20, 20, 0.65)',
+      heroOverlayEnd: 'rgba(10, 20, 20, 0.35)'
+    }
+  },
+  {
+    id: 'aurum-royale',
+    name: 'Aurum Royale',
+    colors: {
+      colorPrimary: '#B8860B',
+      colorSecondary: '#D4AF37',
+      colorTextLight: '#8A6A1C',
+      colorTextDark: '#4A3B18',
+      colorBg: '#FCFBF8',
+      colorSurface: '#FFFFFF',
+      heroOverlayStart: 'rgba(74, 59, 24, 0.55)',
+      heroOverlayEnd: 'rgba(74, 59, 24, 0.25)'
+    }
+  },
+  {
+    id: 'gilded-opulence',
+    name: 'Gilded Opulence',
+    colors: {
+      colorPrimary: '#C5A059',
+      colorSecondary: '#E6D3A8',
+      colorTextLight: '#947842',
+      colorTextDark: '#3A2E17',
+      colorBg: '#FDFCF6',
+      colorSurface: '#FFFFFF',
+      heroOverlayStart: 'rgba(58, 46, 23, 0.55)',
+      heroOverlayEnd: 'rgba(58, 46, 23, 0.25)'
+    }
   }
 ];
 
@@ -337,8 +505,7 @@ function AdminDashboard() {
     if (type === 'hero' || type === 'gallery') {
       let aspect = 1.0;
       if (type === 'hero') {
-        // Layout 1: ~1.81, Layout 2: ~1.66
-        aspect = config.heroLayout === 2 ? 1.66 : 1.81;
+        aspect = 4 / 3;
       } else if (type === 'gallery') {
         aspect = 0.75; // Standard 3:4 Portrait for masonry
       }
@@ -589,7 +756,7 @@ function AdminDashboard() {
             <SectionCard title="Hero Style" icon="✨">
               <div 
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden mb-5 transition-all duration-500"
-                style={{ aspectRatio: config.heroLayout === 2 ? '1.66 / 1' : '1.81 / 1' }}
+                style={{ aspectRatio: '4 / 3' }}
               >
                 {config.heroImage ? (
                   <img src={config.heroImage} className="w-full h-full object-cover" alt="Hero Preview" />
@@ -654,6 +821,7 @@ function AdminDashboard() {
                   {[
                     { id: 1, label: 'Layout 1 — Script Overlay', desc: 'Photo on top · "forever" cursive straddling photo & text · Clean details below' },
                     { id: 2, label: 'Layout 2 — Names on Photo', desc: 'Full-bleed photo fading to white · Names overlaid · Large numeric date below' },
+                    { id: 3, label: 'Layout 3 — Royal Arch', desc: 'Ornate Indian-style arches · Warm pink/peach aesthetics · Traditional fonts and decorative motifs' },
                   ].map(layout => {
                     const active = (config.heroLayout ?? 1) === layout.id;
                     return (
