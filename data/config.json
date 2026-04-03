@@ -55,7 +55,7 @@
     }
   ],
   "heroImage": "/images/1775245725492-blob.webp",
-  "heroLayout": 2,
+  "heroLayout": 1,
   "rsvp": {
     "whatsappNumber": "94711690138",
     "deadline": "December 1, 2026",
@@ -64,17 +64,18 @@
   "envelope": {
     "title": "A Wedding Invitation",
     "subtitle": "kaveeth & pramudi",
-    "buttonText": "Open Invitation"
+    "buttonText": "Open Invitation",
+    "bgImage": "/images/1775246769611-chjpdmf0zs9sci9pbwfnzxmvd2vic2l0zs8ymdi0ltayl3jhd3bpegvsx29mzmljzv81ml9ozwfydf9wyxr0zxjux2jva2vox2vmzmvjdf9iywnrz3jvdw5kx19pbl90af82ntczmzjjys1howeyltqyodktogm5ys0zmdzjzdazyjhhmjbfms5qcgc.webp"
   },
   "theme": {
-    "colorPrimary": "#232323",
-    "colorSecondary": "#E6D3A8",
-    "colorTextLight": "#947842",
-    "colorTextDark": "#3A2E17",
-    "colorBg": "#FDFCF6",
+    "colorPrimary": "#C08081",
+    "colorSecondary": "#E6C7C7",
+    "colorTextLight": "#875152",
+    "colorTextDark": "#3A1F20",
+    "colorBg": "#FDF7F7",
     "colorSurface": "#FFFFFF",
-    "heroOverlayStart": "rgba(58, 46, 23, 0.55)",
-    "heroOverlayEnd": "rgba(58, 46, 23, 0.25)"
+    "heroOverlayStart": "rgba(58, 31, 32, 0.55)",
+    "heroOverlayEnd": "rgba(58, 31, 32, 0.25)"
   },
   "meta": {
     "title": "Kaveeth & Pramudi — Wedding Invitation",
