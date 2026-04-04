@@ -447,8 +447,13 @@ function ColourField({ label, value, onChange }) {
 // ─────────────────────────────────────────────────────────────────
 //  MAIN ADMIN PAGE
 // ─────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+//  MAIN ADMIN PAGE (Multi-Tenant Container)
+// ─────────────────────────────────────────────────────────────────
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [view, setView] = useState('list'); // 'list' or 'edit'
+  const [selectedSlug, setSelectedSlug] = useState(null);
 
   useEffect(() => {
     if (localStorage.getItem('wedding_admin_auth') === 'true') {
@@ -467,10 +472,173 @@ export default function AdminPage() {
     );
   }
 
-  return <AdminDashboard />;
+  if (view === 'list') {
+    return (
+      <InvitationList 
+        onEdit={(slug) => {
+          setSelectedSlug(slug);
+          setView('edit');
+        }} 
+      />
+    );
+  }
+
+  return (
+    <AdminDashboard 
+      slug={selectedSlug} 
+      onBack={() => setView('list')} 
+    />
+  );
 }
 
-function AdminDashboard() {
+function InvitationList({ onEdit }) {
+  const [invitations, setInvitations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [newSlug, setNewSlug] = useState('');
+
+  const fetchInvitations = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/config');
+      const data = await res.json();
+      setInvitations(data.map(item => ({
+        ...item,
+        slug: item.slug || 'global_config',
+        displayNames: item.couple?.displayNames || item.displayNames || 'Legacy Invitation'
+      })));
+    } catch (err) {
+      alert('Failed to load invitations.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchInvitations(); }, []);
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    if (!newSlug) return;
+    setLoading(true);
+    try {
+      const res = await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: newSlug }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCreating(false);
+        setNewSlug('');
+        fetchInvitations();
+        onEdit(newSlug);
+      } else {
+        alert(data.error);
+      }
+    } catch (err) {
+      alert('Creation failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 p-6 md:p-12">
+      <div className="max-w-6xl mx-auto">
+        <header className="flex justify-between items-center mb-10">
+          <div>
+            <h1 className="text-3xl font-serif text-slate-800">Wedding Invitations</h1>
+            <p className="text-slate-500 text-sm">Manage all your client invitations from one place.</p>
+          </div>
+          <button 
+            onClick={() => setCreating(true)}
+            className="px-6 py-3 bg-[#C9956A] text-white rounded-xl font-bold uppercase text-xs shadow-lg hover:bg-[#b5845a] transition-all"
+          >
+            + Create New Invitation
+          </button>
+        </header>
+
+        {loading && !invitations.length ? (
+          <div className="text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm">
+            <div className="w-10 h-10 border-4 border-[#C9956A]/20 border-t-[#C9956A] rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-slate-400 font-medium">Loading invitations...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {invitations.map((inv) => (
+              <div key={inv.slug} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group relative">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="w-12 h-12 bg-[#C9956A]/10 rounded-2xl flex items-center justify-center text-2xl">💍</div>
+                  <span className="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-1 rounded-md">
+                    {inv.slug === 'global_config' ? 'Legacy' : 'Active'}
+                  </span>
+                </div>
+                <h3 className="text-lg font-serif text-slate-800 mb-1">{inv.displayNames || 'Untitled Wedding'}</h3>
+                <p className="text-slate-400 text-xs mb-6">Slug: <span className="text-slate-600 font-mono tracking-tighter">/{inv.slug}</span></p>
+                
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => onEdit(inv.slug)}
+                    className="flex-1 py-2.5 bg-slate-50 text-slate-700 text-[0.65rem] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-100 transition-colors"
+                  >
+                    Edit Config
+                  </button>
+                  <a 
+                    href={`/${inv.slug}`} 
+                    target="_blank" 
+                    className="flex-1 py-2.5 bg-[#C9956A]/10 text-[#C9956A] text-[0.65rem] font-bold uppercase tracking-widest rounded-lg hover:bg-[#C9956A]/20 transition-colors text-center"
+                  >
+                    View Live
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {creating && (
+          <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+            <div 
+              className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl"
+            >
+              <h2 className="text-2xl font-serif text-slate-800 mb-2">New Invitation</h2>
+              <p className="text-slate-400 text-sm mb-6">Enter a unique URL slug for this wedding (only lowercase letters and hyphens).</p>
+              <form onSubmit={handleCreate}>
+                <input 
+                  autoFocus
+                  type="text" 
+                  placeholder="e.g. kasun-nimesha-2026"
+                  className={inputCls}
+                  value={newSlug}
+                  onChange={(e) => setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                  required
+                />
+                <div className="flex gap-3 mt-8">
+                  <button 
+                    type="button" 
+                    onClick={() => setCreating(false)}
+                    className="flex-1 py-3 text-slate-400 text-xs font-bold uppercase tracking-widest"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    disabled={loading}
+                    className="flex-1 py-3 bg-[#C9956A] text-white rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-[#C9956A]/40"
+                  >
+                    {loading ? 'Creating...' : 'Initialize'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AdminDashboard({ slug, onBack }) {
   // ── Data State ────────────────────────────────────────────────
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -591,15 +759,16 @@ function AdminDashboard() {
   const loadConfig = useCallback(async () => {
     setFetching(true);
     try {
-      const res = await fetch('/api/get-config');
+      const res = await fetch(`/api/config?slug=${slug}`);
       const data = await res.json();
+      if (data.success === false) throw new Error(data.error);
       setConfig(data);
-    } catch {
-      showToast('error', 'Failed to load config.json.');
+    } catch (err) {
+      showToast('error', `Failed to load invitation '${slug}': ${err.message}`);
     } finally {
       setFetching(false);
     }
-  }, [showToast]);
+  }, [slug, showToast]);
 
   useEffect(() => {
     loadConfig();
@@ -609,14 +778,14 @@ function AdminDashboard() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch('/api/save-config', {
-        method: 'POST',
+      const res = await fetch(`/api/config?slug=${slug}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config),
       });
       const data = await res.json();
       if (data.success) {
-        showToast('success', '✅ Config saved! Refresh the invitation page to see changes.');
+        showToast('success', '✅ Config saved successfully!');
       } else {
         throw new Error(data.error || 'Unknown error');
       }
@@ -697,15 +866,17 @@ function AdminDashboard() {
       <header className="sticky top-0 z-30 bg-white border-b border-slate-100 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
-            <span className="text-xl">💍</span>
-            <h1 className="font-bold text-slate-800 text-sm">Wedding Admin Dashboard</h1>
-            <span className="hidden sm:inline-flex items-center gap-1 text-xs bg-amber-50 text-amber-700 border border-amber-200 rounded-full px-2.5 py-0.5">
-              ⚡ Local Only
-            </span>
+            <button 
+              onClick={onBack}
+              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-400 transition-colors"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </button>
+            <h1 className="font-bold text-slate-800 text-sm hidden sm:block">Editor: /{slug}</h1>
           </div>
           <div className="flex items-center gap-2">
             <a
-              href="/"
+              href={`/${slug}`}
               target="_blank"
               rel="noopener"
               className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-slate-600 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors"
@@ -713,7 +884,7 @@ function AdminDashboard() {
               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
               </svg>
-              Preview
+              View Live
             </a>
             <button
               form="config-form"
