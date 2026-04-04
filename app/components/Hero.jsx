@@ -352,25 +352,25 @@ function Layout4({ config }) {
       </div>
 
       {/* ── TOP DATE HEADER (Matching image layout) ── */}
-      <div className="relative z-20 w-full px-8 pt-10 pb-6 flex items-center justify-between border-b border-black/5">
-        <div className="flex-1 text-center font-sans font-bold text-[10px] tracking-[0.4em] uppercase text-[#2C2018] opacity-60">
+      <div className="relative z-20 w-full px-6 pt-10 pb-6 flex items-center justify-between border-b border-black/5">
+        <div className="flex-1 text-center font-sans font-bold text-[14px] md:text-[16px] tracking-[0.25em] uppercase text-[#2C2018] opacity-90">
           {dayLabel || 'SUNDAY'}
         </div>
         
         {/* Central Date Box (Liquid Glass Box) */}
-        <div className="relative flex flex-col items-center px-10 py-4">
+        <div className="relative flex flex-col items-center px-10 py-6">
           <div className="absolute inset-0 bg-white/40 backdrop-blur-md rounded-lg border border-white/60 shadow-sm" />
           <div className="relative z-10 flex flex-col items-center">
-            <span className="font-sans font-bold text-[9px] tracking-widest text-[#8A7F6A] mb-1">{month}</span>
-            <span className="font-serif text-4xl text-[#2C2018] leading-none mb-1">{dayNum}</span>
-            <span className="font-sans text-[8px] tracking-[0.2em] text-[#8A7F6A] font-bold">{year}</span>
+            <span className="font-sans font-bold text-[12px] tracking-widest text-[#8A7F6A] mb-1">{month}</span>
+            <span className="font-serif text-6xl text-[#2C2018] leading-none mb-1">{dayNum}</span>
+            <span className="font-sans text-[11px] tracking-[0.2em] text-[#8A7F6A] font-bold">{year}</span>
           </div>
           {/* Vertical separators match the image style */}
-          <div className="absolute -left-0 top-4 bottom-4 w-px bg-black/10" />
-          <div className="absolute -right-0 top-4 bottom-4 w-px bg-black/10" />
+          <div className="absolute -left-0 top-6 bottom-6 w-px bg-black/10" />
+          <div className="absolute -right-0 top-6 bottom-6 w-px bg-black/10" />
         </div>
 
-        <div className="flex-1 text-center font-sans font-bold text-[10px] tracking-[0.4em] uppercase text-[#2C2018] opacity-60">
+        <div className="flex-1 text-center font-sans font-bold text-[14px] md:text-[16px] tracking-[0.25em] uppercase text-[#2C2018] opacity-90">
           {ceremony?.time ? `AT ${ceremony.time.toUpperCase()}` : 'AT 10:00 AM'}
         </div>
       </div>

@@ -18,17 +18,17 @@ function CountdownBlock({ value, unit }) {
 
   return (
     <div className="flex flex-col items-center bg-white/5 border border-[var(--colorSecondary)]/20
-      rounded-xl px-4 py-4 sm:px-6 sm:py-5 min-w-[72px] sm:min-w-[100px] backdrop-blur-sm"
+      rounded-xl px-1.5 py-3 sm:px-6 sm:py-5 min-w-[62px] sm:min-w-[100px] backdrop-blur-sm transition-all duration-300"
     >
       <span
         ref={ref}
         className={`font-serif font-light text-[var(--colorSecondary)] leading-none
-          text-4xl sm:text-5xl tracking-tight ${flip ? 'flip' : ''}`}
+          text-3xl sm:text-5xl tracking-tight ${flip ? 'flip' : ''}`}
       >
         {formatted}
       </span>
-      <span className="font-sans text-[0.58rem] tracking-[0.2em] uppercase
-        text-[var(--colorTextLight)]/40 mt-2"
+      <span className="font-sans text-[0.5rem] sm:text-[0.58rem] tracking-[0.1em] sm:tracking-[0.2em] uppercase
+        text-[var(--colorTextLight)]/40 mt-1 sm:mt-2"
       >
         {unit}
       </span>
@@ -70,15 +70,15 @@ export default function Countdown({ config }) {
   // to avoid layout shift while preventing hydration mismatch
   if (!isMounted) {
     return (
-      <section id="countdown" className="bg-[var(--colorTextDark)] text-[var(--colorTextLight)] py-16 md:py-20 text-center">
+      <section id="countdown" className="bg-[var(--colorTextDark)] text-[var(--colorTextLight)] py-16 md:py-20 text-center overflow-hidden">
         <p className="font-serif text-xs tracking-[0.24em] uppercase text-[var(--colorSecondary)] mb-8 invisible">
           Counting down to the big day
         </p>
-        <div className="flex justify-center items-center gap-3 sm:gap-5 flex-wrap px-4 opacity-0">
-           <div className="min-w-[72px] sm:min-w-[100px] h-24 bg-white/5 rounded-xl" />
-           <div className="min-w-[72px] sm:min-w-[100px] h-24 bg-white/5 rounded-xl" />
-           <div className="min-w-[72px] sm:min-w-[100px] h-24 bg-white/5 rounded-xl" />
-           <div className="min-w-[72px] sm:min-w-[100px] h-24 bg-white/5 rounded-xl" />
+        <div className="flex justify-center items-center gap-1 sm:gap-5 flex-nowrap px-1 sm:px-4 opacity-0 scale-95 sm:scale-100 transition-transform">
+           <div className="min-w-[62px] sm:min-w-[100px] h-20 sm:h-24 bg-white/5 rounded-xl transition-all" />
+           <div className="min-w-[62px] sm:min-w-[100px] h-20 sm:h-24 bg-white/5 rounded-xl transition-all" />
+           <div className="min-w-[62px] sm:min-w-[100px] h-20 sm:h-24 bg-white/5 rounded-xl transition-all" />
+           <div className="min-w-[62px] sm:min-w-[100px] h-20 sm:h-24 bg-white/5 rounded-xl transition-all" />
         </div>
       </section>
     );
@@ -87,24 +87,24 @@ export default function Countdown({ config }) {
   return (
     <section
       id="countdown"
-      className="bg-[var(--colorTextDark)] text-[var(--colorTextLight)] py-16 md:py-20 text-center"
+      className="bg-[var(--colorTextDark)] text-[var(--colorTextLight)] py-16 md:py-20 text-center overflow-hidden"
     >
       <p className="font-serif text-xs tracking-[0.24em] uppercase text-[var(--colorSecondary)] mb-8">
         Counting down to the big day
       </p>
 
       {done ? (
-        <p className="font-script text-3xl text-[var(--colorSecondary)]">
+        <p className="font-script text-3xl text-[var(--colorSecondary)] px-4">
           🎉 Today is the day! Congratulations! 🎉
         </p>
       ) : timeLeft && (
-        <div className="flex justify-center items-center gap-3 sm:gap-5 flex-wrap px-4">
+        <div className="flex justify-center items-center gap-1 sm:gap-5 flex-nowrap px-1 sm:px-4 overflow-hidden">
           <CountdownBlock value={timeLeft.days}    unit="Days" />
-          <span className="font-serif text-3xl text-[var(--colorSecondary)]/40 mb-5">:</span>
+          <span className="font-serif text-xl sm:text-3xl text-[var(--colorSecondary)]/40 mb-3 sm:mb-5">:</span>
           <CountdownBlock value={timeLeft.hours}   unit="Hours" />
-          <span className="font-serif text-3xl text-[var(--colorSecondary)]/40 mb-5">:</span>
+          <span className="font-serif text-xl sm:text-3xl text-[var(--colorSecondary)]/40 mb-3 sm:mb-5">:</span>
           <CountdownBlock value={timeLeft.minutes} unit="Minutes" />
-          <span className="font-serif text-3xl text-[var(--colorSecondary)]/40 mb-5">:</span>
+          <span className="font-serif text-xl sm:text-3xl text-[var(--colorSecondary)]/40 mb-3 sm:mb-5">:</span>
           <CountdownBlock value={timeLeft.seconds} unit="Seconds" />
         </div>
       )}
