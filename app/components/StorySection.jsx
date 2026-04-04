@@ -150,6 +150,49 @@ function Layout3({ config, ref1, ref2, ref3, ref4 }) {
   );
 }
 
+function Layout4({ config, ref1, ref2, ref3 }) {
+  const { story } = config;
+  return (
+    <div className="max-w-4xl mx-auto px-6 py-24 md:py-32 relative text-center">
+      {/* Decorative nature elements */}
+      <div className="absolute top-10 left-10 text-4xl opacity-10 pointer-events-none rotate-12">🌿</div>
+      <div className="absolute bottom-10 right-10 text-4xl opacity-10 pointer-events-none -rotate-12">🍃</div>
+      
+      <div ref={ref1} className="opacity-0 translate-y-8 transition-all duration-1000 mb-16">
+        <p className="font-sans text-[0.65rem] tracking-[0.4em] uppercase text-[var(--colorPrimary)] mb-4 font-bold">
+          Our Journey
+        </p>
+        <h2 className="font-serif text-5xl md:text-6xl text-[var(--colorTextDark)] mb-6 tracking-tight">
+          The Story of Us
+        </h2>
+        <div className="flex items-center justify-center gap-4">
+          <div className="h-px w-12 bg-[var(--colorPrimary)] opacity-30" />
+          <span className="text-[var(--colorPrimary)] text-xl">🪷</span>
+          <div className="h-px w-12 bg-[var(--colorPrimary)] opacity-30" />
+        </div>
+      </div>
+
+      <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-1000 delay-300 mb-20 max-w-2xl mx-auto">
+        <p className="font-serif text-2xl md:text-3xl leading-relaxed text-[var(--colorTextDark)] italic">
+          "{story.invitationText}"
+        </p>
+      </div>
+
+      <div ref={ref3} className="opacity-0 translate-y-8 transition-all duration-1000 delay-500 space-y-10">
+        {story.paragraphs.map((p, i) => (
+          <p key={i} className="font-serif text-lg md:text-xl leading-[2] text-[var(--colorTextDark)]/70 max-w-3xl mx-auto px-4">
+            {p}
+          </p>
+        ))}
+        
+        <div className="pt-12">
+          <span className="font-script text-4xl text-[var(--colorPrimary)]">Happily Ever After</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function StorySection({ config }) {
   const ref1 = useReveal();
   const ref2 = useReveal();
@@ -161,18 +204,28 @@ export default function StorySection({ config }) {
   return (
     <section 
       id="story" 
-      className="overflow-hidden transition-colors duration-500"
-      style={{
-        backgroundColor: 'var(--colorBg)',
-        ...(config.sectionBackgrounds?.story ? {
-          backgroundImage: `url(${config.sectionBackgrounds.story})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-        } : {})
-      }}
+      className="overflow-hidden transition-colors duration-500 relative"
+      style={{ backgroundColor: 'var(--colorBg)' }}
     >
-      {layout === 3 ? (
+      {/* ── BLURRED BACKGROUND LAYER ── */}
+      {config.sectionBackgrounds?.story && (
+        <div 
+          className="absolute inset-0 z-0 pointer-events-none transition-transform duration-1000"
+          style={{ 
+            backgroundImage: `url(${config.sectionBackgrounds.story})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+            filter: 'blur(15px)',
+            transform: 'scale(1.05)',
+            opacity: 0.5
+          }} 
+        />
+      )}
+      <div className="absolute inset-0 bg-white/5 z-[1] pointer-events-none" />
+      {layout === 4 ? (
+        <Layout4 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
+      ) : layout === 3 ? (
         <Layout3 config={config} ref1={ref1} ref2={ref2} ref3={ref3} ref4={ref4} />
       ) : layout === 2 ? (
         <Layout2 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />

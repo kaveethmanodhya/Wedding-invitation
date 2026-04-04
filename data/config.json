@@ -33,7 +33,8 @@
       "venueName": "Araliya Gardens",
       "address": "123 Lotus Lane, Colombo 05, Sri Lanka",
       "mapsUrl": "https://maps.google.com/?q=Colombo+05+Sri+Lanka",
-      "dressCode": "none"
+      "dressCode": "none",
+      "image": "/images/1775297633842-blob.webp"
     }
   },
   "gallery": [
@@ -54,8 +55,8 @@
       "alt": "Beach walk"
     }
   ],
-  "heroImage": "/images/1775290610280-blob.webp",
-  "heroLayout": 3,
+  "heroImage": "/images/1775295968449-blob.webp",
+  "heroLayout": 4,
   "rsvp": {
     "whatsappNumber": "94711690138",
     "deadline": "December 1, 2026",
@@ -68,27 +69,31 @@
     "bgImage": "/images/1775246769611-chjpdmf0zs9sci9pbwfnzxmvd2vic2l0zs8ymdi0ltayl3jhd3bpegvsx29mzmljzv81ml9ozwfydf9wyxr0zxjux2jva2vox2vmzmvjdf9iywnrz3jvdw5kx19pbl90af82ntczmzjjys1howeyltqyodktogm5ys0zmdzjzdazyjhhmjbfms5qcgc.webp"
   },
   "theme": {
-    "colorPrimary": "#E899B8",
-    "colorSecondary": "#F5D0E0",
-    "colorTextLight": "#A3607E",
-    "colorTextDark": "#4A2335",
-    "colorBg": "#FCF8FA",
+    "colorPrimary": "#D4A5A5",
+    "colorSecondary": "#E9D5D5",
+    "colorTextLight": "#9A7F7F",
+    "colorTextDark": "#3A2828",
+    "colorBg": "#FAF5F5",
     "colorSurface": "#FFFFFF",
-    "heroOverlayStart": "rgba(74, 35, 53, 0.55)",
-    "heroOverlayEnd": "rgba(74, 35, 53, 0.25)"
+    "heroOverlayStart": "rgba(40, 20, 20, 0.55)",
+    "heroOverlayEnd": "rgba(40, 20, 20, 0.25)"
   },
   "meta": {
     "title": "Kaveeth & Pramudi — Wedding Invitation",
     "description": "Join us as we celebrate the union of Amara Silva and Kaveen Fernando on December 19, 2026.",
     "ogImage": "/images/gallery-1.png"
   },
-  "revealStyle": "couple",
+  "revealStyle": "cover",
   "coupleImages": {
     "groom": "/images/1775222506702-0403(1).gif",
     "bride": "/images/1775222510611-0403.gif"
   },
   "sectionBackgrounds": {
-    "events": ""
+    "hero": "/images/1775298655232-golden-rose-line-art-background-vector-55300540.webp",
+    "events": "/images/1775298737115-45b856046d4ce44438c5afe3c36824ad-elegant-gold-background.webp",
+    "story": "/images/1775298873533-close-up-white-marble-textured-wall_53876-88524.webp",
+    "gallery": "/images/1775298691926-golden-rose-line-art-background-vector-55300540.webp",
+    "rsvp": "/images/1775298884383-luxurious-abstract-marble-background-collection-600nw-2697768315.webp"
   },
-  "layout1EventBanner": "/images/1775298375736-blob.webp"
+  "revealCoverImage": "/images/1775297208537-creamy-beige-roses-and-delicate-peonies-frame-the-central-copy-space-accented-by-intricate-white-lace-and-glittering-gold-leaves-free-photo.webp"
 }

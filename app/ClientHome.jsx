@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Envelope from './components/Envelope';
 import CoupleReveal from './components/CoupleReveal';
+import CoverReveal from './components/CoverReveal';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Countdown from './components/Countdown';
@@ -42,24 +43,24 @@ export default function ClientHome({ config }) {
   return (
     <>
       <AnimatePresence mode="wait">
-        {!hasOpened && revealStyle === 'envelope' && (
-          <Envelope key="envelope-layer" config={config} onOpen={handleOpen} />
+        {!hasOpened && (
+          revealStyle === 'cover' ? (
+            <CoverReveal key="cover-reveal" config={config} onOpen={handleOpen} />
+          ) : revealStyle === 'couple' ? (
+            <CoupleReveal key="couple-reveal" config={config} onOpen={handleOpen} />
+          ) : (
+            <Envelope key="envelope-layer" config={config} onOpen={handleOpen} />
+          )
         )}
       </AnimatePresence>
 
-      {revealStyle === 'couple' && !hasOpened ? (
-        <CoupleReveal config={config} onOpen={handleOpen}>
-          {mainContent}
-        </CoupleReveal>
-      ) : (
-        <motion.div
-          initial={{ opacity: revealStyle === 'couple' ? 1 : 0 }}
-          animate={{ opacity: hasOpened || revealStyle === 'couple' ? 1 : 0 }}
-          transition={{ duration: 1, delay: revealStyle === 'couple' ? 0 : 0.5 }}
-        >
-          {mainContent}
-        </motion.div>
-      )}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: hasOpened ? 1 : 0 }}
+        transition={{ duration: 1, delay: 0.5 }}
+      >
+        {mainContent}
+      </motion.div>
     </>
   );
 }

@@ -257,6 +257,20 @@ const PRESET_THEMES = [
       heroOverlayStart: 'rgba(58, 46, 23, 0.55)',
       heroOverlayEnd: 'rgba(58, 46, 23, 0.25)'
     }
+  },
+  {
+    id: 'nature-arch',
+    name: 'Nature Arch',
+    colors: {
+      colorPrimary: '#4A6741',
+      colorSecondary: '#A3B18A',
+      colorTextLight: '#6B705C',
+      colorTextDark: '#1B261B',
+      colorBg: '#F0F4EF',
+      colorSurface: '#FFFFFF',
+      heroOverlayStart: 'rgba(27, 38, 27, 0.45)',
+      heroOverlayEnd: 'rgba(27, 38, 27, 0.15)'
+    }
   }
 ];
 
@@ -884,6 +898,7 @@ function AdminDashboard() {
                     { id: 1, label: 'Layout 1 — Script Overlay', desc: 'Photo on top · "forever" cursive straddling photo & text · Clean details below' },
                     { id: 2, label: 'Layout 2 — Names on Photo', desc: 'Full-bleed photo fading to white · Names overlaid · Large numeric date below' },
                     { id: 3, label: 'Layout 3 — Royal Arch', desc: 'Ornate Indian-style arches · Warm pink/peach aesthetics · Traditional fonts and decorative motifs' },
+                    { id: 4, label: 'Layout 4 — Nature Arch', desc: 'Premium forest archway design with central couple illustration and refined typography.' },
                   ].map(layout => {
                     const active = (config.heroLayout ?? 1) === layout.id;
                     return (
@@ -1008,6 +1023,27 @@ function AdminDashboard() {
                   onChange={e => setPath('events.ceremony.mapsUrl', e.target.value)}
                 />
               </FieldGroup>
+              <FieldGroup label="Event Image" hint="Upload a photo for this event (appears on the left in Layout 4)">
+                <div className="flex flex-col gap-3">
+                  {config.events.ceremony.image && (
+                    <div className="w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                      <img src={config.events.ceremony.image} className="w-full h-full object-cover" alt="Event Preview" />
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      className={inputCls}
+                      value={config.events.ceremony.image || ''}
+                      onChange={e => setPath('events.ceremony.image', e.target.value)}
+                    />
+                    <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
+                      Upload
+                      <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'events.ceremony.image', 'general')} />
+                    </label>
+                  </div>
+                </div>
+              </FieldGroup>
             </SectionCard>
           )}
 
@@ -1080,6 +1116,43 @@ function AdminDashboard() {
                       />
                       <span className={`text-sm font-medium ${config.revealStyle === 'couple' ? 'text-slate-900' : 'text-slate-500'}`}>Animated Couple</span>
                     </label>
+                    <label className="flex items-center gap-2.5 cursor-pointer group">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${config.revealStyle === 'cover' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
+                        {config.revealStyle === 'cover' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
+                      </div>
+                      <input 
+                        type="radio" 
+                        className="hidden"
+                        name="revealStyle" 
+                        value="cover" 
+                        checked={config.revealStyle === 'cover'} 
+                        onChange={() => setPath('revealStyle', 'cover')} 
+                      />
+                      <span className={`text-sm font-medium ${config.revealStyle === 'cover' ? 'text-slate-900' : 'text-slate-500'}`}>Cover Page</span>
+                    </label>
+                  </div>
+                </FieldGroup>
+                
+                <FieldGroup label="Cover Image" hint="Upload a high-quality photo for the cover page">
+                  <div className="flex flex-col gap-3">
+                    {config.revealCoverImage && (
+                      <div className="w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                        <img src={config.revealCoverImage} className="w-full h-full object-cover" alt="Cover Preview" />
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="/images/cover.jpg"
+                        className={inputCls}
+                        value={config.revealCoverImage || ''}
+                        onChange={e => setPath('revealCoverImage', e.target.value)}
+                      />
+                      <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
+                        Upload
+                        <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'revealCoverImage', 'general')} />
+                      </label>
+                    </div>
                   </div>
                 </FieldGroup>
                 

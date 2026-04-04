@@ -80,6 +80,10 @@ export default function RSVPSection({ config }) {
   } else if (layout === 3) {
     inputCls = `w-full px-4 py-3 font-serif text-base bg-[var(--colorPrimary)]/5 text-[var(--colorTextDark)] placeholder:text-[var(--colorTextDark)]/40 border border-[var(--colorPrimary)]/40 outline-none focus:border-[var(--colorPrimary)] focus:ring-1 focus:ring-[var(--colorPrimary)] transition-all duration-200 shadow-inner`;
     btnCls = "w-full flex items-center justify-center py-4 bg-[var(--colorTextDark)] text-[var(--colorBg)] font-sans text-xs font-bold tracking-widest uppercase shadow-lg hover:bg-[var(--colorPrimary)] hover:text-white transition-all duration-300 border border-[var(--colorPrimary)]";
+  } else if (layout === 4) {
+    inputCls = `w-full px-6 py-4 rounded-none font-serif text-lg bg-white border border-[var(--colorTextDark)]/10 focus:border-[var(--colorPrimary)] outline-none transition-all duration-300 placeholder:opacity-30`;
+    btnCls = "w-full flex items-center justify-center py-5 bg-[var(--colorTextDark)] text-white font-sans text-[10px] font-bold tracking-[0.4em] uppercase hover:bg-[var(--colorPrimary)] transition-all duration-500 shadow-2xl";
+    optionBtnCls = (active) => `flex items-center gap-3 cursor-pointer font-serif text-lg px-6 py-3 border transition-all duration-300 ${active ? 'bg-[var(--colorPrimary)] text-white border-[var(--colorPrimary)] shadow-lg scale-105' : 'bg-white border-[var(--colorTextDark)]/10 text-[var(--colorTextDark)]/60 hover:border-[var(--colorPrimary)]'}`;
   }
 
   if (status === 'success') {
@@ -98,10 +102,11 @@ export default function RSVPSection({ config }) {
         }}
       >
         <div className="max-w-lg mx-auto px-6 text-center">
-          <div className="bg-[var(--colorPrimary)]/10 border border-[var(--colorPrimary)]/25 rounded-2xl p-10">
-            <p className="text-4xl mb-4 text-[var(--colorPrimary)] drop-shadow-sm">💌</p>
-            <p className="font-serif text-xl md:text-2xl text-[var(--colorTextDark)] leading-relaxed">
-              Thank you! Your Reply has been received.<br />We look forward to celebrating with you.
+          <div className={`${layout === 4 ? 'bg-white' : 'bg-[var(--colorPrimary)]/10'} border border-[var(--colorPrimary)]/25 rounded-2xl p-10 shadow-xl`}>
+            <p className="text-4xl mb-4 text-[var(--colorPrimary)] drop-shadow-sm">🌿</p>
+            <h2 className="font-serif text-3xl text-[var(--colorTextDark)] mb-4 italic">Thank You</h2>
+            <p className="font-serif text-xl text-[var(--colorTextDark)]/80 leading-relaxed">
+              Your reply has been received.<br />We look forward to celebrating with you!
             </p>
           </div>
         </div>
@@ -113,16 +118,24 @@ export default function RSVPSection({ config }) {
     <section 
       id="rsvp" 
       className="py-20 md:py-32 relative overflow-hidden transition-colors duration-500"
-      style={{
-        backgroundColor: 'var(--colorBg)',
-        ...(config.sectionBackgrounds?.rsvp ? {
-          backgroundImage: `url(${config.sectionBackgrounds.rsvp})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-        } : {})
-      }}
+      style={{ backgroundColor: 'var(--colorBg)' }}
     >
+      {/* ── BLURRED BACKGROUND LAYER ── */}
+      {config.sectionBackgrounds?.rsvp && (
+        <div 
+          className="absolute inset-0 z-0 pointer-events-none transition-transform duration-1000"
+          style={{ 
+            backgroundImage: `url(${config.sectionBackgrounds.rsvp})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+            filter: 'blur(15px)',
+            transform: 'scale(1.05)',
+            opacity: 0.5
+          }} 
+        />
+      )}
+      <div className="absolute inset-0 bg-white/5 z-[1] pointer-events-none" />
       {layout === 1 && (
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 20% 80%, var(--colorPrimary) 0%, transparent 55%), radial-gradient(circle at 80% 20%, var(--colorPrimary) 0%, transparent 55%)', opacity: 0.05 }} />
       )}
@@ -133,15 +146,21 @@ export default function RSVPSection({ config }) {
         </>
       )}
 
-      <div className={`relative max-w-2xl mx-auto px-6 ${
-        layout === 3 ? 'bg-[var(--colorBg)] p-8 md:p-14 shadow-2xl border border-[var(--colorPrimary)]/30' 
+      <div className={`relative max-w-2xl mx-auto px-6 transition-all duration-500 ${
+        layout === 4 ? 'bg-white p-10 md:p-16 shadow-2xl border-t-[12px] border-[#556B2F]'
+        : layout === 3 ? 'bg-[var(--colorBg)] p-8 md:p-14 shadow-2xl border border-[var(--colorPrimary)]/30' 
         : layout === 2 ? 'bg-white/40 p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.05)] rounded-[40px] border border-white/60 backdrop-blur-md'
         : 'bg-[var(--colorPrimary)]/5 p-6 md:p-10 border border-[var(--colorPrimary)]/20'
       }`}>
         
         {/* Header */}
-        <div ref={headerRef} className="text-center mb-12 opacity-0 translate-y-8 transition-all duration-700">
-          {layout === 3 ? (
+        <div ref={headerRef} className="text-center mb-12 opacity-0 translate-y-8 transition-all duration-1000">
+          {layout === 4 ? (
+            <>
+              <h2 className="font-sans text-5xl md:text-6xl font-bold text-[var(--colorTextDark)] mb-4 tracking-tighter">R.S.V.P.</h2>
+              <p className="font-sans text-xs md:text-sm text-[var(--colorTextDark)] opacity-70">Kindly respond by {rsvp.deadline}</p>
+            </>
+          ) : layout === 3 ? (
             <>
               <span className="text-3xl text-[var(--colorPrimary)] mb-4 block">❀</span>
               <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 tracking-wide">Please Confirm</h2>
@@ -165,63 +184,101 @@ export default function RSVPSection({ config }) {
           )}
         </div>
 
-        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6 relative z-10 w-full max-w-lg mx-auto">
-          <div>
-            <label className={labelCls}>Name *</label>
-            <input type="text" placeholder="Your full name" className={`${inputCls} ${errors.name ? '!border-red-400' : ''}`} value={formData.name} onChange={e => { setFormData(f => ({ ...f, name: e.target.value })); setErrors(x => ({ ...x, name: '' })); }} />
-            {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
-          </div>
-
-          <div>
-            <label className={labelCls}>Phone Number</label>
-            <input type="tel" placeholder="+94 77 123 4567" className={inputCls} value={formData.phone} onChange={e => setFormData(f => ({ ...f, phone: e.target.value }))} />
-          </div>
-
-          <div>
-            <label className={labelCls}>Will you be attending? *</label>
-            <div className="flex gap-3 flex-wrap">
-              {[{ value: 'Attending', label: 'Joyfully Accept 🎉' }, { value: 'Not Attending', label: 'Regretfully Decline' }].map(({ value, label }) => (
-                <label key={value} className={optionBtnCls(formData.attendance === value)}>
-                  <input type="radio" name="attendance" value={value} className="sr-only" checked={formData.attendance === value} onChange={() => setFormData(f => ({ ...f, attendance: value }))} />
-                  {label}
-                </label>
-              ))}
-            </div>
-            {errors.attendance && <p className="text-red-400 text-xs mt-1">{errors.attendance}</p>}
-          </div>
-
-          {isAttending && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-[var(--colorPrimary)]/5 border border-[var(--colorPrimary)]/10">
-              <div>
-                <label className={labelCls}>Guests</label>
-                <select className={`${inputCls} cursor-pointer`} value={formData.guests} onChange={e => setFormData(f => ({ ...f, guests: e.target.value }))}>
-                  {guestOptions.map(n => <option key={n} value={n}>{n}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className={labelCls}>Events</label>
-                <div className="flex gap-2 flex-wrap">
-                  {[{ key: 'ceremony', label: 'Ceremony' }].map(({ key, label }) => (
-                    <label key={key} className={optionBtnCls(formData.events[key])}>
-                      <input type="checkbox" className="sr-only" checked={formData.events[key]} onChange={e => setFormData(f => ({ ...f, events: { ...f.events, [key]: e.target.checked } }))} />
-                      <span className={`w-4 h-4 border flex items-center justify-center text-xs ${formData.events[key] ? 'bg-[var(--colorPrimary)] border-[var(--colorPrimary)] text-white' : 'border-gray-400'}`}>
-                        {formData.events[key] && '✓'}
-                      </span>
-                      {label}
-                    </label>
-                  ))}
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-8 relative z-10 w-full max-w-lg mx-auto">
+          {/* ── ATTENDANCE HEARTS (Layout 4) ── */}
+          {layout === 4 ? (
+            <div className="flex justify-center gap-10 md:gap-16 mb-4">
+              <button 
+                type="button"
+                onClick={() => setFormData(f => ({ ...f, attendance: 'Attending' }))}
+                className="flex flex-col items-center gap-3 group transition-transform hover:scale-105"
+              >
+                <div className={`transition-colors duration-300 ${formData.attendance === 'Attending' ? 'text-[#556B2F]' : 'text-gray-300'}`}>
+                   <HeartIcon size={80} fill={formData.attendance === 'Attending'} />
                 </div>
+                <span className="font-sans text-[10px] md:text-xs font-bold leading-tight text-center tracking-tight">I WILL BE<br/>ATTENDING</span>
+              </button>
+
+              <button 
+                type="button"
+                onClick={() => setFormData(f => ({ ...f, attendance: 'Not Attending' }))}
+                className="flex flex-col items-center gap-3 group transition-transform hover:scale-105"
+              >
+                <div className={`transition-colors duration-300 ${formData.attendance === 'Not Attending' ? 'text-[#556B2F]' : 'text-gray-300'}`}>
+                   <HeartIcon size={80} fill={formData.attendance === 'Not Attending'} />
+                </div>
+                <span className="font-sans text-[10px] md:text-xs font-bold leading-tight text-center tracking-tight">I WILL NOT BE<br/>ATTENDING</span>
+              </button>
+            </div>
+          ) : (
+            <div>
+              <label className={labelCls}>Will you be attending? *</label>
+              <div className="flex gap-3 flex-wrap">
+                {[{ value: 'Attending', label: 'Joyfully Accept 🎉' }, { value: 'Not Attending', label: 'Regretfully Decline' }].map(({ value, label }) => (
+                  <label key={value} className={optionBtnCls(formData.attendance === value)}>
+                    <input type="radio" name="attendance" value={value} className="sr-only" checked={formData.attendance === value} onChange={() => setFormData(f => ({ ...f, attendance: value }))} />
+                    {label}
+                  </label>
+                ))}
               </div>
+              {errors.attendance && <p className="text-red-400 text-xs mt-1">{errors.attendance}</p>}
             </div>
           )}
 
-          <div>
-            <label className={labelCls}>Message for the Couple (optional)</label>
-            <textarea rows={3} placeholder="Write your wishes here…" className={`${inputCls} resize-y min-h-[100px]`} value={formData.message} onChange={e => setFormData(f => ({ ...f, message: e.target.value }))} />
+          {/* ── GUEST SELECTION (Layout 4 style) ── */}
+          {formData.attendance === 'Attending' && layout === 4 && (
+            <div className="flex items-center justify-center gap-4 py-4 border-y border-gray-100">
+               <span className="font-sans text-sm text-[var(--colorTextDark)] opacity-60">How many guests will attend?</span>
+               <select 
+                 className="w-16 h-10 border border-gray-300 rounded text-center font-sans font-bold text-sm cursor-pointer hover:border-[#556B2F] transition-colors" 
+                 value={formData.guests} 
+                 onChange={e => setFormData(f => ({ ...f, guests: e.target.value }))}
+               >
+                 {guestOptions.map(n => <option key={n} value={n}>{n}</option>)}
+               </select>
+            </div>
+          )}
+
+          {/* ── NAME & CONTACT (Updated Layout 4) ── */}
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col items-center w-full">
+              <label className={`${labelCls} !text-[var(--colorTextDark)] !opacity-100 !mb-2 !font-bold`}>Your Name</label>
+              <input 
+                type="text" 
+                placeholder="" 
+                className={`${inputCls} text-center border-gray-200 focus:border-[#556B2F] ${errors.name ? '!border-red-400' : ''}`} 
+                value={formData.name} 
+                onChange={e => { setFormData(f => ({ ...f, name: e.target.value })); setErrors(x => ({ ...x, name: '' })); }} 
+              />
+              {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
+            </div>
+
+            <div className="flex flex-col items-center w-full">
+              <label className={`${labelCls} !text-[var(--colorTextDark)] !opacity-100 !mb-2 !font-bold`}>Your Contact Number:</label>
+              <input 
+                type="tel" 
+                placeholder="" 
+                className={`${inputCls} text-center border-gray-200 focus:border-[#556B2F]`} 
+                value={formData.phone} 
+                onChange={e => setFormData(f => ({ ...f, phone: e.target.value }))} 
+              />
+            </div>
           </div>
 
-          <button type="submit" disabled={status === 'loading'} className={`${btnCls} mt-4`}>
-            {status === 'loading' ? <span className="w-5 h-5 rounded-full border-2 border-[var(--colorBg)] border-t-transparent animate-spin" /> : 'Send My Reply'}
+          {/* ── MESSAGE (Hidden in Layout 4 as per image) ── */}
+          {layout !== 4 && (
+            <div>
+              <label className={labelCls}>Message for the Couple (optional)</label>
+              <textarea rows={3} placeholder="Write your wishes here…" className={`${inputCls} resize-y min-h-[100px]`} value={formData.message} onChange={e => setFormData(f => ({ ...f, message: e.target.value }))} />
+            </div>
+          )}
+
+          <button 
+            type="submit" 
+            disabled={status === 'loading'} 
+            className={`${layout === 4 ? 'bg-[#556B2F] text-white py-5 rounded shadow-lg hover:bg-[#3E4F22] transition-colors !font-bold tracking-widest uppercase text-sm' : btnCls} mt-4`}
+          >
+            {status === 'loading' ? <span className="w-5 h-5 rounded-full border-2 border-[var(--colorBg)] border-t-transparent animate-spin mx-auto" /> : (layout === 4 ? 'SEND' : 'Send My Reply')}
           </button>
 
           {status === 'error' && (
@@ -231,6 +288,27 @@ export default function RSVPSection({ config }) {
           )}
         </form>
       </div>
+
+      {/* Floating corner detail (Layout 4) */}
+      {layout === 4 && (
+        <div className="absolute bottom-0 right-0 w-32 h-32 opacity-10 pointer-events-none translate-x-4 grayscale sepia">
+           <img src="/images/nature-arch-bg.png" className="w-full h-full object-contain" />
+        </div>
+      )}
     </section>
+  );
+}
+
+// ── HeartIcon Helper ──
+function HeartIcon({ size = 60, fill = false }) {
+  return (
+    <svg 
+      width={size} height={size} viewBox="0 0 24 24" 
+      fill={fill ? "currentColor" : "none"} 
+      stroke="currentColor" strokeWidth="1" 
+      strokeLinecap="round" strokeLinejoin="round"
+    >
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.89-8.89 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
   );
 }

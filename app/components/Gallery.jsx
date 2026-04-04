@@ -34,17 +34,25 @@ export default function Gallery({ config }) {
   return (
     <section 
       id="gallery" 
-      className="py-20 md:py-28 transition-colors duration-500"
-      style={{
-        backgroundColor: 'var(--colorBg)',
-        ...(config.sectionBackgrounds?.gallery ? {
-          backgroundImage: `url(${config.sectionBackgrounds.gallery})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-        } : {})
-      }}
+      className="py-20 md:py-28 transition-colors duration-500 relative overflow-hidden"
+      style={{ backgroundColor: 'var(--colorBg)' }}
     >
+      {/* ── BLURRED BACKGROUND LAYER ── */}
+      {config.sectionBackgrounds?.gallery && (
+        <div 
+          className="absolute inset-0 z-0 pointer-events-none transition-transform duration-1000"
+          style={{ 
+            backgroundImage: `url(${config.sectionBackgrounds.gallery})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+            filter: 'blur(15px)',
+            transform: 'scale(1.05)',
+            opacity: 0.5
+          }} 
+        />
+      )}
+      <div className="absolute inset-0 bg-white/5 z-[1] pointer-events-none" />
       <div className="max-w-5xl mx-auto px-6">
         
         {/* Header Layout 1 */}
@@ -74,10 +82,44 @@ export default function Gallery({ config }) {
             <div className="w-24 h-0.5 bg-[var(--colorPrimary)] mx-auto opacity-60" />
           </div>
         )}
+
+        {/* Header Layout 4 */}
+        {layout === 4 && (
+          <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-1000">
+            <span className="font-sans text-[0.65rem] tracking-[0.4em] uppercase text-[var(--colorPrimary)] mb-4 font-bold block">Gallery</span>
+            <h2 className="font-serif text-5xl md:text-6xl text-[var(--colorTextDark)] mb-4 italic">Beautiful Moments</h2>
+            <div className="flex items-center justify-center gap-3">
+              <div className="h-px w-8 bg-[var(--colorPrimary)] opacity-30" />
+              <span className="text-[var(--colorPrimary)] opacity-40 text-xl">🌿</span>
+              <div className="h-px w-8 bg-[var(--colorPrimary)] opacity-30" />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Grid Layouts */}
-      {layout === 3 ? (
+      {layout === 4 ? (
+        // Layout 4: Nature Arch Grid
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 px-6 max-w-6xl mx-auto">
+          {gallery.map((photo, idx) => (
+            <button
+              key={idx} onClick={() => setLightbox(idx)}
+              className="group relative cursor-zoom-in focus:outline-none w-full bg-white p-3 shadow-md hover:shadow-xl transition-all duration-500"
+              style={{
+                borderRadius: '120px 120px 0 0',
+                border: '1px solid var(--colorPrimary)/20',
+              }}
+            >
+              <div className="w-full h-full relative overflow-hidden" style={{ borderRadius: '110px 110px 0 0', aspectRatio: '3/4' }}>
+                <Image src={photo.src} alt={photo.alt} width={600} height={800} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 filter saturate-50 group-hover:saturate-100" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-[var(--colorPrimary)]/10 transition-all duration-500 flex items-center justify-center">
+                  <span className="text-white text-4xl opacity-0 group-hover:opacity-100 transition-all duration-500 drop-shadow-md scale-50 group-hover:scale-100">🌿</span>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      ) : layout === 3 ? (
         // Layout 3: Royal Arch Grid
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 max-w-6xl mx-auto">
           {gallery.map((photo, idx) => (
