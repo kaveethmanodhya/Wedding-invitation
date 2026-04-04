@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import ClientHome from './ClientHome';
 
 /** Load config: try MongoDB first, fallback to local file */
