@@ -162,7 +162,7 @@ export default function RSVPSection({ config }) {
           ) : layout === 3 ? (
             <>
               <span className="text-3xl text-[var(--colorPrimary)] mb-4 block">❀</span>
-              <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 tracking-wide">Please Confirm.</h2>
+              <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 tracking-wide">Please Confirm</h2>
               <div className="w-24 h-0.5 bg-[var(--colorPrimary)] mx-auto opacity-60 mb-4" />
               <p className="font-sans text-xs tracking-widest uppercase text-[var(--colorTextDark)]/80">Please respond by {rsvp.deadline}</p>
             </>

@@ -348,7 +348,7 @@ function Layout4({ config }) {
     <div className="flex flex-col items-center w-full max-w-[600px] mx-auto min-h-[85vh] bg-white relative overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.15)] border-[12px] border-white">
       {/* Full Background (Liquid Layer) */}
       <div className="absolute inset-x-0 top-0 bottom-0 z-0">
-         <img src={heroBg} className="w-full h-full object-cover transition-transform duration-[20s] animate-pulse-slow" style={{ opacity: 0.15, filter: 'blur(10px) saturate(1.5)' }} />
+         <img src={heroBg} className="w-full h-full object-cover object-top transition-transform duration-[20s] animate-pulse-slow" style={{ opacity: 0.15, filter: 'blur(10px) saturate(1.5)' }} />
       </div>
 
       {/* ── TOP DATE HEADER (Matching image layout) ── */}
@@ -384,7 +384,7 @@ function Layout4({ config }) {
 
           {/* Primary View (Arched Photo) */}
           <div className="absolute inset-0 z-10 transition-transform duration-700 group-hover:scale-105">
-            <img src={heroBg} className="w-full h-full object-cover" />
+            <img src={heroBg} className="w-full h-full object-cover object-top" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30" />
           </div>
         </div>
