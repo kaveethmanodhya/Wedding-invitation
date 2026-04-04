@@ -8,7 +8,6 @@ import Hero from './components/Hero';
 import Countdown from './components/Countdown';
 import StorySection from './components/StorySection';
 import EventDetails from './components/EventDetails';
-import Gallery from './components/Gallery';
 import RSVPSection from './components/RSVPSection';
 import Footer from './components/Footer';
 
@@ -35,7 +34,6 @@ export default function ClientHome({ config }) {
       <Countdown config={config} />
       <StorySection config={config} />
       <EventDetails config={config} />
-      <Gallery config={config} />
       <RSVPSection config={config} />
       <Footer config={config} />
     </main>

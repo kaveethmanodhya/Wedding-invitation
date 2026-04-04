@@ -42,7 +42,7 @@ function Layout1({ config, ref1, ref2, ref3 }) {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-10 items-center relative z-10 pb-16 px-6">
+      <div className="grid md:grid-cols-2 gap-10 items-center relative z-10 pb-16 px-6 max-w-5xl mx-auto">
         <div ref={ref3} className="opacity-0 translate-y-8 transition-all duration-700 delay-200 flex flex-col gap-6 text-center md:text-left">
           {story.paragraphs.map((p, i) => (
             <p key={i} className="font-serif text-base md:text-lg leading-[1.8] text-[var(--colorTextDark)]/80">
@@ -50,10 +50,10 @@ function Layout1({ config, ref1, ref2, ref3 }) {
             </p>
           ))}
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-6 relative">
           {config.gallery?.slice(0, 2).map((img, i) => (
-            <div key={i} className={`rounded-xl overflow-hidden shadow-xl aspect-[3/4] border-2 border-[var(--colorBg)] outline outline-1 outline-[var(--colorPrimary)] outline-offset-2 ${i === 1 ? 'mt-8' : ''}`}>
-              <img src={img.src} alt={img.alt} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 saturate-50" />
+            <div key={i} className={`rounded-[2rem] overflow-hidden shadow-2xl aspect-[3/4] border-4 border-white/40 backdrop-blur-md ${i === 1 ? 'mt-16 -ml-4' : 'mb-16'}`}>
+              <img src={img.src} alt={img.alt || 'Story Image'} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 hover:saturate-100 opacity-90" />
             </div>
           ))}
         </div>
@@ -88,10 +88,10 @@ function Layout2({ config, ref1, ref2, ref3 }) {
         </div>
       </div>
 
-      <div ref={ref3} className="flex justify-center gap-6 mt-16 opacity-0 translate-y-8 transition-all duration-700 delay-200">
-         {config.gallery?.slice(0, 3).map((img, i) => (
-            <div key={i} className={`w-32 h-32 md:w-48 md:h-48 overflow-hidden rounded-full border-4 border-[var(--colorBg)] outline outline-[var(--colorPrimary)] outline-1 shadow-lg ${i === 1 ? '-translate-y-8' : ''}`}>
-              <img src={img.src} alt={img.alt} className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-all duration-500 scale-110" />
+      <div ref={ref3} className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-16 opacity-0 translate-y-8 transition-all duration-700 delay-200">
+         {config.gallery?.slice(0, 4).map((img, i) => (
+            <div key={i} className={`w-full aspect-[3/4] overflow-hidden rounded-3xl shadow-xl border border-[var(--colorPrimary)]/20 ${i % 2 === 1 ? 'md:translate-y-8' : ''}`}>
+              <img src={img.src} alt={img.alt || 'Journey Image'} className="w-full h-full object-cover hover:scale-110 transition-transform duration-700 opacity-90 hover:opacity-100" />
             </div>
           ))}
       </div>
@@ -99,7 +99,7 @@ function Layout2({ config, ref1, ref2, ref3 }) {
   );
 }
 
-function Layout3({ config, ref1, ref2, ref3 }) {
+function Layout3({ config, ref1, ref2, ref3, ref4 }) {
   const { story } = config;
   return (
     <div className="relative max-w-5xl mx-auto px-6 py-28 md:py-36">
@@ -128,7 +128,7 @@ function Layout3({ config, ref1, ref2, ref3 }) {
           </p>
         </div>
 
-        <div ref={ref3} className="opacity-0 translate-y-8 transition-all duration-700 delay-200 space-y-8">
+        <div ref={ref3} className="opacity-0 translate-y-8 transition-all duration-700 delay-200 space-y-8 mb-20">
           {story.paragraphs.map((p, i) => (
             <p key={i} className="font-sans text-sm md:text-base leading-relaxed tracking-wide text-[var(--colorTextDark)] opacity-80 text-justify md:text-center">
               {p}
@@ -136,7 +136,15 @@ function Layout3({ config, ref1, ref2, ref3 }) {
           ))}
         </div>
         
-        <span className="text-3xl text-[var(--colorPrimary)] mt-16 scale-[-1]">❀</span>
+        <div ref={ref4} className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-5xl mx-auto opacity-0 translate-y-8 transition-all duration-700 delay-300 mt-8 mb-16">
+           {config.gallery?.slice(0, 4).map((img, i) => (
+              <div key={i} className="w-full aspect-square rounded-lg overflow-hidden shadow-lg border-2 border-[var(--colorBg)] transition-transform duration-500 hover:scale-105">
+                 <img src={img.src} className="w-full h-full object-cover" alt={`Journey ${i}`} />
+              </div>
+           ))}
+        </div>
+        
+        <span className="text-3xl text-[var(--colorPrimary)] mt-24 scale-[-1]">❀</span>
       </div>
     </div>
   );
@@ -146,6 +154,7 @@ export default function StorySection({ config }) {
   const ref1 = useReveal();
   const ref2 = useReveal();
   const ref3 = useReveal();
+  const ref4 = useReveal();
   const layout = config?.heroLayout ?? 1;
 
   // The background color is handled globally by var(--colorBg)
@@ -164,7 +173,7 @@ export default function StorySection({ config }) {
       }}
     >
       {layout === 3 ? (
-        <Layout3 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
+        <Layout3 config={config} ref1={ref1} ref2={ref2} ref3={ref3} ref4={ref4} />
       ) : layout === 2 ? (
         <Layout2 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
       ) : (

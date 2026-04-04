@@ -77,3 +77,30 @@ export async function POST(req) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
+
+export async function DELETE(req) {
+  try {
+    const body = await req.json();
+    const { fileUrl } = body;
+
+    if (!fileUrl || !fileUrl.startsWith('/images/')) {
+      return NextResponse.json({ success: false, error: 'Invalid file URL' }, { status: 400 });
+    }
+
+    const filename = fileUrl.replace('/images/', '');
+    if (filename.includes('/') || filename.includes('\\')) {
+      return NextResponse.json({ success: false, error: 'Invalid filename path' }, { status: 400 });
+    }
+
+    const filePath = join(process.cwd(), 'public', 'images', filename);
+    await unlink(filePath);
+
+    return NextResponse.json({ success: true, message: 'Image deleted from server' });
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return NextResponse.json({ success: true, message: 'File was already missing, assumed deleted' });
+    }
+    console.error('Delete Error:', err);
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  }
+}

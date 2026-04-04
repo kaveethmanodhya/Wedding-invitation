@@ -42,7 +42,7 @@
       "alt": "Golden hour"
     },
     {
-      "src": "/images/1775223747728-blob.webp",
+      "src": "/images/1775298407428-blob.webp",
       "alt": "Garden stroll"
     },
     {
@@ -54,8 +54,8 @@
       "alt": "Beach walk"
     }
   ],
-  "heroImage": "/images/1775290272379-blob.webp",
-  "heroLayout": 1,
+  "heroImage": "/images/1775290610280-blob.webp",
+  "heroLayout": 3,
   "rsvp": {
     "whatsappNumber": "94711690138",
     "deadline": "December 1, 2026",
@@ -68,14 +68,14 @@
     "bgImage": "/images/1775246769611-chjpdmf0zs9sci9pbwfnzxmvd2vic2l0zs8ymdi0ltayl3jhd3bpegvsx29mzmljzv81ml9ozwfydf9wyxr0zxjux2jva2vox2vmzmvjdf9iywnrz3jvdw5kx19pbl90af82ntczmzjjys1howeyltqyodktogm5ys0zmdzjzdazyjhhmjbfms5qcgc.webp"
   },
   "theme": {
-    "colorPrimary": "#C9956A",
-    "colorSecondary": "#E8D5B7",
-    "colorTextLight": "#8A7F6A",
-    "colorTextDark": "#2C2018",
-    "colorBg": "#FAF7F2",
+    "colorPrimary": "#E899B8",
+    "colorSecondary": "#F5D0E0",
+    "colorTextLight": "#A3607E",
+    "colorTextDark": "#4A2335",
+    "colorBg": "#FCF8FA",
     "colorSurface": "#FFFFFF",
-    "heroOverlayStart": "rgba(18, 12, 6, 0.55)",
-    "heroOverlayEnd": "rgba(18, 12, 6, 0.25)"
+    "heroOverlayStart": "rgba(74, 35, 53, 0.55)",
+    "heroOverlayEnd": "rgba(74, 35, 53, 0.25)"
   },
   "meta": {
     "title": "Kaveeth & Pramudi — Wedding Invitation",
@@ -86,5 +86,9 @@
   "coupleImages": {
     "groom": "/images/1775222506702-0403(1).gif",
     "bride": "/images/1775222510611-0403.gif"
-  }
+  },
+  "sectionBackgrounds": {
+    "events": ""
+  },
+  "layout1EventBanner": "/images/1775298375736-blob.webp"
 }

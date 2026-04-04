@@ -13,6 +13,14 @@ export default function ImageCropper({ image, aspect, onCropComplete, onCancel }
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [currentAspect, setCurrentAspect] = useState(aspect || 1);
+
+  const aspects = [
+    { label: 'Square (1:1)', value: 1 },
+    { label: 'Portrait (3:4)', value: 3/4 },
+    { label: 'Landscape (16:9)', value: 16/9 },
+    { label: 'Banner (3:1)', value: 3 },
+  ];
 
   const onCropChange = (crop) => setCrop(crop);
   const onZoomChange = (zoom) => setZoom(zoom);
@@ -43,7 +51,7 @@ export default function ImageCropper({ image, aspect, onCropComplete, onCancel }
             image={image}
             crop={crop}
             zoom={zoom}
-            aspect={aspect}
+            aspect={currentAspect}
             onCropChange={onCropChange}
             onZoomChange={onZoomChange}
             onCropComplete={onCropCompleteInternal}
@@ -54,9 +62,10 @@ export default function ImageCropper({ image, aspect, onCropComplete, onCancel }
           />
         </div>
 
-        <div className="px-6 py-6 border-t border-slate-50 flex flex-col gap-4">
+        <div className="px-6 py-6 border-t border-slate-50 flex flex-col gap-5">
+          {/* Zoom Slider */}
           <div className="flex items-center gap-4">
-            <span className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">Zoom</span>
+            <span className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest min-w-[40px]">Zoom</span>
             <input
               type="range"
               value={zoom}
@@ -69,7 +78,30 @@ export default function ImageCropper({ image, aspect, onCropComplete, onCancel }
             />
           </div>
 
-          <div className="flex justify-end gap-3">
+          {/* Aspect Ratio Selection */}
+          <div className="flex flex-col gap-2">
+            <span className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">Select Size</span>
+            <div className="flex flex-wrap gap-2">
+              {aspects.map((a) => {
+                const isActive = Math.abs(currentAspect - a.value) < 0.01;
+                return (
+                  <button
+                    key={a.label}
+                    onClick={() => setCurrentAspect(a.value)}
+                    className={`px-3 py-1.5 rounded-lg text-[0.65rem] font-bold uppercase tracking-wider transition-all border ${
+                      isActive 
+                        ? 'bg-[#C9956A]/10 border-[#C9956A] text-[#C9956A]' 
+                        : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-slate-300'
+                    }`}
+                  >
+                    {a.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 mt-2">
             <button
               onClick={onCancel}
               className="px-5 py-2 text-xs font-bold text-slate-500 hover:bg-slate-50 rounded-lg transition-colors uppercase tracking-wide"

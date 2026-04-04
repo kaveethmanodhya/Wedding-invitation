@@ -65,7 +65,7 @@ function Layout1({ config }) {
 
         {/* Hero BG Image Area - Top Half */}
         <div style={{ position: 'absolute', top: '24px', left: '24px', right: '24px', height: '45%' }}>
-          <img src={heroImage || '/images/hero.png'} alt="Hero Background" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} />
+          <img src={heroImage || '/images/hero.png'} alt="Hero Background" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', opacity: 0.8 }} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, var(--colorBg) 95%)' }} />
         </div>
 
@@ -124,23 +124,28 @@ function Layout2({ config }) {
           overflow: 'hidden',
           padding: '24px',
           borderRadius: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: heroImage ? 'flex-start' : 'center',
         }}
       >
         {/* Floating Oval Window */}
         <div style={{ position: 'absolute', top: '16px', left: '16px', right: '16px', bottom: '16px', border: '1px solid var(--colorPrimary)', opacity: 0.4, borderRadius: '50% 50% / 10% 10%', pointerEvents: 'none' }} />
 
-        <div style={{
-          margin: '0 auto 24px', width: 'clamp(200px, 60vw, 300px)', height: 'clamp(280px, 80vw, 400px)',
-          borderRadius: '50%',
-          overflow: 'hidden',
-          border: '4px solid var(--colorPrimary)',
-          padding: '4px',
-          position: 'relative'
-        }}>
-          <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden' }}>
-            <img src={heroImage || '/images/hero.png'} alt="Hero" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        {heroImage && heroImage.trim() !== "" && (
+          <div style={{
+            margin: '0 auto 24px', width: 'clamp(200px, 60vw, 300px)', height: 'clamp(280px, 80vw, 400px)',
+            borderRadius: '50%',
+            overflow: 'hidden',
+            border: '4px solid var(--colorPrimary)',
+            padding: '4px',
+            position: 'relative'
+          }}>
+            <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden' }}>
+              <img src={heroImage} alt="Hero" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Content */}
         <div className="relative z-20 flex flex-col items-center text-center px-4 w-full">
@@ -200,11 +205,12 @@ function Layout3({ config }) {
       >
         {/* Full Image Background wrapped by Arch */}
         {heroImage && (
-          <div className="absolute inset-0 opacity-40 pointer-events-none z-0">
-            <img src={heroImage} className="w-full h-full object-cover grayscale mix-blend-multiply filter saturate-50" />
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 40%, var(--colorBg) 100%)' }} />
+          <div className="absolute inset-x-0 top-0 h-[60%] pointer-events-none z-0">
+            <img src={heroImage} className="w-full h-full object-cover object-top" style={{ opacity: 0.8 }} />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent, var(--colorBg) 95%)' }} />
           </div>
         )}
+
 
         {/* Ornate Arch Outline */}
         <div style={{
@@ -227,14 +233,23 @@ function Layout3({ config }) {
 
         {/* Content Box */}
         <div className="relative z-20 flex flex-col items-center pt-[15vh] px-8 pb-32 text-center h-full">
-          <p className="font-script text-3xl md:text-5xl mb-6 drop-shadow-sm" style={{ color: 'var(--colorTextDark)' }}>
-            Wedding Invitation
-          </p>
-
-          <p className="font-sans text-[0.65rem] md:text-xs tracking-widest uppercase mb-4 leading-relaxed max-w-[280px]" style={{ color: 'var(--colorTextDark)', opacity: 0.8 }}>
-            You Are Cordially Invited To<br />
-            Celebrate the marriage of
-          </p>
+          
+          <div className="flex flex-col items-center pt-8 pb-4 px-6 rounded-[100px_100px_20px_20px] mb-6 relative shadow-xl overflow-hidden w-11/12 max-w-[300px]">
+            {/* Glass Background layer */}
+            <div className="absolute inset-0 opacity-85 backdrop-blur-md" style={{ backgroundColor: 'var(--colorBg)' }} />
+            <div className="absolute inset-0 opacity-40 border-[1.5px] rounded-[100px_100px_20px_20px]" style={{ borderColor: 'var(--colorPrimary)' }} />
+            <div className="absolute inset-0 opacity-20 bg-gradient-to-b from-white/30 to-transparent" />
+            
+            <div className="relative z-10 text-center">
+              <p className="font-script text-3xl md:text-5xl mb-3" style={{ color: 'var(--colorTextDark)' }}>
+                Wedding Invitation
+              </p>
+              <p className="font-sans text-[0.65rem] md:text-xs tracking-widest uppercase leading-relaxed max-w-[280px] mx-auto" style={{ color: 'var(--colorTextDark)' }}>
+                You Are Cordially Invited To<br />
+                Celebrate the marriage of
+              </p>
+            </div>
+          </div>
 
           <h1 className="font-serif text-4xl md:text-5xl my-4 tracking-widest drop-shadow-sm" style={{ color: 'var(--colorPrimary)' }}>
             {(couple?.groom?.firstName || 'Groom').toUpperCase()}

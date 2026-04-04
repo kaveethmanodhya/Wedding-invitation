@@ -332,9 +332,16 @@ function Toast({ type, message, onClose }) {
 // ─────────────────────────────────────────────────────────────────
 //  Gallery row editor
 // ─────────────────────────────────────────────────────────────────
-function GalleryEditor({ gallery, onChange, onUpload }) {
+function GalleryEditor({ gallery, onChange, onUpload, onDelete }) {
   const addPhoto = () => onChange([...gallery, { src: '', alt: '' }]);
-  const removePhoto = (i) => onChange(gallery.filter((_, idx) => idx !== i));
+  const removePhoto = (i) => {
+    const photo = gallery[i];
+    if (photo.src && photo.src.startsWith('/images/')) {
+      onDelete(`gallery.${i}.src`, photo.src, true, i);
+    } else {
+      onChange(gallery.filter((_, idx) => idx !== i));
+    }
+  };
   const updatePhoto = (i, key, val) => {
     const updated = gallery.map((p, idx) => idx === i ? { ...p, [key]: val } : p);
     onChange(updated);
@@ -510,12 +517,14 @@ function AdminDashboard() {
     }
 
     // 2. Determine if cropping is needed
-    if (type === 'hero' || type === 'gallery') {
+    if (type === 'hero' || type === 'gallery' || type === 'banner') {
       let aspect = 1.0;
       if (type === 'hero') {
         aspect = 3 / 4;
       } else if (type === 'gallery') {
         aspect = 0.75; // Standard 3:4 Portrait for masonry
+      } else if (type === 'banner') {
+        aspect = 3 / 1; // Default to Banner 3:1
       }
 
       setCropping({
@@ -604,6 +613,36 @@ function AdminDashboard() {
     }
   };
 
+  const handleDeleteImage = async (path, oldImageUrl, isGallery = false, index = -1) => {
+    if (!oldImageUrl) return;
+    if (!confirm('Are you sure you want to permanently delete this image from the server?')) return;
+
+    try {
+      setLoading(true);
+      const res = await fetch('/api/upload', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileUrl: oldImageUrl }),
+      });
+      const data = await res.json();
+      
+      if (!data.success) throw new Error(data.error || 'Failed to delete image');
+
+      if (isGallery && index > -1) {
+        const newGallery = [...config.gallery];
+        newGallery.splice(index, 1);
+        setConfig(prev => ({ ...prev, gallery: newGallery }));
+      } else {
+        setPath(path, '');
+      }
+      showToast('success', 'Image successfully deleted!');
+    } catch (err) {
+      showToast('error', `Delete failed: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (fetching || !config) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -625,6 +664,7 @@ function AdminDashboard() {
     { id: 'theme', label: '🎨 Theme' },
     { id: 'meta', label: '🔍 SEO' },
     { id: 'backgrounds', label: '🖼️ Backgrounds' },
+    { id: 'decor', label: '✨ Decoration' },
   ];
 
   return (
@@ -825,6 +865,15 @@ function AdminDashboard() {
                       Upload
                       <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'heroImage', 'hero')} />
                     </label>
+                    {config.heroImage && config.heroImage.startsWith('/images/') && (
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteImage('heroImage', config.heroImage)}
+                        className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
+                      >
+                        Remove
+                      </button>
+                    )}
                   </div>
                 </div>
               </FieldGroup>
@@ -964,7 +1013,12 @@ function AdminDashboard() {
 
           {activeTab === 'gallery' && (
             <SectionCard title="Gallery Photos" icon="🖼">
-              <GalleryEditor gallery={config.gallery} onChange={val => setPath('gallery', val)} onUpload={handleUpload} />
+              <GalleryEditor 
+                gallery={config.gallery} 
+                onChange={val => setPath('gallery', val)} 
+                onUpload={handleUpload} 
+                onDelete={handleDeleteImage}
+              />
             </SectionCard>
           )}
 
@@ -1051,6 +1105,15 @@ function AdminDashboard() {
                           Upload
                           <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'coupleImages.groom', 'general')} />
                         </label>
+                        {config.coupleImages?.groom && config.coupleImages.groom.startsWith('/images/') && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteImage('coupleImages.groom', config.coupleImages.groom)}
+                            className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
+                          >
+                            Remove
+                          </button>
+                        )}
                       </div>
                     </div>
                   </FieldGroup>
@@ -1076,6 +1139,15 @@ function AdminDashboard() {
                           Upload
                           <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'coupleImages.bride', 'general')} />
                         </label>
+                        {config.coupleImages?.bride && config.coupleImages.bride.startsWith('/images/') && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteImage('coupleImages.bride', config.coupleImages.bride)}
+                            className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
+                          >
+                            Remove
+                          </button>
+                        )}
                       </div>
                     </div>
                   </FieldGroup>
@@ -1102,6 +1174,15 @@ function AdminDashboard() {
                         Upload
                         <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'envelope.bgImage', 'general')} />
                       </label>
+                      {config.envelope?.bgImage && config.envelope.bgImage.startsWith('/images/') && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteImage('envelope.bgImage', config.envelope.bgImage)}
+                          className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
+                        >
+                          Remove
+                        </button>
+                      )}
                     </div>
                   </div>
                 </FieldGroup>
@@ -1124,6 +1205,15 @@ function AdminDashboard() {
                         Upload
                         <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'envelope.outerBgImage', 'general')} />
                       </label>
+                      {config.envelope?.outerBgImage && config.envelope.outerBgImage.startsWith('/images/') && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteImage('envelope.outerBgImage', config.envelope.outerBgImage)}
+                          className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
+                        >
+                          Remove
+                        </button>
+                      )}
                     </div>
                   </div>
                 </FieldGroup>
@@ -1265,10 +1355,55 @@ function AdminDashboard() {
                         Upload
                         <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], `sectionBackgrounds.${sec}`, 'general')} />
                       </label>
+                      {config.sectionBackgrounds?.[sec] && config.sectionBackgrounds[sec].startsWith('/images/') && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteImage(`sectionBackgrounds.${sec}`, config.sectionBackgrounds[sec])}
+                          className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
+                        >
+                          Remove
+                        </button>
+                      )}
                     </div>
                   </div>
                 </FieldGroup>
               ))}
+            </SectionCard>
+          )}
+
+          {activeTab === 'decor' && (
+            <SectionCard title="Layout Decorations" icon="✨">
+              <FieldGroup label="Layout 1: Event Details Banner" hint="Custom header image for the Layout 1 event section (replaces gallery fallback)">
+                <div className="flex flex-col gap-3">
+                  {config.layout1EventBanner && (
+                    <div className="w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                      <img src={config.layout1EventBanner} className="w-full h-full object-cover" alt="Layout 1 Event Banner Preview" />
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="/images/event-banner.jpg"
+                      className={inputCls}
+                      value={config.layout1EventBanner || ''}
+                      onChange={e => setPath('layout1EventBanner', e.target.value)}
+                    />
+                    <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
+                      Upload
+                      <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'layout1EventBanner', 'banner')} />
+                    </label>
+                    {config.layout1EventBanner && config.layout1EventBanner.startsWith('/images/') && (
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteImage('layout1EventBanner', config.layout1EventBanner)}
+                        className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </FieldGroup>
             </SectionCard>
           )}
 

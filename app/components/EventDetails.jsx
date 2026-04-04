@@ -57,11 +57,24 @@ function Layout1({ config }) {
   const { events } = config;
   return (
     <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
-      <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
-        <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">Mark Your Calendar</p>
-        <h2 className="font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-4 tracking-wide">Event Details</h2>
-        <div className="w-24 h-px bg-[var(--colorPrimary)] opacity-50 mx-auto" />
-      </div>
+      {(config.layout1EventBanner || config.gallery?.[2]) && (
+        <div className="w-full h-64 md:h-80 relative overflow-hidden mb-16 rounded-[2rem] shadow-xl isolate">
+          <img src={config.layout1EventBanner || config.gallery[2].src} alt="Banner" className="absolute inset-0 w-full h-full object-cover attachment-fixed object-[center_30%]" style={{ transform: 'scale(1.05)' }} />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--colorBg)] to-transparent opacity-80" />
+          <div ref={headerRef} className="absolute inset-0 flex flex-col items-center justify-center opacity-0 translate-y-8 transition-all duration-700">
+            <p className="font-sans text-[0.7rem] md:text-xs tracking-[0.3em] uppercase text-[var(--colorBg)] drop-shadow-md mb-2">Mark Your Calendar</p>
+            <h2 className="font-serif text-5xl md:text-6xl font-normal text-white drop-shadow-lg tracking-wide">Event Details</h2>
+          </div>
+        </div>
+      )}
+
+      {!config.layout1EventBanner && !config.gallery?.[2] && (
+        <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
+          <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">Mark Your Calendar</p>
+          <h2 className="font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-4 tracking-wide">Event Details</h2>
+          <div className="w-24 h-px bg-[var(--colorPrimary)] opacity-50 mx-auto" />
+        </div>
+      )}
 
       <div className={`flex flex-wrap justify-center gap-8 md:gap-12 ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
         {Object.entries(events).map(([key, event], idx) => (
@@ -76,13 +89,13 @@ function Layout1({ config }) {
 function EventCard2({ event, delay }) {
   const ref = useReveal(delay);
   return (
-    <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 w-full md:w-[48%] bg-white/70 backdrop-blur-md shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white/60 relative group hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] p-10 rounded-[32px]">
+    <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 w-full md:w-[48%] bg-white/70 backdrop-blur-md shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white/60 relative group hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] p-10 rounded-[32px] text-center flex flex-col items-center justify-center">
       <h3 className="font-script text-4xl text-[var(--colorPrimary)] mb-2 drop-shadow-sm">{event.title}</h3>
       <p className="font-serif text-[var(--colorTextDark)] opacity-80 text-lg mb-6 tracking-wide">{event.time}</p>
 
-      <div className="space-y-4 mb-8">
-        <p className="font-sans font-light text-sm uppercase tracking-widest text-[var(--colorTextDark)] opacity-90"><span className="font-bold border-b border-[var(--colorPrimary)]/50 mr-2">Venue</span> {event.venueName}</p>
-        <p className="font-sans font-light text-sm uppercase tracking-widest text-[var(--colorTextDark)] opacity-90"><span className="font-bold border-b border-[var(--colorPrimary)]/50 mr-2">Loc</span> {event.address}</p>
+      <div className="space-y-4 mb-8 flex flex-col items-center text-center">
+        <p className="font-sans font-light text-sm uppercase tracking-widest text-[var(--colorTextDark)] opacity-90"><span className="font-bold border-b border-[var(--colorPrimary)]/50 block mb-1">Venue</span> {event.venueName}</p>
+        <p className="font-sans font-light text-sm uppercase tracking-widest text-[var(--colorTextDark)] opacity-90 mt-2"><span className="font-bold border-b border-[var(--colorPrimary)]/50 block mb-1">Location</span> {event.address}</p>
         {event.dressCode && event.dressCode !== 'none' && (
           <p className="font-sans font-light text-sm uppercase tracking-widest text-[var(--colorTextDark)] opacity-90"><span className="font-bold border-b border-[var(--colorPrimary)]/50 mr-2">Attire</span> {event.dressCode}</p>
         )}
@@ -102,7 +115,7 @@ function Layout2({ config }) {
     <div className="max-w-6xl mx-auto px-6 py-24 md:py-32 relative">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[var(--colorPrimary)] opacity-5 rounded-full blur-3xl pointer-events-none" />
       <div ref={headerRef} className="opacity-0 translate-y-8 transition-all duration-700 mb-20 text-center relative z-10 w-full">
-        <h2 className="font-script text-5xl md:text-6xl text-[var(--colorTextDark)] mb-6 leading-none drop-shadow-sm tracking-widest uppercase drop-shadow-sm">
+        <h2 className="font-script text-6xl md:text-8xl text-[var(--colorPrimary)] mb-6 leading-none drop-shadow-sm tracking-wide">
           Celebrations
         </h2>
       </div>
@@ -148,7 +161,7 @@ function Layout3({ config }) {
   const headerRef = useReveal(0);
   const { events } = config;
   return (
-    <div className="max-w-5xl mx-auto px-6 py-28 md:py-36">
+    <div className="max-w-6xl mx-auto px-6 py-28 md:py-36 rounded-[3rem] border border-[var(--colorPrimary)]/20 mt-12 mb-12 shadow-sm bg-[var(--colorBg)]/50 backdrop-blur-[2px]">
       <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
         <span className="text-3xl text-[var(--colorPrimary)] mb-4 block">❀</span>
         <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 tracking-wide">Celebrations</h2>
