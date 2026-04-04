@@ -285,25 +285,120 @@ export default function Hero({ config }) {
     <section
       id="hero"
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden transition-all duration-500"
-      style={{
-        backgroundColor: 'var(--colorBg)',
-        paddingTop: 'clamp(80px, 12vw, 120px)',
-        paddingBottom: 'clamp(48px, 8vw, 80px)',
-        paddingLeft: '16px',
-        paddingRight: '16px',
-        ...(config.sectionBackgrounds?.hero ? {
-          backgroundImage: `url(${config.sectionBackgrounds.hero})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-        } : {})
-      }}
+      style={{ backgroundColor: 'var(--colorBg)' }}
     >
-      <div className="absolute inset-0 pointer-events-none z-0" style={{ background: 'radial-gradient(circle at 50% 50%, var(--colorPrimary) 0%, transparent 60%)', opacity: 0.03 }} />
-      <div className="relative z-10 w-full flex justify-center">
-        {layout === 3 ? <Layout3 config={config} /> : layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
+      {/* ── BLURRED BACKGROUND LAYER ── */}
+      {config.sectionBackgrounds?.hero && (
+        <div 
+          className="absolute inset-0 pointer-events-none transition-transform duration-1000 z-0"
+          style={{ 
+            backgroundImage: `url(${config.sectionBackgrounds.hero})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+            filter: 'blur(15px)',
+            transform: 'scale(1.05)',
+            opacity: 0.6
+          }} 
+        />
+      )}
+      {/* Subtle overlay */}
+      <div className="absolute inset-0 bg-white/5 z-[1] pointer-events-none" />
+
+      <div className="absolute inset-0 pointer-events-none z-[1]" style={{ background: 'radial-gradient(circle at 50% 50%, var(--colorPrimary) 0%, transparent 60%)', opacity: 0.03 }} />
+      <div className="relative z-10 w-full flex justify-center py-20 px-4">
+        {layout === 4 ? <Layout4 config={config} /> : layout === 3 ? <Layout3 config={config} /> : layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
       </div>
     </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   LAYOUT 4 — Nature Arch (Premium Design)
+   Inspired by a forest garden arch with central couple
+───────────────────────────────────────────────────────── */
+function Layout4({ config }) {
+  const { couple, wedding, events, heroImage, coupleImages } = config;
+  const ceremony = events?.ceremony || {};
+  const dateObj = new Date(wedding?.dateTimeISO);
+  const dayLabel = dateObj.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+  const month = dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+  const dayNum = dateObj.getDate();
+  const year = dateObj.getFullYear();
+
+  // Primary image from admin "Hero Background Image" field
+  const heroBg = heroImage || '/images/nature-arch-bg.png';
+
+  return (
+    <div className="flex flex-col items-center w-full max-w-[600px] mx-auto min-h-[85vh] bg-white relative overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.15)] border-[12px] border-white">
+      {/* Full Background (Liquid Layer) */}
+      <div className="absolute inset-x-0 top-0 bottom-0 z-0">
+         <img src={heroBg} className="w-full h-full object-cover transition-transform duration-[20s] animate-pulse-slow" style={{ opacity: 0.15, filter: 'blur(10px) saturate(1.5)' }} />
+      </div>
+
+      {/* ── TOP DATE HEADER (Matching image layout) ── */}
+      <div className="relative z-20 w-full px-8 pt-10 pb-6 flex items-center justify-between border-b border-black/5">
+        <div className="flex-1 text-center font-sans font-bold text-[10px] tracking-[0.4em] uppercase text-[#2C2018] opacity-60">
+          {dayLabel || 'SUNDAY'}
+        </div>
+        
+        {/* Central Date Box (Liquid Glass Box) */}
+        <div className="relative flex flex-col items-center px-10 py-4">
+          <div className="absolute inset-0 bg-white/40 backdrop-blur-md rounded-lg border border-white/60 shadow-sm" />
+          <div className="relative z-10 flex flex-col items-center">
+            <span className="font-sans font-bold text-[9px] tracking-widest text-[#8A7F6A] mb-1">{month}</span>
+            <span className="font-serif text-4xl text-[#2C2018] leading-none mb-1">{dayNum}</span>
+            <span className="font-sans text-[8px] tracking-[0.2em] text-[#8A7F6A] font-bold">{year}</span>
+          </div>
+          {/* Vertical separators match the image style */}
+          <div className="absolute -left-0 top-4 bottom-4 w-px bg-black/10" />
+          <div className="absolute -right-0 top-4 bottom-4 w-px bg-black/10" />
+        </div>
+
+        <div className="flex-1 text-center font-sans font-bold text-[10px] tracking-[0.4em] uppercase text-[#2C2018] opacity-60">
+          {ceremony?.time ? `AT ${ceremony.time.toUpperCase()}` : 'AT 10:00 AM'}
+        </div>
+      </div>
+
+      {/* ── MAIN LIQUID GLASS ARCH ── */}
+      <div className="relative w-full flex-1 px-4 mt-8 mb-4">
+        <div className="relative w-full h-[540px] rounded-t-[180px] overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.12)] border border-white/40 group">
+          
+          {/* Internal Shimmer Layer */}
+          <div className="absolute inset-0 z-30 pointer-events-none bg-gradient-to-tr from-white/0 via-white/10 to-transparent animate-shimmer" />
+
+          {/* Primary View (Arched Photo) */}
+          <div className="absolute inset-0 z-10 transition-transform duration-700 group-hover:scale-105">
+            <img src={heroBg} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30" />
+          </div>
+        </div>
+
+        {/* Decorative Glass Highlights floating beneath the arch */}
+        <div className="absolute -bottom-10 left-10 w-24 h-24 bg-white/40 backdrop-blur-xl rounded-full border border-white/60 -z-10 shadow-lg blur-sm" />
+        <div className="absolute -top-10 right-10 w-32 h-32 bg-white/20 backdrop-blur-2xl rounded-full border border-white/40 -z-10 animate-float" />
+      </div>
+
+      {/* ── FOOTER NAMES & BRANDING ── */}
+      <div className="relative z-40 text-center flex flex-col items-center py-8 bg-white w-full">
+        <h2 className="font-serif text-3xl md:text-5xl text-[#2C2018] tracking-[0.2em] uppercase mb-4 font-medium transition-all duration-500 group-hover:tracking-[0.25em]">
+          {couple?.groom?.firstName} & {couple?.bride?.firstName}
+        </h2>
+
+        <div className="flex items-center justify-center gap-4 mb-4">
+          <div className="h-px w-8 bg-[#8A7F6A]/30" />
+          <span className="font-sans text-[9px] tracking-[0.4em] uppercase text-[#8A7F6A] font-bold">The Celebration Of</span>
+          <div className="h-px w-8 bg-[#8A7F6A]/30" />
+        </div>
+
+        <p className="font-serif text-sm md:text-base text-[#2C2018]/80 italic opacity-70">
+          Together with their families invite you to their wedding
+        </p>
+      </div>
+
+      {/* Extra Liquid Corner Flair */}
+      <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-[var(--colorPrimary)]/5 to-transparent opacity-30 pointer-events-none" />
+    </div>
   );
 }
 

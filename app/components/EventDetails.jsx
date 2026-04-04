@@ -172,18 +172,128 @@ export default function EventDetails({ config }) {
   return (
     <section 
       id="events" 
-      className="overflow-hidden transition-colors duration-500"
-      style={{
-        backgroundColor: 'var(--colorBg)',
-        ...(config.sectionBackgrounds?.events ? {
-          backgroundImage: `url(${config.sectionBackgrounds.events})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-        } : {})
-      }}
+      className="overflow-hidden transition-colors duration-500 relative"
+      style={{ backgroundColor: 'var(--colorBg)' }}
     >
-      {layout === 3 ? <Layout3 config={config} /> : layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
+      {/* ── BLURRED BACKGROUND LAYER ── */}
+      {config.sectionBackgrounds?.events && (
+        <div 
+          className="absolute inset-0 z-0 pointer-events-none transition-transform duration-1000"
+          style={{ 
+            backgroundImage: `url(${config.sectionBackgrounds.events})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+            filter: 'blur(15px)',
+            transform: 'scale(1.05)',
+            opacity: 0.5
+          }} 
+        />
+      )}
+      <div className="absolute inset-0 bg-white/5 z-[1] pointer-events-none" />
+      {layout === 4 ? <Layout4 config={config} /> : layout === 3 ? <Layout3 config={config} /> : layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
     </section>
+  );
+}
+
+// ── LAYOUT 4 — Nature Arch Event Cards ──
+function EventCard4({ event, delay }) {
+  const ref = useReveal(delay);
+  const hasImage = !!event.image;
+
+  return (
+    <article
+      ref={ref}
+      className={`opacity-0 translate-y-8 transition-all duration-1000 bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_20px_60px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col md:flex-row w-full max-w-[900px] group transition-all duration-500 hover:shadow-2xl rounded-3xl`}
+    >
+      {/* ── LEFT: IMAGE ── */}
+      {hasImage && (
+        <div className="w-full md:w-5/12 h-[300px] md:h-auto relative overflow-hidden">
+          <img 
+            src={event.image} 
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+            alt={event.title} 
+          />
+          {/* Subtle liquid overlay on the image part */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-white/10 pointer-events-none" />
+          <div className="absolute inset-0 bg-black/5" />
+        </div>
+      )}
+
+      {/* ── RIGHT: DETAILS ── */}
+      <div className={`flex flex-col items-center md:items-start text-center md:text-left p-10 md:p-14 flex-1 relative z-10 ${!hasImage ? 'w-full' : ''}`}>
+        {/* Shimmer overlay */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none -z-10" />
+
+        <div className="flex flex-col items-center md:items-start gap-4 w-full">
+          <div className="flex items-center gap-3">
+             <span className="text-3xl text-[var(--colorPrimary)] opacity-70">🌿</span>
+             <span className="font-sans font-bold text-[8px] tracking-[0.4em] uppercase text-[var(--colorPrimary)]">{event.time}</span>
+          </div>
+
+          <h3 className="font-serif text-4xl md:text-5xl font-medium text-[var(--colorTextDark)] tracking-tight italic mb-2">
+            {event.title}
+          </h3>
+
+          <div className="w-20 h-px bg-[var(--colorPrimary)] opacity-30 my-2" />
+
+          <div className="flex flex-col gap-2 mt-2">
+            <span className="font-serif text-xl text-[var(--colorTextDark)] font-medium leading-relaxed">
+              {event.venueName}
+            </span>
+            <span className="font-sans text-[10px] md:text-xs uppercase tracking-[0.2em] text-[var(--colorTextDark)]/60 leading-relaxed max-w-sm">
+              {event.address}
+            </span>
+          </div>
+
+          {event.dressCode && event.dressCode !== 'none' && (
+            <div className="mt-4 px-4 py-2 bg-[var(--colorPrimary)]/10 rounded-lg flex items-center gap-2">
+               <span className="text-xs">👗</span>
+               <span className="font-sans text-[9px] uppercase tracking-widest text-[var(--colorPrimary)] font-bold">
+                 Dress Code: {event.dressCode}
+               </span>
+            </div>
+          )}
+
+          <a 
+            href={event.mapsUrl} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="mt-8 flex items-center gap-4 px-12 py-5 bg-[var(--colorTextDark)] text-white font-sans text-[10px] font-bold tracking-[0.4em] uppercase hover:bg-[var(--colorPrimary)] transition-all duration-500 rounded-full shadow-[0_15px_35px_rgba(0,0,0,0.12)] group/btn"
+          >
+            <PlaneIcon /> 
+            <span className="relative overflow-hidden flex flex-col h-4 overflow-hidden">
+               <span className="transition-transform duration-300 group-hover/btn:-translate-y-full">Directions</span>
+               <span className="absolute top-full transition-transform duration-300 group-hover/btn:-translate-y-full">Click Map</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function Layout4({ config }) {
+  const headerRef = useReveal(0);
+  const { events } = config;
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-24 md:py-32 relative">
+      <div ref={headerRef} className="text-center mb-20 opacity-0 translate-y-8 transition-all duration-1000">
+        <p className="font-sans text-[0.65rem] tracking-[0.4em] uppercase text-[var(--colorPrimary)] mb-4 font-bold">The Celebration</p>
+        <h2 className="font-serif text-5xl md:text-6xl text-[var(--colorTextDark)] mb-4 italic">When & Where</h2>
+        <div className="w-24 h-px bg-[var(--colorPrimary)] opacity-30 mx-auto" />
+      </div>
+
+      <div className={`flex flex-wrap justify-center gap-10 md:gap-14 ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
+        {Object.entries(events).map(([key, event], idx) => (
+          <EventCard4 key={key} event={event} delay={idx * 200} />
+        ))}
+      </div>
+      
+      {/* Background decoration */}
+      <div className="absolute top-1/2 left-0 w-32 h-32 opacity-5 pointer-events-none -translate-x-1/2">
+         <img src="/images/nature-arch-bg.png" className="w-full h-full object-contain" />
+      </div>
+    </div>
   );
 }

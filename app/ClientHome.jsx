@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Envelope from './components/Envelope';
 import CoupleReveal from './components/CoupleReveal';
+import CoverReveal from './components/CoverReveal';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Countdown from './components/Countdown';
@@ -32,7 +33,9 @@ export default function ClientHome({ config }) {
     <>
       <AnimatePresence>
         {!hasOpened && (
-          revealStyle === 'couple' ? (
+          revealStyle === 'cover' ? (
+            <CoverReveal key="cover-reveal" config={config} onOpen={handleOpen} />
+          ) : revealStyle === 'couple' ? (
             <CoupleReveal key="couple-reveal" config={config} onOpen={handleOpen} />
           ) : (
             <Envelope key="envelope-layer" config={config} onOpen={handleOpen} />
