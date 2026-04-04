@@ -20,13 +20,38 @@ const montserrat = Montserrat({
   display: 'swap',
 });
 
-export async function generateMetadata() {
-  // Read config server-side for meta tags
-  const { readFileSync } = await import('fs');
-  const { join } = await import('path');
+/** Load config: try MongoDB first, fallback to local file */
+async function loadConfig() {
+  // 1. Try MongoDB
   try {
+    if (process.env.MONGODB_URI) {
+      const getMongoClientPromise = (await import('@/lib/mongodb')).default;
+      const client = await getMongoClientPromise();
+      const db = client.db('wedding_app');
+      const doc = await db.collection('settings').findOne({ _id: 'global_config' });
+      if (doc) {
+        const { _id, ...config } = doc;
+        return config;
+      }
+    }
+  } catch (e) {
+    console.warn('[layout] MongoDB unavailable, falling back to local config:', e.message);
+  }
+
+  // 2. Fallback to local file
+  try {
+    const { readFileSync } = await import('fs');
+    const { join } = await import('path');
     const raw = readFileSync(join(process.cwd(), 'data', 'config.json'), 'utf-8');
-    const config = JSON.parse(raw);
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
+
+export async function generateMetadata() {
+  try {
+    const config = await loadConfig();
     return {
       title: config.meta?.title || 'Wedding Invitation',
       description: config.meta?.description || 'You are invited!',
@@ -42,16 +67,11 @@ export async function generateMetadata() {
 }
 
 export default async function RootLayout({ children }) {
-  // Read config to inject theme variables
   let themeStyles = '';
   try {
-    const { readFileSync } = await import('fs');
-    const { join } = await import('path');
-    const raw = readFileSync(join(process.cwd(), 'data', 'config.json'), 'utf-8');
-    const config = JSON.parse(raw);
+    const config = await loadConfig();
     const theme = config.theme || {};
     
-    // Map config keys to CSS variables
     themeStyles = `
       :root {
         --colorPrimary: ${theme.colorPrimary || '#C9956A'};

@@ -1,25 +1,78 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir, unlink } from 'fs/promises';
-import { join } from 'path';
+import { v2 as cloudinary } from 'cloudinary';
 import sharp from 'sharp';
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+/**
+ * Helper to upload a buffer to Cloudinary
+ */
+const uploadToCloudinary = (buffer, type = 'general') => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'wedding_invites',
+        resource_type: 'auto',
+        // Optional: tag can help with organization
+        tags: [type]
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+    uploadStream.end(buffer);
+  });
+};
+
+/**
+ * Extract Cloudinary public_id from a secure_url.
+ * e.g. https://res.cloudinary.com/cloud/image/upload/v1234/wedding_invites/file.webp
+ *   -> wedding_invites/file
+ */
+function getPublicId(url) {
+  if (!url || !url.includes('cloudinary.com')) return null;
+  try {
+    // Remove query string, then split on '/upload/'
+    const clean = url.split('?')[0];
+    const parts = clean.split('/upload/');
+    if (parts.length < 2) return null;
+    // Remove the version segment (v1234567/) if present
+    const afterUpload = parts[1].replace(/^v\d+\//, '');
+    // Remove file extension
+    return afterUpload.replace(/\.[^/.]+$/, '');
+  } catch {
+    return null;
+  }
+}
 
 export async function POST(req) {
   try {
     const formData = await req.formData();
     const file = formData.get('file');
-    const type = formData.get('type') || 'general'; // hero | gallery | general
-    const oldImage = formData.get('oldImage');
-
-    if (oldImage && oldImage.startsWith('/images/')) {
-      const oldFilename = oldImage.replace('/images/', '');
-      if (!oldFilename.includes('/') && !oldFilename.includes('\\')) {
-        const oldPath = join(process.cwd(), 'public', 'images', oldFilename);
-        try { await unlink(oldPath); } catch (e) { console.error('Delete old file failed:', e.message); }
-      }
-    }
+    const type = formData.get('type') || 'general';
+    const oldImage = formData.get('oldImage'); // URL of the image being replaced
 
     if (!file) {
       return NextResponse.json({ success: false, error: 'No file uploaded' }, { status: 400 });
+    }
+
+    // ── Delete old image from Cloudinary BEFORE uploading new one ───
+    if (oldImage) {
+      const publicId = getPublicId(oldImage);
+      if (publicId) {
+        try {
+          await cloudinary.uploader.destroy(publicId);
+          console.log(`[Cloudinary] Deleted old image: ${publicId}`);
+        } catch (delErr) {
+          console.warn(`[Cloudinary] Could not delete old image (${publicId}):`, delErr.message);
+        }
+      }
     }
 
     const bytes = await file.arrayBuffer();
@@ -27,54 +80,31 @@ export async function POST(req) {
 
     const isGif = file.type === 'image/gif' || file.name.toLowerCase().endsWith('.gif');
 
-    if (isGif) {
-      // Save original GIF to preserve animation
-      const baseName = file.name.replace(/\.[^/.]+$/, '').replace(/\s+/g, '-').toLowerCase();
-      const filename = `${Date.now()}-${baseName}.gif`;
-      const uploadDir = join(process.cwd(), 'public', 'images');
-      
-      try {
-        await mkdir(uploadDir, { recursive: true });
-      } catch {}
-
-      const filePath = join(uploadDir, filename);
-      await writeFile(filePath, buffer);
-
-      const imageUrl = `/images/${filename}`;
-      return NextResponse.json({ success: true, url: imageUrl });
-    }
-
-    // ── Image Optimization with Sharp ─────────────────────────────
-    let pipeline = sharp(buffer);
-
-    if (type === 'hero') {
-      pipeline = pipeline.resize({ width: 1920, withoutEnlargement: true, fit: 'inside' });
-    } else if (type === 'gallery') {
-      pipeline = pipeline.resize({ width: 1200, withoutEnlargement: true, fit: 'inside' });
-    } else {
-      pipeline = pipeline.resize({ width: 1200, withoutEnlargement: true, fit: 'inside' });
-    }
-
-    const optimizedBuffer = await pipeline
-      .webp({ quality: 85 })
-      .toBuffer();
-
-    const baseName = file.name.replace(/\.[^/.]+$/, '').replace(/\s+/g, '-').toLowerCase();
-    const filename = `${Date.now()}-${baseName}.webp`;
-    const uploadDir = join(process.cwd(), 'public', 'images');
+    let finalBuffer;
     
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch {}
+    if (isGif) {
+      finalBuffer = buffer;
+    } else {
+      let pipeline = sharp(buffer);
+      if (type === 'hero') pipeline = pipeline.resize({ width: 1920, withoutEnlargement: true, fit: 'inside' });
+      else if (type === 'gallery') pipeline = pipeline.resize({ width: 1200, withoutEnlargement: true, fit: 'inside' });
+      else pipeline = pipeline.resize({ width: 1200, withoutEnlargement: true, fit: 'inside' });
 
-    const filePath = join(uploadDir, filename);
-    await writeFile(filePath, optimizedBuffer);
+      finalBuffer = await pipeline.webp({ quality: 85 }).toBuffer();
+    }
 
-    const imageUrl = `/images/${filename}`;
-    return NextResponse.json({ success: true, url: imageUrl });
+    // Upload new image to Cloudinary
+    const uploadResult = await uploadToCloudinary(finalBuffer, type);
+    
+    return NextResponse.json({ 
+      success: true, 
+      url: uploadResult.secure_url,
+      public_id: uploadResult.public_id 
+    });
+
   } catch (err) {
-    console.error('Upload Error:', err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    console.error('Upload [Cloud] Error:', err);
+    return NextResponse.json({ success: false, error: 'Upload failed: Please check Cloudinary config.' }, { status: 500 });
   }
 }
 
@@ -83,24 +113,21 @@ export async function DELETE(req) {
     const body = await req.json();
     const { fileUrl } = body;
 
-    if (!fileUrl || !fileUrl.startsWith('/images/')) {
-      return NextResponse.json({ success: false, error: 'Invalid file URL' }, { status: 400 });
+    if (!fileUrl) {
+      return NextResponse.json({ success: false, error: 'No file URL provided' }, { status: 400 });
     }
 
-    const filename = fileUrl.replace('/images/', '');
-    if (filename.includes('/') || filename.includes('\\')) {
-      return NextResponse.json({ success: false, error: 'Invalid filename path' }, { status: 400 });
+    const publicId = getPublicId(fileUrl);
+    if (!publicId) {
+      return NextResponse.json({ success: true, message: 'Non-Cloudinary URL — nothing to delete from cloud.' });
     }
 
-    const filePath = join(process.cwd(), 'public', 'images', filename);
-    await unlink(filePath);
+    await cloudinary.uploader.destroy(publicId);
+    console.log(`[Cloudinary] Deleted: ${publicId}`);
 
-    return NextResponse.json({ success: true, message: 'Image deleted from server' });
+    return NextResponse.json({ success: true, message: 'Image deleted from Cloudinary.' });
   } catch (err) {
-    if (err.code === 'ENOENT') {
-      return NextResponse.json({ success: true, message: 'File was already missing, assumed deleted' });
-    }
-    console.error('Delete Error:', err);
+    console.error('Delete [Cloud] Error:', err);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
