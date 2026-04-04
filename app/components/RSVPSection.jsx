@@ -156,7 +156,7 @@ export default function RSVPSection({ config }) {
         <div ref={headerRef} className="text-center mb-12 opacity-0 translate-y-8 transition-all duration-1000">
           {layout === 4 ? (
             <>
-              <h2 className="font-sans text-5xl md:text-6xl font-bold text-[var(--colorTextDark)] mb-4 tracking-tighter">R.S.V.P.</h2>
+              <h2 className="font-sans text-5xl md:text-6xl font-bold text-[var(--colorTextDark)] mb-4 tracking-tighter">Please Confirm</h2>
               <p className="font-sans text-xs md:text-sm text-[var(--colorTextDark)] opacity-70">Kindly respond by {rsvp.deadline}</p>
             </>
           ) : layout === 3 ? (
