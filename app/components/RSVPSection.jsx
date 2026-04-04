@@ -73,7 +73,7 @@ export default function RSVPSection({ config }) {
   let labelCls = "block font-sans text-xs font-semibold tracking-widest uppercase text-[var(--colorTextDark)] opacity-80 mb-1.5";
   let btnCls = "w-full flex items-center justify-center gap-2 py-4 bg-[var(--colorPrimary)] text-white font-sans text-xs font-bold tracking-widest uppercase shadow-[0_4px_18px_var(--colorPrimary)/40] hover:bg-transparent hover:text-[var(--colorPrimary)] border border-[var(--colorPrimary)] transition-all duration-300";
   let optionBtnCls = (active) => `flex items-center gap-2.5 cursor-pointer font-serif text-base px-5 py-2.5 border transition-all duration-200 ${active ? 'bg-[var(--colorPrimary)]/10 border-[var(--colorPrimary)] text-[var(--colorTextDark)] shadow-sm' : 'bg-transparent border-[var(--colorPrimary)]/25 text-[var(--colorTextDark)]/70 hover:border-[var(--colorPrimary)]'}`;
-  
+
   if (layout === 2) {
     inputCls = `w-full px-4 py-4 rounded-xl font-serif text-base bg-[var(--colorBg)]/50 border-b-2 border-[var(--colorPrimary)]/50 focus:border-[var(--colorPrimary)] outline-none transition-all duration-200 placeholder:text-[var(--colorTextDark)]/40`;
     btnCls = "w-full flex items-center justify-center py-5 rounded-full bg-[var(--colorTextDark)] text-[var(--colorBg)] font-sans text-sm font-bold tracking-widest uppercase hover:bg-[var(--colorPrimary)] hover:text-white transition-all duration-300 shadow-xl";
@@ -88,8 +88,8 @@ export default function RSVPSection({ config }) {
 
   if (status === 'success') {
     return (
-      <section 
-        id="rsvp" 
+      <section
+        id="rsvp"
         className="py-20 md:py-28 transition-colors duration-500"
         style={{
           backgroundColor: 'var(--colorBg)',
@@ -115,16 +115,16 @@ export default function RSVPSection({ config }) {
   }
 
   return (
-    <section 
-      id="rsvp" 
+    <section
+      id="rsvp"
       className="py-20 md:py-32 relative overflow-hidden transition-colors duration-500"
       style={{ backgroundColor: 'var(--colorBg)' }}
     >
       {/* ── BLURRED BACKGROUND LAYER ── */}
       {config.sectionBackgrounds?.rsvp && (
-        <div 
+        <div
           className="absolute inset-0 z-0 pointer-events-none transition-transform duration-1000"
-          style={{ 
+          style={{
             backgroundImage: `url(${config.sectionBackgrounds.rsvp})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
@@ -132,7 +132,7 @@ export default function RSVPSection({ config }) {
             filter: 'blur(15px)',
             transform: 'scale(1.05)',
             opacity: 0.5
-          }} 
+          }}
         />
       )}
       <div className="absolute inset-0 bg-white/5 z-[1] pointer-events-none" />
@@ -151,7 +151,7 @@ export default function RSVPSection({ config }) {
         : layout === 2 ? 'bg-white/40 p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.05)] rounded-[40px] border border-white/60 backdrop-blur-md'
         : 'bg-[var(--colorPrimary)]/5 p-6 md:p-10 border border-[var(--colorPrimary)]/20'
       }`}>
-        
+
         {/* Header */}
         <div ref={headerRef} className="text-center mb-12 opacity-0 translate-y-8 transition-all duration-1000">
           {layout === 4 ? (
@@ -162,21 +162,21 @@ export default function RSVPSection({ config }) {
           ) : layout === 3 ? (
             <>
               <span className="text-3xl text-[var(--colorPrimary)] mb-4 block">❀</span>
-              <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 tracking-wide">Please Confirm</h2>
+              <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 tracking-wide">Please Confirm.</h2>
               <div className="w-24 h-0.5 bg-[var(--colorPrimary)] mx-auto opacity-60 mb-4" />
               <p className="font-sans text-xs tracking-widest uppercase text-[var(--colorTextDark)]/80">Please respond by {rsvp.deadline}</p>
             </>
           ) : layout === 2 ? (
-             <>
-               <h2 className="font-serif text-4xl md:text-6xl font-bold uppercase tracking-widest text-[var(--colorTextDark)] mb-4 drop-shadow-sm">Please Confirm</h2>
-               <p className="font-script text-3xl text-[var(--colorPrimary)] mb-6">We would love to see you</p>
-               <div className="w-16 h-px bg-[var(--colorPrimary)] mx-auto opacity-70" />
-               <p className="font-sans text-xs tracking-widest uppercase text-[var(--colorTextDark)]/70 mt-6">Respond by {rsvp.deadline}</p>
-             </>
+            <>
+              <h2 className="font-serif text-4xl md:text-6xl font-bold uppercase tracking-widest text-[var(--colorTextDark)] mb-4 drop-shadow-sm">Please Confirm</h2>
+              <p className="font-script text-3xl text-[var(--colorPrimary)] mb-6">We would love to see you</p>
+              <div className="w-16 h-px bg-[var(--colorPrimary)] mx-auto opacity-70" />
+              <p className="font-sans text-xs tracking-widest uppercase text-[var(--colorTextDark)]/70 mt-6">Respond by {rsvp.deadline}</p>
+            </>
           ) : (
             <>
               <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">We Hope to See You</p>
-              <h2 className="font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3">Please Confirm</h2>
+              <h2 className="font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3">firm</h2>
               <span className="text-[var(--colorPrimary)]/60 text-2xl">❧</span>
               <p className="font-sans text-sm text-[var(--colorTextDark)]/55 mt-3">Kindly respond by <strong className="text-[var(--colorPrimary)]">{rsvp.deadline}</strong></p>
             </>
@@ -187,26 +187,26 @@ export default function RSVPSection({ config }) {
           {/* ── ATTENDANCE HEARTS (Layout 4) ── */}
           {layout === 4 ? (
             <div className="flex justify-center gap-10 md:gap-16 mb-4">
-              <button 
+              <button
                 type="button"
                 onClick={() => setFormData(f => ({ ...f, attendance: 'Attending' }))}
                 className="flex flex-col items-center gap-3 group transition-transform hover:scale-105"
               >
                 <div className={`transition-colors duration-300 ${formData.attendance === 'Attending' ? 'text-[var(--colorPrimary)]' : 'text-gray-300'}`}>
-                   <HeartIcon size={80} fill={formData.attendance === 'Attending'} />
+                  <HeartIcon size={80} fill={formData.attendance === 'Attending'} />
                 </div>
-                <span className="font-sans text-[10px] md:text-xs font-bold leading-tight text-center tracking-tight">I WILL BE<br/>ATTENDING</span>
+                <span className="font-sans text-[10px] md:text-xs font-bold leading-tight text-center tracking-tight">I WILL BE<br />ATTENDING</span>
               </button>
 
-              <button 
+              <button
                 type="button"
                 onClick={() => setFormData(f => ({ ...f, attendance: 'Not Attending' }))}
                 className="flex flex-col items-center gap-3 group transition-transform hover:scale-105"
               >
                 <div className={`transition-colors duration-300 ${formData.attendance === 'Not Attending' ? 'text-[var(--colorPrimary)]' : 'text-gray-300'}`}>
-                   <HeartIcon size={80} fill={formData.attendance === 'Not Attending'} />
+                  <HeartIcon size={80} fill={formData.attendance === 'Not Attending'} />
                 </div>
-                <span className="font-sans text-[10px] md:text-xs font-bold leading-tight text-center tracking-tight">I WILL NOT BE<br/>ATTENDING</span>
+                <span className="font-sans text-[10px] md:text-xs font-bold leading-tight text-center tracking-tight">I WILL NOT BE<br />ATTENDING</span>
               </button>
             </div>
           ) : (
@@ -227,14 +227,14 @@ export default function RSVPSection({ config }) {
           {/* ── GUEST SELECTION (Layout 4 style) ── */}
           {formData.attendance === 'Attending' && layout === 4 && (
             <div className="flex items-center justify-center gap-4 py-4 border-y border-gray-100">
-               <span className="font-sans text-sm text-[var(--colorTextDark)] opacity-60">How many guests will attend?</span>
-               <select 
-                 className="w-16 h-10 border border-gray-300 rounded text-center font-sans font-bold text-sm cursor-pointer hover:border-[var(--colorPrimary)] transition-colors" 
-                 value={formData.guests} 
-                 onChange={e => setFormData(f => ({ ...f, guests: e.target.value }))}
-               >
-                 {guestOptions.map(n => <option key={n} value={n}>{n}</option>)}
-               </select>
+              <span className="font-sans text-sm text-[var(--colorTextDark)] opacity-60">How many guests will attend?</span>
+              <select
+                className="w-16 h-10 border border-gray-300 rounded text-center font-sans font-bold text-sm cursor-pointer hover:border-[var(--colorPrimary)] transition-colors"
+                value={formData.guests}
+                onChange={e => setFormData(f => ({ ...f, guests: e.target.value }))}
+              >
+                {guestOptions.map(n => <option key={n} value={n}>{n}</option>)}
+              </select>
             </div>
           )}
 
@@ -242,24 +242,24 @@ export default function RSVPSection({ config }) {
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center w-full">
               <label className={`${labelCls} !text-[var(--colorTextDark)] !opacity-100 !mb-2 !font-bold`}>Your Name</label>
-              <input 
-                type="text" 
-                placeholder="" 
-                className={`${inputCls} text-center border-gray-200 focus:border-[var(--colorPrimary)] ${errors.name ? '!border-red-400' : ''}`} 
-                value={formData.name} 
-                onChange={e => { setFormData(f => ({ ...f, name: e.target.value })); setErrors(x => ({ ...x, name: '' })); }} 
+              <input
+                type="text"
+                placeholder=""
+                className={`${inputCls} text-center border-gray-200 focus:border-[var(--colorPrimary)] ${errors.name ? '!border-red-400' : ''}`}
+                value={formData.name}
+                onChange={e => { setFormData(f => ({ ...f, name: e.target.value })); setErrors(x => ({ ...x, name: '' })); }}
               />
               {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
             </div>
 
             <div className="flex flex-col items-center w-full">
               <label className={`${labelCls} !text-[var(--colorTextDark)] !opacity-100 !mb-2 !font-bold`}>Your Contact Number:</label>
-              <input 
-                type="tel" 
-                placeholder="" 
-                className={`${inputCls} text-center border-gray-200 focus:border-[var(--colorPrimary)]`} 
-                value={formData.phone} 
-                onChange={e => setFormData(f => ({ ...f, phone: e.target.value }))} 
+              <input
+                type="tel"
+                placeholder=""
+                className={`${inputCls} text-center border-gray-200 focus:border-[var(--colorPrimary)]`}
+                value={formData.phone}
+                onChange={e => setFormData(f => ({ ...f, phone: e.target.value }))}
               />
             </div>
           </div>
@@ -272,9 +272,9 @@ export default function RSVPSection({ config }) {
             </div>
           )}
 
-          <button 
-            type="submit" 
-            disabled={status === 'loading'} 
+          <button
+            type="submit"
+            disabled={status === 'loading'}
             className={`${layout === 4 ? 'bg-[var(--colorPrimary)] text-white py-5 rounded shadow-lg hover:brightness-110 active:scale-[0.98] transition-all !font-bold tracking-widest uppercase text-sm' : btnCls} mt-4`}
           >
             {status === 'loading' ? <span className="w-5 h-5 rounded-full border-2 border-[var(--colorBg)] border-t-transparent animate-spin mx-auto" /> : (layout === 4 ? 'SEND' : 'Send My Reply')}
@@ -282,7 +282,7 @@ export default function RSVPSection({ config }) {
 
           {status === 'error' && (
             <p className="text-center text-red-500 text-sm font-sans mt-2">
-               Oops! Something went wrong. Please try again or contact us directly.
+              Oops! Something went wrong. Please try again or contact us directly.
             </p>
           )}
         </form>
@@ -291,7 +291,7 @@ export default function RSVPSection({ config }) {
       {/* Floating corner detail (Layout 4) */}
       {layout === 4 && (
         <div className="absolute bottom-0 right-0 w-32 h-32 opacity-10 pointer-events-none translate-x-4 grayscale sepia">
-           <img src="/images/nature-arch-bg.png" className="w-full h-full object-contain" />
+          <img src="/images/nature-arch-bg.png" className="w-full h-full object-contain" />
         </div>
       )}
     </section>
@@ -301,10 +301,10 @@ export default function RSVPSection({ config }) {
 // ── HeartIcon Helper ──
 function HeartIcon({ size = 60, fill = false }) {
   return (
-    <svg 
-      width={size} height={size} viewBox="0 0 24 24" 
-      fill={fill ? "currentColor" : "none"} 
-      stroke="currentColor" strokeWidth="1" 
+    <svg
+      width={size} height={size} viewBox="0 0 24 24"
+      fill={fill ? "currentColor" : "none"}
+      stroke="currentColor" strokeWidth="1"
       strokeLinecap="round" strokeLinejoin="round"
     >
       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.89-8.89 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
