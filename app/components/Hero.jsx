@@ -212,60 +212,24 @@ function Layout3({ config }) {
         )}
 
 
-        {/* Ornate Arch Outline */}
-        <div style={{
-          position: 'absolute',
-          inset: '16px',
-          border: '2px solid var(--colorPrimary)',
-          borderRadius: '350px 350px 0 0',
-          pointerEvents: 'none',
-          boxShadow: 'inset 0 0 20px var(--colorPrimary)',
-          opacity: 0.8,
-          zIndex: 1
-        }}>
-          {/* Inner border */}
-          <div style={{ position: 'absolute', inset: '6px', border: '1px solid var(--colorPrimary)', opacity: 0.5, borderRadius: '344px 344px 0 0' }} />
-        </div>
-
-        {/* Top floral decoration placeholder */}
-        <div className="absolute top-0 left-0 right-0 h-32 opacity-20 pointer-events-none z-0"
-          style={{ background: 'radial-gradient(circle at top, var(--colorPrimary) 0%, transparent 70%)' }} />
-
         {/* Content Box */}
-        <div className="relative z-20 flex flex-col items-center pt-[15vh] px-8 pb-32 text-center h-full">
+        <div className="relative z-20 flex flex-col items-center justify-center pt-[20vh] px-8 pb-32 text-center h-full">
           
-          <div className="flex flex-col items-center pt-8 pb-4 px-6 rounded-[100px_100px_20px_20px] mb-6 relative shadow-xl overflow-hidden w-11/12 max-w-[300px]">
-            {/* Glass Background layer */}
-            <div className="absolute inset-0 opacity-85 backdrop-blur-md" style={{ backgroundColor: 'var(--colorBg)' }} />
-            <div className="absolute inset-0 opacity-40 border-[1.5px] rounded-[100px_100px_20px_20px]" style={{ borderColor: 'var(--colorPrimary)' }} />
-            <div className="absolute inset-0 opacity-20 bg-gradient-to-b from-white/30 to-transparent" />
-            
-            <div className="relative z-10 text-center">
-              <p className="font-script text-3xl md:text-5xl mb-3" style={{ color: 'var(--colorTextDark)' }}>
-                Wedding Invitation
-              </p>
-              <p className="font-sans text-[0.65rem] md:text-xs tracking-widest uppercase leading-relaxed max-w-[280px] mx-auto" style={{ color: 'var(--colorTextDark)' }}>
-                You Are Cordially Invited To<br />
-                Celebrate the marriage of
-              </p>
-            </div>
-          </div>
-
-          <h1 className="font-serif text-4xl md:text-5xl my-4 tracking-widest drop-shadow-sm" style={{ color: 'var(--colorPrimary)' }}>
+          <h1 className="font-serif text-5xl md:text-6xl my-4 tracking-widest drop-shadow-sm" style={{ color: 'var(--colorPrimary)' }}>
             {(couple?.groom?.firstName || 'Groom').toUpperCase()}
           </h1>
           <span className="font-sans text-[0.6rem] uppercase tracking-[0.3em] my-1" style={{ color: 'var(--colorTextDark)', opacity: 0.6 }}>With</span>
-          <h1 className="font-serif text-4xl md:text-5xl my-4 tracking-widest drop-shadow-sm" style={{ color: 'var(--colorPrimary)' }}>
+          <h1 className="font-serif text-5xl md:text-6xl my-4 tracking-widest drop-shadow-sm" style={{ color: 'var(--colorPrimary)' }}>
             {(couple?.bride?.firstName || 'Bride').toUpperCase()}
           </h1>
 
-          <div style={{ width: '80px', height: '1.5px', background: 'var(--colorPrimary)', margin: '24px 0', opacity: 0.8 }} />
+          <div style={{ width: '80px', height: '1.5px', background: 'var(--colorPrimary)', margin: '32px 0', opacity: 0.8 }} />
 
-          <p className="font-sans text-xs tracking-wider" style={{ color: 'var(--colorTextDark)' }}>
+          <p className="font-sans text-xs tracking-wider uppercase opacity-80" style={{ color: 'var(--colorTextDark)' }}>
             {dayLabel ? dayLabel + ', ' : ''} {wedding?.displayDate}
           </p>
           {ceremony?.time && (
-            <p className="font-sans text-xs tracking-wider mt-1" style={{ color: 'var(--colorTextDark)' }}>
+            <p className="font-sans text-xs tracking-wider mt-1 uppercase opacity-80" style={{ color: 'var(--colorTextDark)' }}>
               Time {ceremony.time}
             </p>
           )}

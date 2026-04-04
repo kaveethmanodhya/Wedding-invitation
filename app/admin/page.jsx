@@ -4,275 +4,55 @@ import AdminLogin from './components/AdminLogin';
 import { motion, AnimatePresence } from 'framer-motion';
 import ImageCropper from './components/ImageCropper';
 import imageCompression from 'browser-image-compression';
+import { Trash2, ImageIcon, Upload, X } from 'lucide-react';
+import { PRESET_THEMES } from '../../lib/themes';
 
-const PRESET_THEMES = [
-  {
-    id: 'gold',
-    name: 'Golden Elegance',
-    colors: {
-      colorPrimary: '#C9956A',
-      colorSecondary: '#E8D5B7',
-      colorTextLight: '#8A7F6A',
-      colorTextDark: '#2C2018',
-      colorBg: '#FAF7F2',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(18, 12, 6, 0.55)',
-      heroOverlayEnd: 'rgba(18, 12, 6, 0.25)'
-    }
-  },
-  {
-    id: 'rose',
-    name: 'Rose Blush',
-    colors: {
-      colorPrimary: '#D4A5A5',
-      colorSecondary: '#E9D5D5',
-      colorTextLight: '#9A7F7F',
-      colorTextDark: '#3A2828',
-      colorBg: '#FAF5F5',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(40, 20, 20, 0.55)',
-      heroOverlayEnd: 'rgba(40, 20, 20, 0.25)'
-    }
-  },
-  {
-    id: 'navy',
-    name: 'Midnight Royal',
-    colors: {
-      colorPrimary: '#1A365D',
-      colorSecondary: '#C9956A',
-      colorTextLight: '#4A5568',
-      colorTextDark: '#171923',
-      colorBg: '#F7FAFC',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(10, 20, 40, 0.6)',
-      heroOverlayEnd: 'rgba(10, 20, 40, 0.3)'
-    }
-  },
-  {
-    id: 'emerald',
-    name: 'Emerald Garden',
-    colors: {
-      colorPrimary: '#2D5A27',
-      colorSecondary: '#A3B18A',
-      colorTextLight: '#344E41',
-      colorTextDark: '#1B261B',
-      colorBg: '#F0F4EF',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(15, 30, 15, 0.55)',
-      heroOverlayEnd: 'rgba(15, 30, 15, 0.25)'
-    }
-  },
-  {
-    id: 'noir',
-    name: 'Modern Noir',
-    colors: {
-      colorPrimary: '#2D2D2D',
-      colorSecondary: '#999999',
-      colorTextLight: '#666666',
-      colorTextDark: '#111111',
-      colorBg: '#F5F5F5',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(0, 0, 0, 0.65)',
-      heroOverlayEnd: 'rgba(0, 0, 0, 0.35)'
-    }
-  },
-  {
-    id: 'sunset',
-    name: 'Sun-kissed Peach',
-    colors: {
-      colorPrimary: '#E67E22',
-      colorSecondary: '#F39C12',
-      colorTextLight: '#7F8C8D',
-      colorTextDark: '#2C3E50',
-      colorBg: '#FEF9E7',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(40, 20, 0, 0.5)',
-      heroOverlayEnd: 'rgba(40, 20, 0, 0.2)'
-    }
-  },
-  {
-    id: 'kandyan-gold',
-    name: 'Royal Kandyan Gold',
-    colors: {
-      colorPrimary: '#D4AF37',
-      colorSecondary: '#F3E5AB',
-      colorTextLight: '#8C7423',
-      colorTextDark: '#4A3B0D',
-      colorBg: '#FCFBF6',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(74, 59, 13, 0.55)',
-      heroOverlayEnd: 'rgba(74, 59, 13, 0.25)'
-    }
-  },
-  {
-    id: 'regal-ivory',
-    name: 'Regal Ivory',
-    colors: {
-      colorPrimary: '#8B8682',
-      colorSecondary: '#EEDDCC',
-      colorTextLight: '#696460',
-      colorTextDark: '#383431',
-      colorBg: '#FFFFF0',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(56, 52, 49, 0.55)',
-      heroOverlayEnd: 'rgba(56, 52, 49, 0.25)'
-    }
-  },
-  {
-    id: 'champagne-blush',
-    name: 'Champagne Blush',
-    colors: {
-      colorPrimary: '#E6C298',
-      colorSecondary: '#FAD6A5',
-      colorTextLight: '#A3845E',
-      colorTextDark: '#4F3A22',
-      colorBg: '#FFFDFC',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(79, 58, 34, 0.55)',
-      heroOverlayEnd: 'rgba(79, 58, 34, 0.25)'
-    }
-  },
-  {
-    id: 'velvet-noir',
-    name: 'Velvet Noir',
-    colors: {
-      colorPrimary: '#1A1A1A',
-      colorSecondary: '#A94442',
-      colorTextLight: '#444444',
-      colorTextDark: '#0A0A0A',
-      colorBg: '#F8F8F8',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(10, 10, 10, 0.65)',
-      heroOverlayEnd: 'rgba(10, 10, 10, 0.35)'
-    }
-  },
-  {
-    id: 'golden-dynasty',
-    name: 'Golden Dynasty',
-    colors: {
-      colorPrimary: '#DAA520',
-      colorSecondary: '#B8860B',
-      colorTextLight: '#8E6B15',
-      colorTextDark: '#3A2C09',
-      colorBg: '#FDFCF7',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(58, 44, 9, 0.55)',
-      heroOverlayEnd: 'rgba(58, 44, 9, 0.25)'
-    }
-  },
-  {
-    id: 'crystal-opulence',
-    name: 'Crystal Opulence',
-    colors: {
-      colorPrimary: '#A9C9CB',
-      colorSecondary: '#E0F0F0',
-      colorTextLight: '#6B8E90',
-      colorTextDark: '#2B4042',
-      colorBg: '#F9FCFC',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(43, 64, 66, 0.55)',
-      heroOverlayEnd: 'rgba(43, 64, 66, 0.25)'
-    }
-  },
-  {
-    id: 'rose-garden',
-    name: 'Rose Garden Bliss',
-    colors: {
-      colorPrimary: '#C08081',
-      colorSecondary: '#E6C7C7',
-      colorTextLight: '#875152',
-      colorTextDark: '#3A1F20',
-      colorBg: '#FDF7F7',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(58, 31, 32, 0.55)',
-      heroOverlayEnd: 'rgba(58, 31, 32, 0.25)'
-    }
-  },
-  {
-    id: 'lotus-harmony',
-    name: 'Lotus Harmony',
-    colors: {
-      colorPrimary: '#E899B8',
-      colorSecondary: '#F5D0E0',
-      colorTextLight: '#A3607E',
-      colorTextDark: '#4A2335',
-      colorBg: '#FCF8FA',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(74, 35, 53, 0.55)',
-      heroOverlayEnd: 'rgba(74, 35, 53, 0.25)'
-    }
-  },
-  {
-    id: 'platinum-grace',
-    name: 'Platinum Grace',
-    colors: {
-      colorPrimary: '#A0A0A0',
-      colorSecondary: '#E5E4E2',
-      colorTextLight: '#696969',
-      colorTextDark: '#212121',
-      colorBg: '#F8F9FA',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(33, 33, 33, 0.55)',
-      heroOverlayEnd: 'rgba(33, 33, 33, 0.25)'
-    }
-  },
-  {
-    id: 'timeless-elegance',
-    name: 'Timeless Elegance',
-    colors: {
-      colorPrimary: '#2F4F4F',
-      colorSecondary: '#708090',
-      colorTextLight: '#1C3131',
-      colorTextDark: '#0A1414',
-      colorBg: '#F4F6F6',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(10, 20, 20, 0.65)',
-      heroOverlayEnd: 'rgba(10, 20, 20, 0.35)'
-    }
-  },
-  {
-    id: 'aurum-royale',
-    name: 'Aurum Royale',
-    colors: {
-      colorPrimary: '#B8860B',
-      colorSecondary: '#D4AF37',
-      colorTextLight: '#8A6A1C',
-      colorTextDark: '#4A3B18',
-      colorBg: '#FCFBF8',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(74, 59, 24, 0.55)',
-      heroOverlayEnd: 'rgba(74, 59, 24, 0.25)'
-    }
-  },
-  {
-    id: 'gilded-opulence',
-    name: 'Gilded Opulence',
-    colors: {
-      colorPrimary: '#C5A059',
-      colorSecondary: '#E6D3A8',
-      colorTextLight: '#947842',
-      colorTextDark: '#3A2E17',
-      colorBg: '#FDFCF6',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(58, 46, 23, 0.55)',
-      heroOverlayEnd: 'rgba(58, 46, 23, 0.25)'
-    }
-  },
-  {
-    id: 'nature-arch',
-    name: 'Nature Arch',
-    colors: {
-      colorPrimary: '#4A6741',
-      colorSecondary: '#A3B18A',
-      colorTextLight: '#6B705C',
-      colorTextDark: '#1B261B',
-      colorBg: '#F0F4EF',
-      colorSurface: '#FFFFFF',
-      heroOverlayStart: 'rgba(27, 38, 27, 0.45)',
-      heroOverlayEnd: 'rgba(27, 38, 27, 0.15)'
-    }
-  }
-];
+const ImageField = ({ label, hint, value, path, type, onUpload, onDelete }) => (
+  <FieldGroup label={label} hint={hint}>
+    <div className="flex flex-col gap-3">
+      {value ? (
+        <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-slate-200 bg-slate-50 group">
+          <img src={value} className="w-full h-full object-cover" alt={label} />
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => onDelete(path, value)}
+              className="w-8 h-8 flex items-center justify-center bg-rose-500 text-white rounded-full shadow-lg hover:bg-rose-600 transition-colors"
+              title="Remove Image"
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full aspect-video rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center p-4 text-slate-400">
+          <ImageIcon size={24} className="mb-2 opacity-20" />
+          <p className="text-[10px] uppercase tracking-widest font-bold">No Image Selected</p>
+        </div>
+      )}
+      
+      <div className="flex gap-2">
+        <input
+          type="text"
+          placeholder="Enter image URL..."
+          className={inputCls}
+          value={value || ''}
+          onChange={e => onUpload(null, path, type, e.target.value)}
+        />
+        <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors">
+          <Upload size={14} />
+          Upload
+          <input 
+            type="file" 
+            className="hidden" 
+            accept="image/*" 
+            onChange={e => onUpload(e.target.files[0], path, type)} 
+          />
+        </label>
+      </div>
+    </div>
+  </FieldGroup>
+);
 
 // ─────────────────────────────────────────────────────────────────
 //  Tiny reusable field components
@@ -419,32 +199,67 @@ function GalleryEditor({ gallery, onChange, onUpload, onDelete }) {
   );
 }
 
+// ────────────────────────────────────────────────────// ─────────────────────────────────────────────────────────────────
+//  MAIN ADMIN PAGE (Multi-Tenant Container)
 // ─────────────────────────────────────────────────────────────────
-//  Colour swatch preview
-// ─────────────────────────────────────────────────────────────────
-function ColourField({ label, value, onChange }) {
+export default function AdminPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [view, setView] = useState('list'); // 'list' or 'edit'
+  const [selectedSlug, setSelectedSlug] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  const showToast = useCallback((type, message) => {
+    setToast({ type, message });
+    setTimeout(() => setToast(null), 4000);
+  }, []);
+
+  useEffect(() => {
+    if (localStorage.getItem('wedding_admin_auth') === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  if (!isAuthenticated) {
+    return (
+      <AdminLogin
+        onLogin={() => {
+          localStorage.setItem('wedding_admin_auth', 'true');
+          setIsAuthenticated(true);
+        }}
+      />
+    );
+  }
+
   return (
-    <FieldGroup label={label}>
-      <div className="flex items-center gap-2">
-        <input
-          type="color"
-          value={value.startsWith('#') ? value : '#c9956a'}
-          onChange={e => onChange(e.target.value)}
-          className="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer p-0.5"
+    <>
+      {view === 'list' ? (
+        <InvitationList 
+          onEdit={(slug) => {
+            setSelectedSlug(slug);
+            setView('edit');
+          }}
+          showToast={showToast}
         />
-        <input
-          type="text"
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          className={`${inputCls} flex-1`}
-          placeholder="#C9956A"
+      ) : (
+        <AdminDashboard 
+          slug={selectedSlug} 
+          onBack={() => setView('list')}
+          showToast={showToast}
         />
-      </div>
-    </FieldGroup>
+      )}
+      {toast && (
+        <Toast 
+          type={toast.type} 
+          message={toast.message} 
+          onClose={() => setToast(null)} 
+        />
+      )}
+    </>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
+function InvitationList({ onEdit, showToast }) {
+��
 //  MAIN ADMIN PAGE
 // ─────────────────────────────────────────────────────────────────
 // ─────────────────────────────────────────────────────────────────
@@ -496,6 +311,7 @@ function InvitationList({ onEdit }) {
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
   const [newSlug, setNewSlug] = useState('');
+  const [confirmDeleteSlug, setConfirmDeleteSlug] = useState(null);
 
   const fetchInvitations = async () => {
     setLoading(true);
@@ -508,13 +324,35 @@ function InvitationList({ onEdit }) {
         displayNames: item.couple?.displayNames || item.displayNames || 'Legacy Invitation'
       })));
     } catch (err) {
-      alert('Failed to load invitations.');
+      showToast('error', 'Failed to load invitations.');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => { fetchInvitations(); }, []);
+
+  const handleDeleteInvitation = async (slug) => {
+    setLoading(true);
+    try {
+      const url = `/api/config?${new URLSearchParams({ slug }).toString()}`;
+      const res = await fetch(url, { method: 'DELETE' });
+      const data = await res.json();
+      
+      if (data.success) {
+        setInvitations(prev => prev.filter(inv => inv.slug !== slug));
+        setConfirmDeleteSlug(null);
+        showToast('success', 'Invitation deleted successfully.');
+      } else {
+        showToast('error', data.error || 'Failed to delete invitation.');
+      }
+    } catch (err) {
+      console.error('[InvitationList] Deletion Error:', err);
+      showToast('error', 'Deletion failed due to a server error.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -532,11 +370,12 @@ function InvitationList({ onEdit }) {
         setNewSlug('');
         fetchInvitations();
         onEdit(newSlug);
+        showToast('success', 'New invitation created!');
       } else {
-        alert(data.error);
+        showToast('error', data.error);
       }
     } catch (err) {
-      alert('Creation failed');
+      showToast('error', 'Creation failed');
     } finally {
       setLoading(false);
     }
@@ -566,35 +405,84 @@ function InvitationList({ onEdit }) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {invitations.map((inv) => (
-              <div key={inv.slug} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group relative">
+              <div key={inv.slug} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-12 h-12 bg-[#C9956A]/10 rounded-2xl flex items-center justify-center text-2xl">💍</div>
                   <span className="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-1 rounded-md">
                     {inv.slug === 'global_config' ? 'Legacy' : 'Active'}
                   </span>
                 </div>
-                <h3 className="text-lg font-serif text-slate-800 mb-1">{inv.displayNames || 'Untitled Wedding'}</h3>
+                <h3 className="text-lg font-serif text-slate-800 mb-1 line-clamp-1">{inv.displayNames || 'Untitled Wedding'}</h3>
                 <p className="text-slate-400 text-xs mb-6">Slug: <span className="text-slate-600 font-mono tracking-tighter">/{inv.slug}</span></p>
                 
-                <div className="flex gap-2">
+                <div className="flex gap-2 relative z-10">
                   <button 
                     onClick={() => onEdit(inv.slug)}
-                    className="flex-1 py-2.5 bg-slate-50 text-slate-700 text-[0.65rem] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-100 transition-colors"
+                    className="flex-[2] py-2.5 bg-slate-50 text-slate-700 text-[0.65rem] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-100 transition-colors"
                   >
                     Edit Config
                   </button>
                   <a 
                     href={`/${inv.slug}`} 
                     target="_blank" 
-                    className="flex-1 py-2.5 bg-[#C9956A]/10 text-[#C9956A] text-[0.65rem] font-bold uppercase tracking-widest rounded-lg hover:bg-[#C9956A]/20 transition-colors text-center"
+                    className="flex-[2] py-2.5 bg-[#C9956A]/5 text-[#C9956A] text-[0.65rem] font-bold uppercase tracking-widest rounded-lg hover:bg-[#C9956A]/15 transition-colors text-center"
                   >
-                    View Live
+                    Live View
                   </a>
+                  <button 
+                    onClick={() => setConfirmDeleteSlug(inv.slug)}
+                    className="flex-1 flex items-center justify-center py-2.5 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-100 transition-colors"
+                  >
+                    <Trash2 size={14} />
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         )}
+
+        <AnimatePresence>
+          {confirmDeleteSlug && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+              <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }}
+                onClick={() => setConfirmDeleteSlug(null)}
+                className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="relative bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl border border-slate-100 text-center"
+              >
+                <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-6">
+                  🗑️
+                </div>
+                <h2 className="text-2xl font-serif text-slate-800 mb-2">Delete Invitation?</h2>
+                <p className="text-slate-500 text-sm mb-8 leading-relaxed">
+                  Are you sure you want to delete <span className="font-bold text-slate-700">/{confirmDeleteSlug}</span>? This will permanently remove all data and linked photos.
+                </p>
+                <div className="flex flex-col gap-3">
+                  <button 
+                    onClick={() => handleDeleteInvitation(confirmDeleteSlug)}
+                    disabled={loading}
+                    className="w-full py-4 bg-rose-500 text-white rounded-2xl font-bold uppercase text-xs tracking-widest shadow-lg shadow-rose-500/30 hover:bg-rose-600 disabled:opacity-50 transition-all"
+                  >
+                    {loading ? 'Deleting...' : 'Yes, Delete Permanently'}
+                  </button>
+                  <button 
+                    onClick={() => setConfirmDeleteSlug(null)}
+                    className="w-full py-4 bg-slate-50 text-slate-400 rounded-2xl font-bold uppercase text-xs tracking-widest hover:bg-slate-100 transition-all"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
         {creating && (
           <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
@@ -638,12 +526,11 @@ function InvitationList({ onEdit }) {
   );
 }
 
-function AdminDashboard({ slug, onBack }) {
+function AdminDashboard({ slug, onBack, showToast }) {
   // ── Data State ────────────────────────────────────────────────
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
-  const [toast, setToast] = useState(null);
   const [activeTab, setActiveTab] = useState('couple');
 
   // ── Cropper State ──────────────────────────────────────────
@@ -664,12 +551,12 @@ function AdminDashboard({ slug, onBack }) {
     });
   }, []);
 
-  const showToast = useCallback((type, message) => {
-    setToast({ type, message });
-    setTimeout(() => setToast(null), 4000);
-  }, []);
 
-  const handleUpload = async (file, path, type = 'general') => {
+  const handleUpload = async (file, path, type = 'general', manualValue = null) => {
+    if (manualValue !== null) {
+      setPath(path, manualValue);
+      return;
+    }
     if (!file) return;
 
     // Determine oldImage based on path
@@ -798,7 +685,24 @@ function AdminDashboard({ slug, onBack }) {
 
   const handleDeleteImage = async (path, oldImageUrl, isGallery = false, index = -1) => {
     if (!oldImageUrl) return;
-    if (!confirm('Are you sure you want to permanently delete this image from the server?')) return;
+    
+    // We only perform server-side delete if it's a Cloudinary URL
+    // If it's a local placeholder /images/..., we just clear it from the state
+    if (!oldImageUrl.includes('cloudinary.com')) {
+      if (isGallery && index > -1) {
+        const newGallery = [...config.gallery];
+        newGallery.splice(index, 1);
+        setConfig(prev => ({ ...prev, gallery: newGallery }));
+      } else {
+        setPath(path, '');
+      }
+      showToast('success', 'Image reference removed.');
+      return;
+    }
+
+    // For Cloudinary images, we use a custom confirmation logic.
+    // Instead of window.confirm, we use a simple inline confirmation to match the professional management style.
+    if (!window.confirm('Are you sure you want to permanently delete this image from the cloud?')) return;
 
     try {
       setLoading(true);
@@ -818,7 +722,7 @@ function AdminDashboard({ slug, onBack }) {
       } else {
         setPath(path, '');
       }
-      showToast('success', 'Image successfully deleted!');
+      showToast('success', 'Image permanently deleted from cloud!');
     } catch (err) {
       showToast('error', `Delete failed: ${err.message}`);
     } finally {
@@ -1031,37 +935,15 @@ function AdminDashboard({ slug, onBack }) {
                   onChange={e => setPath('wedding.year', e.target.value)}
                 />
               </FieldGroup>
-              <FieldGroup label="Hero Background Image" hint="Upload directly or enter a URL">
-                <div className="flex flex-col gap-3">
-                  {config.heroImage && (
-                    <div className="w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                      <img src={config.heroImage} className="w-full h-full object-cover" alt="Hero Preview" />
-                    </div>
-                  )}
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="/images/hero.png"
-                      className={inputCls}
-                      value={config.heroImage}
-                      onChange={e => setPath('heroImage', e.target.value)}
-                    />
-                    <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
-                      Upload
-                      <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'heroImage', 'hero')} />
-                    </label>
-                    {config.heroImage && config.heroImage.startsWith('/images/') && (
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteImage('heroImage', config.heroImage)}
-                        className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </FieldGroup>
+              <ImageField 
+                label="Hero Background Image" 
+                hint="Upload directly or enter a URL"
+                value={config.heroImage}
+                path="heroImage"
+                type="hero"
+                onUpload={handleUpload}
+                onDelete={handleDeleteImage}
+              />
 
               <FieldGroup label="Invitation Card Layout" hint="Choose the hero card style for your invitation">
                 <div className="col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
@@ -1194,27 +1076,15 @@ function AdminDashboard({ slug, onBack }) {
                   onChange={e => setPath('events.ceremony.mapsUrl', e.target.value)}
                 />
               </FieldGroup>
-              <FieldGroup label="Event Image" hint="Upload a photo for this event (appears on the left in Layout 4)">
-                <div className="flex flex-col gap-3">
-                  {config.events.ceremony.image && (
-                    <div className="w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                      <img src={config.events.ceremony.image} className="w-full h-full object-cover" alt="Event Preview" />
-                    </div>
-                  )}
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      className={inputCls}
-                      value={config.events.ceremony.image || ''}
-                      onChange={e => setPath('events.ceremony.image', e.target.value)}
-                    />
-                    <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
-                      Upload
-                      <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'events.ceremony.image', 'general')} />
-                    </label>
-                  </div>
-                </div>
-              </FieldGroup>
+              <ImageField 
+                label="Event Image"
+                hint="Upload a photo for this event (appears on the left in Layout 4)"
+                value={config.events.ceremony.image}
+                path="events.ceremony.image"
+                type="general"
+                onUpload={handleUpload}
+                onDelete={handleDeleteImage}
+              />
             </SectionCard>
           )}
 
@@ -1304,163 +1174,58 @@ function AdminDashboard({ slug, onBack }) {
                   </div>
                 </FieldGroup>
                 
-                <FieldGroup label="Cover Image" hint="Upload a high-quality photo for the cover page">
-                  <div className="flex flex-col gap-3">
-                    {config.revealCoverImage && (
-                      <div className="w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                        <img src={config.revealCoverImage} className="w-full h-full object-cover" alt="Cover Preview" />
-                      </div>
-                    )}
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="/images/cover.jpg"
-                        className={inputCls}
-                        value={config.revealCoverImage || ''}
-                        onChange={e => setPath('revealCoverImage', e.target.value)}
-                      />
-                      <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
-                        Upload
-                        <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'revealCoverImage', 'general')} />
-                      </label>
-                    </div>
-                  </div>
-                </FieldGroup>
+                <ImageField 
+                  label="Cover Image"
+                  hint="Upload a high-quality photo for the cover page"
+                  value={config.revealCoverImage}
+                  path="revealCoverImage"
+                  type="general"
+                  onUpload={handleUpload}
+                  onDelete={handleDeleteImage}
+                />
                 
                 <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 pt-6 border-t border-slate-50">
-                  <FieldGroup label="Groom Cartoon (Running)" hint="Transparent PNG recommended">
-                    <div className="flex flex-col gap-3">
-                      <div className="w-24 h-24 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden">
-                        {config.coupleImages?.groom ? (
-                          <img src={config.coupleImages.groom} className="w-full h-full object-contain p-2" alt="Groom Preview" />
-                        ) : (
-                          <span className="text-4xl">🏃‍♂️</span>
-                        )}
-                      </div>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="/images/groom.png"
-                          className={inputCls}
-                          value={config.coupleImages?.groom || ''}
-                          onChange={e => setPath('coupleImages.groom', e.target.value)}
-                        />
-                        <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
-                          Upload
-                          <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'coupleImages.groom', 'general')} />
-                        </label>
-                        {config.coupleImages?.groom && (
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteImage('coupleImages.groom', config.coupleImages.groom)}
-                            className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
-                          >
-                            Remove
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </FieldGroup>
+                    <ImageField 
+                      label="Groom Cartoon (Running)"
+                      hint="Transparent PNG recommended"
+                      value={config.coupleImages?.groom}
+                      path="coupleImages.groom"
+                      type="general"
+                      onUpload={handleUpload}
+                      onDelete={handleDeleteImage}
+                    />
 
-                  <FieldGroup label="Bride Cartoon (Running)" hint="Transparent PNG recommended">
-                    <div className="flex flex-col gap-3">
-                      <div className="w-24 h-24 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden">
-                        {config.coupleImages?.bride ? (
-                          <img src={config.coupleImages.bride} className="w-full h-full object-contain p-2" alt="Bride Preview" />
-                        ) : (
-                          <span className="text-4xl">🏃‍♀️</span>
-                        )}
-                      </div>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="/images/bride.png"
-                          className={inputCls}
-                          value={config.coupleImages?.bride || ''}
-                          onChange={e => setPath('coupleImages.bride', e.target.value)}
-                        />
-                        <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
-                          Upload
-                          <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'coupleImages.bride', 'general')} />
-                        </label>
-                        {config.coupleImages?.bride && (
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteImage('coupleImages.bride', config.coupleImages.bride)}
-                            className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
-                          >
-                            Remove
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </FieldGroup>
+                    <ImageField 
+                      label="Bride Cartoon (Running)"
+                      hint="Transparent PNG recommended"
+                      value={config.coupleImages?.bride}
+                      path="coupleImages.bride"
+                      type="general"
+                      onUpload={handleUpload}
+                      onDelete={handleDeleteImage}
+                    />
                 </div>
               </SectionCard>
 
               <SectionCard title="Envelope Cover" icon="✉️">
-                <FieldGroup label="Inner Card Background Image" hint="Upload directly or enter a URL">
-                  <div className="flex flex-col gap-3">
-                    {config.envelope?.bgImage && (
-                      <div className="w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                        <img src={config.envelope.bgImage} className="w-full h-full object-cover" alt="Background Preview" />
-                      </div>
-                    )}
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="/images/envelope-bg.jpg"
-                        className={inputCls}
-                        value={config.envelope?.bgImage || ''}
-                        onChange={e => setPath('envelope.bgImage', e.target.value)}
-                      />
-                      <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
-                        Upload
-                        <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'envelope.bgImage', 'general')} />
-                      </label>
-                      {config.envelope?.bgImage && (
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteImage('envelope.bgImage', config.envelope.bgImage)}
-                          className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </FieldGroup>
-                <FieldGroup label="Outer Background Image" hint="Upload directly or enter a URL">
-                  <div className="flex flex-col gap-3">
-                    {config.envelope?.outerBgImage && (
-                      <div className="w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                        <img src={config.envelope.outerBgImage} className="w-full h-full object-cover" alt="Outer Background Preview" />
-                      </div>
-                    )}
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="/images/envelope-outer-bg.jpg"
-                        className={inputCls}
-                        value={config.envelope?.outerBgImage || ''}
-                        onChange={e => setPath('envelope.outerBgImage', e.target.value)}
-                      />
-                      <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
-                        Upload
-                        <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'envelope.outerBgImage', 'general')} />
-                      </label>
-                      {config.envelope?.outerBgImage && (
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteImage('envelope.outerBgImage', config.envelope.outerBgImage)}
-                          className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </FieldGroup>
+                <ImageField 
+                  label="Inner Card Background Image" 
+                  hint="Upload directly or enter a URL"
+                  value={config.envelope?.bgImage}
+                  path="envelope.bgImage"
+                  type="general"
+                  onUpload={handleUpload}
+                  onDelete={handleDeleteImage}
+                />
+                <ImageField 
+                  label="Outer Background Image" 
+                  hint="Upload directly or enter a URL"
+                  value={config.envelope?.outerBgImage}
+                  path="envelope.outerBgImage"
+                  type="general"
+                  onUpload={handleUpload}
+                  onDelete={handleDeleteImage}
+                />
                 <FieldGroup label="Cover Title">
                   <input type="text" className={inputCls} value={config.envelope.title} onChange={e => setPath('envelope.title', e.target.value)} />
                 </FieldGroup>
@@ -1579,39 +1344,20 @@ function AdminDashboard({ slug, onBack }) {
 
           {activeTab === 'backgrounds' && (
             <SectionCard title="Section Backgrounds" icon="🖼️">
-              {['hero', 'story', 'events', 'gallery', 'rsvp'].map(sec => (
-                <FieldGroup key={sec} label={`${sec.charAt(0).toUpperCase() + sec.slice(1)} Background Image`} hint="Upload directly or enter a URL">
-                  <div className="flex flex-col gap-3">
-                    {config.sectionBackgrounds?.[sec] && (
-                      <div className="w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                        <img src={config.sectionBackgrounds[sec]} className="w-full h-full object-cover" alt={`${sec} Background Preview`} />
-                      </div>
-                    )}
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder={`/images/${sec}-bg.jpg`}
-                        className={inputCls}
-                        value={config.sectionBackgrounds?.[sec] || ''}
-                        onChange={e => setPath(`sectionBackgrounds.${sec}`, e.target.value)}
-                      />
-                      <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
-                        Upload
-                        <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], `sectionBackgrounds.${sec}`, 'general')} />
-                      </label>
-                      {config.sectionBackgrounds?.[sec] && (
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteImage(`sectionBackgrounds.${sec}`, config.sectionBackgrounds[sec])}
-                          className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </FieldGroup>
-              ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {['hero', 'story', 'events', 'gallery', 'rsvp', 'footer'].map(sec => (
+                  <ImageField 
+                    key={sec}
+                    label={`${sec.charAt(0).toUpperCase() + sec.slice(1)} Background`}
+                    hint="Full-width background image"
+                    value={config.sectionBackgrounds?.[sec]}
+                    path={`sectionBackgrounds.${sec}`}
+                    type="general"
+                    onUpload={handleUpload}
+                    onDelete={handleDeleteImage}
+                  />
+                ))}
+              </div>
             </SectionCard>
           )}
 

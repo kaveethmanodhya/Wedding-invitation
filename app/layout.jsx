@@ -67,33 +67,9 @@ export async function generateMetadata() {
 }
 
 export default async function RootLayout({ children }) {
-  let themeStyles = '';
-  try {
-    const config = await loadConfig();
-    const theme = config.theme || {};
-    
-    themeStyles = `
-      :root {
-        --colorPrimary: ${theme.colorPrimary || '#C9956A'};
-        --colorSecondary: ${theme.colorSecondary || '#E8D5B7'};
-        --colorTextLight: ${theme.colorTextLight || '#FAF7F2'};
-        --colorTextDark: ${theme.colorTextDark || '#2C2018'};
-        --colorBg: ${theme.colorBg || '#FBF8F4'};
-        --colorSurface: ${theme.colorSurface || '#FFFFFF'};
-        --heroOverlayStart: ${theme.heroOverlayStart || 'rgba(18, 12, 6, 0.55)'};
-        --heroOverlayEnd: ${theme.heroOverlayEnd || 'rgba(18, 12, 6, 0.25)'};
-      }
-    `;
-  } catch (e) {
-    console.error('Failed to load theme config:', e);
-  }
-
   return (
     <html lang="en" className={`${alexBrush.variable} ${playfair.variable} ${montserrat.variable}`}>
-      <head>
-        {themeStyles && <style dangerouslySetInnerHTML={{ __html: themeStyles }} />}
-      </head>
-      <body className="font-sans antialiased overflow-x-hidden bg-[var(--colorBg)] text-[var(--colorTextDark)]">
+      <body className="font-sans antialiased overflow-x-hidden">
         {children}
       </body>
     </html>

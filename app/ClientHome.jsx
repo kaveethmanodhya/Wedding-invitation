@@ -12,6 +12,8 @@ import EventDetails from './components/EventDetails';
 import RSVPSection from './components/RSVPSection';
 import Footer from './components/Footer';
 
+import { PRESET_THEMES } from '../lib/themes';
+
 export default function ClientHome({ config }) {
   const [hasOpened, setHasOpened] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -25,11 +27,26 @@ export default function ClientHome({ config }) {
   };
 
   const revealStyle = config.revealStyle || 'envelope';
+  const themeId = config.themeId || config.theme || 'gold';
+  const theme = PRESET_THEMES.find(t => t.id === themeId)?.colors || config.theme || PRESET_THEMES[0].colors;
 
   if (!mounted) return null;
 
+  const themeStyles = `
+    :root {
+      --colorPrimary: ${theme.colorPrimary};
+      --colorSecondary: ${theme.colorSecondary};
+      --colorTextLight: ${theme.colorTextLight};
+      --colorTextDark: ${theme.colorTextDark};
+      --colorBg: ${theme.colorBg};
+      --colorSurface: ${theme.colorSurface};
+      --heroOverlayStart: ${theme.heroOverlayStart};
+      --heroOverlayEnd: ${theme.heroOverlayEnd};
+    }
+  `;
+
   const mainContent = (
-    <main className={!hasOpened ? 'h-screen overflow-hidden' : 'bg-[var(--colorBg)]'}>
+    <main className={`min-h-screen theme-${themeId} ${!hasOpened ? 'h-screen overflow-hidden' : 'bg-[var(--colorBg)] text-[var(--colorTextDark)]'}`}>
       <Navbar config={config} />
       <Hero config={config} />
       <Countdown config={config} />
@@ -42,6 +59,7 @@ export default function ClientHome({ config }) {
 
   return (
     <>
+      <style dangerouslySetInnerHTML={{ __html: themeStyles }} />
       <AnimatePresence mode="wait">
         {!hasOpened && (
           revealStyle === 'cover' ? (

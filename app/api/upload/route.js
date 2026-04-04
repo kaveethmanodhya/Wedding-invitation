@@ -1,13 +1,6 @@
 import { NextResponse } from 'next/server';
-import { v2 as cloudinary } from 'cloudinary';
 import sharp from 'sharp';
-
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import cloudinary, { getPublicId } from '@/lib/cloudinary';
 
 /**
  * Helper to upload a buffer to Cloudinary
@@ -29,27 +22,6 @@ const uploadToCloudinary = (buffer, type = 'general') => {
     uploadStream.end(buffer);
   });
 };
-
-/**
- * Extract Cloudinary public_id from a secure_url.
- * e.g. https://res.cloudinary.com/cloud/image/upload/v1234/wedding_invites/file.webp
- *   -> wedding_invites/file
- */
-function getPublicId(url) {
-  if (!url || !url.includes('cloudinary.com')) return null;
-  try {
-    // Remove query string, then split on '/upload/'
-    const clean = url.split('?')[0];
-    const parts = clean.split('/upload/');
-    if (parts.length < 2) return null;
-    // Remove the version segment (v1234567/) if present
-    const afterUpload = parts[1].replace(/^v\d+\//, '');
-    // Remove file extension
-    return afterUpload.replace(/\.[^/.]+$/, '');
-  } catch {
-    return null;
-  }
-}
 
 export async function POST(req) {
   try {

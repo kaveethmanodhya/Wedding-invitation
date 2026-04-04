@@ -1,6 +1,52 @@
 import { NextResponse } from 'next/server';
 import getMongoClientPromise from '@/lib/mongodb';
 import { getDefaultConfig } from '@/models/Config';
+import { deleteFromCloudinary } from '@/lib/cloudinary';
+
+/**
+ * Utility to extract all Cloudinary image URLs from a config object.
+ */
+/**
+ * Utility to recursively extract all Cloudinary image URLs from a config object.
+ * This ensures meticulous cleanup regardless of how nested the image fields are.
+ */
+function getAllImagesFromConfig(config) {
+  const images = new Set();
+  
+  const extract = (obj) => {
+    if (!obj || typeof obj !== 'object') return;
+    
+    for (const key in obj) {
+      const val = obj[key];
+      if (typeof val === 'string' && val.startsWith('http')) {
+        // Collect Cloudinary URLs (e.g. res.cloudinary.com)
+        if (val.includes('cloudinary.com')) {
+          images.add(val);
+        }
+      } else if (typeof val === 'object') {
+        extract(val);
+      }
+    }
+  };
+
+  extract(config);
+  return Array.from(images);
+}
+
+/**
+ * Compares two config objects and deletes images that were present in old but missing/changed in new.
+ */
+async function cleanupReplacedImages(oldConfig, newPayload) {
+  const oldImages = getAllImagesFromConfig(oldConfig);
+  const newImages = getAllImagesFromConfig(newPayload);
+
+  // If an image was in old but is NOT in new, it has been replaced or removed.
+  const replaced = oldImages.filter(url => !newImages.includes(url));
+  
+  for (const url of replaced) {
+    await deleteFromCloudinary(url);
+  }
+}
 
 /**
  * GET /api/config?slug=XYZ
@@ -84,9 +130,20 @@ export async function PUT(request) {
     const client = await getMongoClientPromise();
     const db = client.db('wedding_app');
 
+    // ── Legacy Support Query ─────────────────────────────────────
+    const query = (slug === 'global_config') ? { _id: 'global_config' } : { slug };
+
+    // ── Image Cleanup Logic ──────────────────────────────────────
+    // Fetch the old configuration to check for replaced images
+    const oldDoc = await db.collection('settings').findOne(query);
+    if (oldDoc) {
+      // compare and purge replaced Cloudinary assets
+      await cleanupReplacedImages(oldDoc, data);
+    }
+
     // Perform update
     const result = await db.collection('settings').updateOne(
-      { slug },
+      query,
       { $set: data }
     );
 
@@ -97,6 +154,52 @@ export async function PUT(request) {
     return NextResponse.json({ success: true, message: 'Config updated successfully!' });
   } catch (error) {
     console.error('[api/config] PUT Error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+/**
+ * DELETE /api/config?slug=XYZ
+ * Deletes an invitation and all associated Cloudinary images.
+ */
+export async function DELETE(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const slug = searchParams.get('slug');
+
+    if (!slug) {
+      return NextResponse.json({ success: false, error: 'Slug parameter is required for deletion.' }, { status: 400 });
+    }
+
+    const client = await getMongoClientPromise();
+    const db = client.db('wedding_app');
+
+    // ── Legacy Support Query ─────────────────────────────────────
+    const query = (slug === 'global_config') ? { _id: 'global_config' } : { slug };
+
+    // 1. Fetch document to find all images
+    const doc = await db.collection('settings').findOne(query);
+    if (!doc) {
+      return NextResponse.json({ success: false, error: 'Invitation not found' }, { status: 404 });
+    }
+
+    // 2. Extract and delete all Cloudinary images
+    const images = getAllImagesFromConfig(doc);
+    console.log(`[api/config] Purging ${images.length} images for slug: ${slug}`);
+    
+    // Run deletions in parallel
+    await Promise.all(images.map(url => deleteFromCloudinary(url)));
+
+    // 3. Delete from MongoDB
+    const result = await db.collection('settings').deleteOne(query);
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ success: false, error: 'Failed to delete record from DB' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, message: `Successfully deleted invitation and cleaned up cloud storage for '${slug}'.` });
+  } catch (error) {
+    console.error('[api/config] DELETE Error:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
