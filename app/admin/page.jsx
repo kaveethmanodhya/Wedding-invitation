@@ -1105,7 +1105,7 @@ function AdminDashboard() {
                           Upload
                           <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'coupleImages.groom', 'general')} />
                         </label>
-                        {config.coupleImages?.groom && config.coupleImages.groom.startsWith('/images/') && (
+                        {config.coupleImages?.groom && (
                           <button
                             type="button"
                             onClick={() => handleDeleteImage('coupleImages.groom', config.coupleImages.groom)}
@@ -1139,7 +1139,7 @@ function AdminDashboard() {
                           Upload
                           <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'coupleImages.bride', 'general')} />
                         </label>
-                        {config.coupleImages?.bride && config.coupleImages.bride.startsWith('/images/') && (
+                        {config.coupleImages?.bride && (
                           <button
                             type="button"
                             onClick={() => handleDeleteImage('coupleImages.bride', config.coupleImages.bride)}
@@ -1174,7 +1174,7 @@ function AdminDashboard() {
                         Upload
                         <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'envelope.bgImage', 'general')} />
                       </label>
-                      {config.envelope?.bgImage && config.envelope.bgImage.startsWith('/images/') && (
+                      {config.envelope?.bgImage && (
                         <button
                           type="button"
                           onClick={() => handleDeleteImage('envelope.bgImage', config.envelope.bgImage)}
@@ -1205,7 +1205,7 @@ function AdminDashboard() {
                         Upload
                         <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'envelope.outerBgImage', 'general')} />
                       </label>
-                      {config.envelope?.outerBgImage && config.envelope.outerBgImage.startsWith('/images/') && (
+                      {config.envelope?.outerBgImage && (
                         <button
                           type="button"
                           onClick={() => handleDeleteImage('envelope.outerBgImage', config.envelope.outerBgImage)}
@@ -1355,7 +1355,7 @@ function AdminDashboard() {
                         Upload
                         <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], `sectionBackgrounds.${sec}`, 'general')} />
                       </label>
-                      {config.sectionBackgrounds?.[sec] && config.sectionBackgrounds[sec].startsWith('/images/') && (
+                      {config.sectionBackgrounds?.[sec] && (
                         <button
                           type="button"
                           onClick={() => handleDeleteImage(`sectionBackgrounds.${sec}`, config.sectionBackgrounds[sec])}
@@ -1392,7 +1392,7 @@ function AdminDashboard() {
                       Upload
                       <input type="file" className="hidden" accept="image/*" onChange={e => handleUpload(e.target.files[0], 'layout1EventBanner', 'banner')} />
                     </label>
-                    {config.layout1EventBanner && config.layout1EventBanner.startsWith('/images/') && (
+                    {config.layout1EventBanner && (
                       <button
                         type="button"
                         onClick={() => handleDeleteImage('layout1EventBanner', config.layout1EventBanner)}

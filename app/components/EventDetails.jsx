@@ -59,7 +59,7 @@ function Layout1({ config }) {
     <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
       {(config.layout1EventBanner || config.gallery?.[2]) && (
         <div className="w-full h-64 md:h-80 relative overflow-hidden mb-16 rounded-[2rem] shadow-xl isolate">
-          <img src={config.layout1EventBanner || config.gallery[2].src} alt="Banner" className="absolute inset-0 w-full h-full object-cover attachment-fixed object-[center_30%]" style={{ transform: 'scale(1.05)' }} />
+          <img src={config.layout1EventBanner || config.gallery[2]?.src} alt="Banner" className="absolute inset-0 w-full h-full object-cover attachment-fixed object-[center_30%]" style={{ transform: 'scale(1.05)' }} />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--colorBg)] to-transparent opacity-80" />
           <div ref={headerRef} className="absolute inset-0 flex flex-col items-center justify-center opacity-0 translate-y-8 transition-all duration-700">
             <p className="font-sans text-[0.7rem] md:text-xs tracking-[0.3em] uppercase text-[var(--colorBg)] drop-shadow-md mb-2">Mark Your Calendar</p>

@@ -38,7 +38,7 @@ const ScrollCue = () => (
    LAYOUT 1 — Rectangular Ornate Frame
 ───────────────────────────────────────────────────────── */
 function Layout1({ config }) {
-  const { couple, wedding, events, heroImage } = config;
+  const { couple = {}, wedding = {}, events = {}, heroImage } = config;
   const ceremony = events?.ceremony || {};
   const dayLabel = dayName(wedding?.dateTimeISO);
 
@@ -104,7 +104,7 @@ function Layout1({ config }) {
    LAYOUT 2 — Oval Ornate Frame inside Card
 ───────────────────────────────────────────────────────── */
 function Layout2({ config }) {
-  const { couple, wedding, events, heroImage } = config;
+  const { couple = {}, wedding = {}, events = {}, heroImage } = config;
   const ceremony = events?.ceremony || {};
   const dayLabel = dayName(wedding?.dateTimeISO);
 
@@ -182,7 +182,7 @@ function Layout2({ config }) {
    LAYOUT 3 — Royal Arch & Peacocks (Indian Style)
 ───────────────────────────────────────────────────────── */
 function Layout3({ config }) {
-  const { couple, wedding, events, heroImage } = config;
+  const { couple = {}, wedding = {}, events = {}, heroImage } = config;
   const ceremony = events?.ceremony || {};
   const dayLabel = dayName(wedding?.dateTimeISO);
 
