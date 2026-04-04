@@ -176,7 +176,7 @@ export default function RSVPSection({ config }) {
           ) : (
             <>
               <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">We Hope to See You</p>
-              <h2 className="font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3">firm</h2>
+              <h2 className="font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3">Please Confirm</h2>
               <span className="text-[var(--colorPrimary)]/60 text-2xl">❧</span>
               <p className="font-sans text-sm text-[var(--colorTextDark)]/55 mt-3">Kindly respond by <strong className="text-[var(--colorPrimary)]">{rsvp.deadline}</strong></p>
             </>
