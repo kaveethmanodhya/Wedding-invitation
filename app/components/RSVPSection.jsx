@@ -211,8 +211,8 @@ export default function RSVPSection({ config }) {
             </div>
           ) : (
             <div>
-              <label className={labelCls}>Will you be attending? *</label>
-              <div className="flex gap-3 flex-wrap">
+              <label className={`${labelCls} text-center`}>Will you be attending? *</label>
+              <div className="flex gap-3 flex-wrap justify-center">
                 {[{ value: 'Attending', label: 'Joyfully Accept 🎉' }, { value: 'Not Attending', label: 'Regretfully Decline' }].map(({ value, label }) => (
                   <label key={value} className={optionBtnCls(formData.attendance === value)}>
                     <input type="radio" name="attendance" value={value} className="sr-only" checked={formData.attendance === value} onChange={() => setFormData(f => ({ ...f, attendance: value }))} />
