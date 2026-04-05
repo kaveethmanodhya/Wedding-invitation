@@ -600,22 +600,24 @@ function AdminDashboard({ slug, onBack, showToast }) {
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
       const data = await res.json();
       if (data.success) {
+        // Update config with new URL
         setPath(path, data.url);
-        showToast('success', 'Photo uploaded and saved!');
+        return data;
       } else {
-        throw new Error(data.error);
+        showToast('error', data.error || 'Upload failed');
       }
     } catch (err) {
-      showToast('error', `Upload failed: ${err.message}`);
+      showToast('error', 'Upload error');
+      console.error(err);
     } finally {
       setLoading(false);
-      setCropping(null);
     }
   };
 
   const onCropComplete = async (croppedBlob) => {
     if (!cropping) return;
     await performUpload(croppedBlob, cropping.path, cropping.type, cropping.oldImage);
+    setCropping(null);
   };
 
   const loadConfig = useCallback(async () => {
