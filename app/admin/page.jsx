@@ -4,7 +4,7 @@ import AdminLogin from './components/AdminLogin';
 import { motion, AnimatePresence } from 'framer-motion';
 import ImageCropper from './components/ImageCropper';
 import imageCompression from 'browser-image-compression';
-import { Trash2, ImageIcon, Upload, X } from 'lucide-react';
+import { Trash2, ImageIcon, Upload, X, Heart, Calendar, Book, MapPin, Image, Mail, Palette, Search, Layers, Sparkles, CheckCircle, AlertCircle, Save, ExternalLink } from 'lucide-react';
 import { PRESET_THEMES } from '../../lib/themes';
 
 const ImageField = ({ label, hint, value, path, type, onUpload, onDelete }) => (
@@ -54,9 +54,9 @@ const ImageField = ({ label, hint, value, path, type, onUpload, onDelete }) => (
   </FieldGroup>
 );
 
-// ─────────────────────────────────────────────────────────────────
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //  Tiny reusable field components
-// ─────────────────────────────────────────────────────────────────
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 function FieldGroup({ label, hint, children }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -105,9 +105,30 @@ function SectionCard({ title, icon, children }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
+function ColourField({ label, value, onChange }) {
+  return (
+    <FieldGroup label={label}>
+      <div className="flex gap-2">
+        <input 
+          type="color" 
+          value={value} 
+          onChange={e => onChange(e.target.value)}
+          className="w-10 h-10 p-0.5 rounded-lg border border-slate-200 cursor-pointer bg-white"
+        />
+        <input 
+          type="text" 
+          value={value} 
+          onChange={e => onChange(e.target.value)}
+          className={inputCls}
+        />
+      </div>
+    </FieldGroup>
+  );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //  Toast
-// ─────────────────────────────────────────────────────────────────
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 function Toast({ type, message, onClose }) {
   return (
     <div
@@ -116,16 +137,18 @@ function Toast({ type, message, onClose }) {
         ${type === 'success' ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
                              : 'bg-red-50 border border-red-200 text-red-800'}`}
     >
-      <span className="text-lg">{type === 'success' ? '✅' : '❌'}</span>
+      <span className="text-lg">
+        {type === 'success' ? <CheckCircle size={20} className="text-emerald-500" /> : <AlertCircle size={20} className="text-red-500" />}
+      </span>
       <p className="text-sm font-medium flex-1">{message}</p>
-      <button onClick={onClose} className="text-current opacity-50 hover:opacity-100 transition-opacity">×</button>
+      <button onClick={onClose} className="text-current opacity-50 hover:opacity-100 transition-opacity"><X size={16} /></button>
     </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //  Gallery row editor
-// ─────────────────────────────────────────────────────────────────
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 function GalleryEditor({ gallery, onChange, onUpload, onDelete }) {
   const addPhoto = () => onChange([...gallery, { src: '', alt: '' }]);
   const removePhoto = (i) => {
@@ -154,7 +177,7 @@ function GalleryEditor({ gallery, onChange, onUpload, onDelete }) {
                 <img src={photo.src} alt={photo.alt} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
-                  <span className="text-xl">🖼</span>
+                  <ImageIcon size={24} className="opacity-20" />
                   <span className="text-[0.6rem] font-bold uppercase mt-1">No Image</span>
                 </div>
               )}
@@ -186,7 +209,7 @@ function GalleryEditor({ gallery, onChange, onUpload, onDelete }) {
               type="button"
               onClick={() => removePhoto(i)}
               className="absolute top-1 right-1 w-6 h-6 bg-white/90 text-red-500 rounded-full shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-            >×</button>
+            >--</button>
           </div>
         ))}
       </div>
@@ -199,9 +222,9 @@ function GalleryEditor({ gallery, onChange, onUpload, onDelete }) {
   );
 }
 
-// ────────────────────────────────────────────────────// ─────────────────────────────────────────────────────────────────
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //  MAIN ADMIN PAGE (Multi-Tenant Container)
-// ─────────────────────────────────────────────────────────────────
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [view, setView] = useState('list'); // 'list' or 'edit'
@@ -259,54 +282,6 @@ export default function AdminPage() {
 }
 
 function InvitationList({ onEdit, showToast }) {
-��
-//  MAIN ADMIN PAGE
-// ─────────────────────────────────────────────────────────────────
-// ─────────────────────────────────────────────────────────────────
-//  MAIN ADMIN PAGE (Multi-Tenant Container)
-// ─────────────────────────────────────────────────────────────────
-export default function AdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [view, setView] = useState('list'); // 'list' or 'edit'
-  const [selectedSlug, setSelectedSlug] = useState(null);
-
-  useEffect(() => {
-    if (localStorage.getItem('wedding_admin_auth') === 'true') {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  if (!isAuthenticated) {
-    return (
-      <AdminLogin
-        onLogin={() => {
-          localStorage.setItem('wedding_admin_auth', 'true');
-          setIsAuthenticated(true);
-        }}
-      />
-    );
-  }
-
-  if (view === 'list') {
-    return (
-      <InvitationList 
-        onEdit={(slug) => {
-          setSelectedSlug(slug);
-          setView('edit');
-        }} 
-      />
-    );
-  }
-
-  return (
-    <AdminDashboard 
-      slug={selectedSlug} 
-      onBack={() => setView('list')} 
-    />
-  );
-}
-
-function InvitationList({ onEdit }) {
   const [invitations, setInvitations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -407,7 +382,7 @@ function InvitationList({ onEdit }) {
             {invitations.map((inv) => (
               <div key={inv.slug} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
                 <div className="flex justify-between items-start mb-4">
-                  <div className="w-12 h-12 bg-[#C9956A]/10 rounded-2xl flex items-center justify-center text-2xl">💍</div>
+                  <div className="w-12 h-12 bg-[#C9956A]/10 rounded-2xl flex items-center justify-center text-2xl"><Heart size={20} className="text-[#C9956A]" /></div>
                   <span className="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-1 rounded-md">
                     {inv.slug === 'global_config' ? 'Legacy' : 'Active'}
                   </span>
@@ -458,7 +433,7 @@ function InvitationList({ onEdit }) {
                 className="relative bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl border border-slate-100 text-center"
               >
                 <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-6">
-                  🗑️
+                  <AlertCircle size={40} />
                 </div>
                 <h2 className="text-2xl font-serif text-slate-800 mb-2">Delete Invitation?</h2>
                 <p className="text-slate-500 text-sm mb-8 leading-relaxed">
@@ -527,13 +502,13 @@ function InvitationList({ onEdit }) {
 }
 
 function AdminDashboard({ slug, onBack, showToast }) {
-  // ── Data State ────────────────────────────────────────────────
+  // ------ Data State ------------------------------------------------------------------------------------------------------------------------------------------------
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [activeTab, setActiveTab] = useState('couple');
 
-  // ── Cropper State ──────────────────────────────────────────
+  // ------ Cropper State ------------------------------------------------------------------------------------------------------------------------------
   const [cropping, setCropping] = useState(null); // { file, path, type, aspect }
 
   // Deep setter helper
@@ -672,7 +647,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
       });
       const data = await res.json();
       if (data.success) {
-        showToast('success', '✅ Config saved successfully!');
+        showToast('success', 'Config saved successfully!');
       } else {
         throw new Error(data.error || 'Unknown error');
       }
@@ -735,7 +710,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-10 h-10 rounded-full border-2 border-[#C9956A]/30 border-t-[#C9956A] animate-spin mx-auto mb-4" />
-          <p className="text-sm text-slate-500 font-sans">Loading config…</p>
+          <p className="text-sm text-slate-500 font-sans">Loading config...</p>
         </div>
       </div>
     );
@@ -756,7 +731,6 @@ function AdminDashboard({ slug, onBack, showToast }) {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
-      {toast && <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />}
 
       {cropping && (
         <ImageCropper
@@ -774,7 +748,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
               onClick={onBack}
               className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-400 transition-colors"
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              <X size={20} />
             </button>
             <h1 className="font-bold text-slate-800 text-sm hidden sm:block">Editor: /{slug}</h1>
           </div>
@@ -799,13 +773,10 @@ function AdminDashboard({ slug, onBack, showToast }) {
               {loading ? (
                 <span className="w-3.5 h-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
               ) : (
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
-                  <polyline points="17 21 17 13 7 13 7 21" />
-                  <polyline points="7 3 7 8 15 8" />
-                </svg>
+                <>
+                  <Save size={14} /> Save Config
+                </>
               )}
-              Save Config
             </button>
           </div>
         </div>
@@ -829,7 +800,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
       <form id="config-form" onSubmit={handleSave}>
         <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-5">
           {activeTab === 'couple' && (
-            <SectionCard title="Couple Information" icon="💑">
+            <SectionCard title="Couple Information" icon={<Heart size={18} className="text-rose-400" />}>
               <FieldGroup label="Bride First Name">
                 <input
                   type="text"
@@ -895,7 +866,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
           )}
 
           {activeTab === 'wedding' && (
-            <SectionCard title="Hero Style" icon="✨">
+            <SectionCard title="Hero Style" icon={<Sparkles size={18} className="text-amber-400" />}>
               <div 
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden mb-5 transition-all duration-500"
                 style={{ aspectRatio: '3 / 4' }}
@@ -904,7 +875,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   <img src={config.heroImage} className="w-full h-full object-cover" alt="Hero Preview" />
                 ) : (
                   <div className="text-center p-6">
-                    <span className="text-3xl opacity-20">📸</span>
+                    <ImageIcon size={32} className="opacity-20 mx-auto" />
                     <p className="text-[10px] text-slate-400 mt-2 uppercase tracking-widest">No Hero Image</p>
                   </div>
                 )}
@@ -948,10 +919,10 @@ function AdminDashboard({ slug, onBack, showToast }) {
               <FieldGroup label="Invitation Card Layout" hint="Choose the hero card style for your invitation">
                 <div className="col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
                   {[
-                    { id: 1, label: 'Layout 1 — Script Overlay', desc: 'Photo on top · "forever" cursive straddling photo & text · Clean details below' },
-                    { id: 2, label: 'Layout 2 — Names on Photo', desc: 'Full-bleed photo fading to white · Names overlaid · Large numeric date below' },
-                    { id: 3, label: 'Layout 3 — Royal Arch', desc: 'Ornate Indian-style arches · Warm pink/peach aesthetics · Traditional fonts and decorative motifs' },
-                    { id: 4, label: 'Layout 4 — Nature Arch', desc: 'Premium forest archway design with central couple illustration and refined typography.' },
+                    { id: 1, label: 'Layout 1: Script Overlay', desc: 'Photo on top - "forever" cursive straddling photo & text - Clean details below' },
+                    { id: 2, label: 'Layout 2: Names on Photo', desc: 'Full-bleed photo fading to white - Names overlaid - Large numeric date below' },
+                    { id: 3, label: 'Layout 3 --- Royal Arch', desc: 'Ornate Indian-style arches -- Warm pink/peach aesthetics -- Traditional fonts and decorative motifs' },
+                    { id: 4, label: 'Layout 4: Nature Arch', desc: 'Premium forest archway design with central couple illustration and refined typography.' },
                   ].map(layout => {
                     const active = (config.heroLayout ?? 1) === layout.id;
                     return (
@@ -965,7 +936,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                       >
                         <span className={`text-xs font-bold tracking-wide ${active ? 'text-[#C9956A]' : 'text-slate-600'}`}>{layout.label}</span>
                         <span className="text-[0.65rem] text-slate-400 leading-snug">{layout.desc}</span>
-                        {active && <span className="mt-1 text-[0.6rem] font-bold text-[#C9956A] uppercase tracking-widest">✓ Active</span>}
+                        {active && <span className="mt-1 flex items-center gap-1 text-[0.6rem] font-bold text-[#C9956A] uppercase tracking-widest"><CheckCircle size={10} /> Active</span>}
                       </button>
                     );
                   })}
@@ -975,7 +946,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
           )}
 
           {activeTab === 'story' && (
-            <SectionCard title="Our Story & Invitation Text" icon="📖">
+            <SectionCard title="Our Story & Invitation Text" icon={<Book size={18} className="text-indigo-400" />}>
               <FieldGroup label="Formal Invitation Text" hint="Shown in an elegant bordered box">
                 <textarea
                   className={`${textareaCls} col-span-2`}
@@ -1002,7 +973,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                       onClick={() => setPath('story.paragraphs', config.story.paragraphs.filter((_, idx) => idx !== i))}
                       className="w-9 h-9 flex items-center justify-center rounded-lg text-red-400 hover:bg-red-50 transition-colors text-lg mt-0.5"
                     >
-                      ×
+                      --
                     </button>
                   </div>
                 ))}
@@ -1018,7 +989,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
           )}
 
           {activeTab === 'events' && (
-            <SectionCard title="Ceremony Details" icon="🌸">
+            <SectionCard title="Ceremony Details" icon={<MapPin size={18} className="text-emerald-400" />}>
               <FieldGroup label="Title">
                 <input
                   type="text"
@@ -1089,7 +1060,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
           )}
 
           {activeTab === 'gallery' && (
-            <SectionCard title="Gallery Photos" icon="🖼">
+            <SectionCard title="Gallery Photos" icon={<Image size={18} className="text-sky-400" />}>
               <GalleryEditor 
                 gallery={config.gallery} 
                 onChange={val => setPath('gallery', val)} 
@@ -1101,7 +1072,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
 
           {activeTab === 'rsvp' && (
             <>
-              <SectionCard title="RSVP Settings" icon="✉️">
+              <SectionCard title="RSVP Settings" icon={<Mail size={18} className="text-blue-400" />}>
                 <FieldGroup label="WhatsApp Number" hint="Phone number for receiving RSVPs">
                   <input
                     type="text"
@@ -1126,7 +1097,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 </FieldGroup>
               </SectionCard>
 
-              <SectionCard title="Opening Animation" icon="✨">
+              <SectionCard title="Opening Animation" icon={<Sparkles size={18} className="text-purple-400" />}>
                 <FieldGroup label="Animation Style" hint="Choose how guests first see your invitation">
                   <div className="flex gap-6 mt-1">
                     <label className="flex items-center gap-2.5 cursor-pointer group">
@@ -1207,7 +1178,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 </div>
               </SectionCard>
 
-              <SectionCard title="Envelope Cover" icon="✉️">
+              <SectionCard title="Envelope Cover" icon={<Layers size={18} className="text-slate-400" />}>
                 <ImageField 
                   label="Inner Card Background Image" 
                   hint="Upload directly or enter a URL"
@@ -1253,7 +1224,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
             <div className="flex flex-col gap-5">
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden px-6 py-6">
                 <div className="flex items-center gap-3 mb-6">
-                  <span className="text-xl">🎨</span>
+                  <Palette size={20} className="text-[#C9956A]" />
                   <h3 className="font-semibold text-slate-700 text-sm tracking-wide">Premium Theme Presets</h3>
                 </div>
                 
@@ -1283,7 +1254,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 </div>
               </div>
 
-              <SectionCard title="Fine-tune Theme Colours" icon="🎨">
+              <SectionCard title="Fine-tune Theme Colours" icon={<Palette size={18} className="text-[#C9956A]" />}>
               {[
                 ['colorPrimary', 'Primary Accent'],
                 ['colorSecondary', 'Secondary Accent'],
@@ -1324,7 +1295,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
         )}
 
           {activeTab === 'meta' && (
-            <SectionCard title="SEO & Social Sharing" icon="🔍">
+            <SectionCard title="SEO & Social Sharing" icon={<Search size={18} className="text-slate-500" />}>
               <FieldGroup label="Page Title">
                 <input type="text" className={inputCls} value={config.meta.title} onChange={e => setPath('meta.title', e.target.value)} />
               </FieldGroup>
@@ -1343,7 +1314,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
           )}
 
           {activeTab === 'backgrounds' && (
-            <SectionCard title="Section Backgrounds" icon="🖼️">
+            <SectionCard title="Section Backgrounds" icon={<Image size={18} className="text-slate-400" />}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {['hero', 'story', 'events', 'gallery', 'rsvp', 'footer'].map(sec => (
                   <ImageField 
@@ -1362,7 +1333,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
           )}
 
           {activeTab === 'decor' && (
-            <SectionCard title="Layout Decorations" icon="✨">
+            <SectionCard title="Layout Decorations" icon={<Sparkles size={18} className="text-amber-500" />}>
               <FieldGroup label="Layout 1: Event Details Banner" hint="Custom header image for the Layout 1 event section (replaces gallery fallback)">
                 <div className="flex flex-col gap-3">
                   {config.layout1EventBanner && (
@@ -1399,7 +1370,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
 
           <details className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
             <summary className="px-6 py-4 cursor-pointer text-xs font-bold tracking-wide text-slate-500 uppercase hover:bg-slate-50 transition-colors flex items-center gap-2">
-              <span>📋</span> Raw JSON Preview
+              <Layers size={14} className="opacity-50" /> Raw JSON Preview
             </summary>
             <pre className="text-xs text-slate-600 bg-slate-50 px-6 py-4 overflow-auto max-h-96 border-t border-slate-100">
               {JSON.stringify(config, null, 2)}
@@ -1415,10 +1386,12 @@ function AdminDashboard({ slug, onBack, showToast }) {
             {loading ? (
               <>
                 <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
-                Saving…
+                Saving...
               </>
             ) : (
-              '💾 Save & Update Config'
+              <span className="flex items-center gap-2">
+                <Save size={18} /> Save & Update Config
+              </span>
             )}
           </button>
         </main>
