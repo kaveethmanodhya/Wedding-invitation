@@ -288,12 +288,6 @@ export default function RSVPSection({ config }) {
         </form>
       </div>
 
-      {/* Floating corner detail (Layout 4) */}
-      {layout === 4 && (
-        <div className="absolute bottom-0 right-0 w-32 h-32 opacity-10 pointer-events-none translate-x-4 grayscale sepia">
-          <img src="/images/nature-arch-bg.png" className="w-full h-full object-contain" />
-        </div>
-      )}
     </section>
   );
 }

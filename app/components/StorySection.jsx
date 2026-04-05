@@ -87,14 +87,6 @@ function Layout2({ config, ref1, ref2, ref3 }) {
           ))}
         </div>
       </div>
-
-      <div ref={ref3} className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-16 opacity-0 translate-y-8 transition-all duration-700 delay-200">
-         {config.gallery?.slice(0, 4).map((img, i) => (
-            <div key={i} className={`w-full aspect-[3/4] overflow-hidden rounded-3xl shadow-xl border border-[var(--colorPrimary)]/20 ${i % 2 === 1 ? 'md:translate-y-8' : ''}`}>
-              <img src={img.src} alt={img.alt || 'Journey Image'} className="w-full h-full object-cover hover:scale-110 transition-transform duration-700 opacity-90 hover:opacity-100" />
-            </div>
-          ))}
-      </div>
     </div>
   );
 }

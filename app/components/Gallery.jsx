@@ -55,14 +55,6 @@ export default function Gallery({ config }) {
       <div className="absolute inset-0 bg-white/5 z-[1] pointer-events-none" />
       <div className="max-w-5xl mx-auto px-6">
         
-        {/* Header Layout 1 */}
-        {layout === 1 && (
-          <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
-            <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">Pre-Shoot Moments</p>
-            <h2 className="font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-4 tracking-wide">Our Gallery</h2>
-            <div className="w-24 h-px bg-[var(--colorPrimary)] opacity-50 mx-auto mt-2" />
-          </div>
-        )}
 
         {/* Header Layout 2 */}
         {layout === 2 && (
@@ -74,14 +66,6 @@ export default function Gallery({ config }) {
           </div>
         )}
 
-        {/* Header Layout 3 */}
-        {layout === 3 && (
-          <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
-            <span className="text-3xl text-[var(--colorPrimary)] mb-4 block">❀</span>
-            <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 tracking-wide">Captured Moments</h2>
-            <div className="w-24 h-0.5 bg-[var(--colorPrimary)] mx-auto opacity-60" />
-          </div>
-        )}
 
         {/* Header Layout 4 */}
         {layout === 4 && (
@@ -119,31 +103,6 @@ export default function Gallery({ config }) {
             </button>
           ))}
         </div>
-      ) : layout === 3 ? (
-        // Layout 3: Royal Arch Grid
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 max-w-6xl mx-auto">
-          {gallery.map((photo, idx) => (
-            <button
-              key={idx} onClick={() => setLightbox(idx)}
-              className="group relative cursor-zoom-in focus:outline-none w-full"
-              style={{
-                borderRadius: '50% 50% 0 0 / 20% 20% 0 0',
-                border: '4px solid var(--colorPrimary)',
-                padding: '4px',
-                aspectRatio: '3/4',
-                background: 'var(--colorBg)',
-                boxShadow: '0 10px 30px rgba(0,0,0, 0.05)'
-              }}
-            >
-              <div className="w-full h-full relative overflow-hidden" style={{ borderRadius: '50% 50% 0 0 / 20% 20% 0 0' }}>
-                <Image src={photo.src} alt={photo.alt} width={600} height={800} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 filter hover:saturate-150" />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                  <span className="text-[var(--colorBg)] text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-md">✤</span>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
       ) : layout === 2 ? (
         // Layout 2: Scattered Floating Ornate Grid
         <div className="grid grid-cols-2 gap-4 md:gap-8 px-4 max-w-5xl mx-auto">
@@ -159,24 +118,7 @@ export default function Gallery({ config }) {
             </button>
           ))}
         </div>
-      ) : (
-        // Layout 1: Ornate Rectangular Framed Grid
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 px-4 max-w-6xl mx-auto">
-          {gallery.map((photo, idx) => (
-            <button
-              key={idx} onClick={() => setLightbox(idx)}
-              className="mb-3 block w-full rounded-none overflow-hidden group relative cursor-zoom-in outline-none p-1.5 border border-[var(--colorPrimary)]/40 hover:border-[var(--colorPrimary)] transition-colors duration-300"
-            >
-              <div className="relative overflow-hidden w-full h-full aspect-[3/4] border border-[var(--colorPrimary)]/20">
-                 <Image src={photo.src} alt={photo.alt} width={600} height={800} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                 <div className="absolute inset-0 bg-[var(--colorPrimary)]/0 group-hover:bg-[var(--colorPrimary)]/20 transition-all duration-300 flex items-center justify-center">
-                   <span className="text-white text-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-md">⊕</span>
-                 </div>
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
+      ) : null}
 
       {/* Lightbox (Shared) */}
       {lightbox !== null && (

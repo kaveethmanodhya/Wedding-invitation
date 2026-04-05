@@ -8,6 +8,7 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Countdown from './components/Countdown';
 import StorySection from './components/StorySection';
+import Gallery from './components/Gallery';
 import EventDetails from './components/EventDetails';
 import RSVPSection from './components/RSVPSection';
 import Footer from './components/Footer';
@@ -51,6 +52,7 @@ export default function ClientHome({ config }) {
       <Hero config={config} />
       <Countdown config={config} />
       <StorySection config={config} />
+      <Gallery config={config} />
       <EventDetails config={config} />
       <RSVPSection config={config} />
       <Footer config={config} />

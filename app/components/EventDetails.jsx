@@ -303,10 +303,6 @@ function Layout4({ config }) {
         ))}
       </div>
       
-      {/* Background decoration */}
-      <div className="absolute top-1/2 left-0 w-32 h-32 opacity-5 pointer-events-none -translate-x-1/2">
-         <img src="/images/nature-arch-bg.png" className="w-full h-full object-contain" />
-      </div>
     </div>
   );
 }
