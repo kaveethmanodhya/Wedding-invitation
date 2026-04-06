@@ -165,10 +165,10 @@ export default function RSVPSection({ config }) {
 
       <div className={`relative max-w-2xl mx-auto px-6 transition-all ${layout === 4 ? 'bg-white p-10 md:p-16 shadow-2xl border-t-[12px] border-[var(--colorPrimary)]'
         : layout === 9 ? 'bg-slate-900/40 p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.3)] rounded-[40px] border border-white/10 backdrop-blur-xl'
-        : layout === 3 ? 'bg-[var(--colorBg)] p-8 md:p-14 shadow-2xl border border-[var(--colorPrimary)]/30' 
-        : layout === 2 ? 'bg-white/40 p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.05)] rounded-[40px] border border-white/60 backdrop-blur-md'
-        : 'bg-[var(--colorPrimary)]/5 p-6 md:p-10 border border-[var(--colorPrimary)]/20'
-      }`}>
+          : layout === 3 ? 'bg-[var(--colorBg)] p-8 md:p-14 shadow-2xl border border-[var(--colorPrimary)]/30'
+            : layout === 2 ? 'bg-white/40 p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.05)] rounded-[40px] border border-white/60 backdrop-blur-md'
+              : 'bg-[var(--colorPrimary)]/5 p-6 md:p-10 border border-[var(--colorPrimary)]/20'
+        }`}>
 
         {/* Header */}
         <div ref={headerRef} className="text-center mb-12 opacity-0 translate-y-8 transition-all duration-1000">
@@ -204,8 +204,8 @@ export default function RSVPSection({ config }) {
               </h2>
               <span className="text-[var(--colorPrimary)]/60 text-2xl">❧</span>
               <p className="font-sans text-sm text-[var(--colorTextDark)]/55 mt-3">
-                {layout === 8 ? 'කරුණාකර ' : 'Kindly respond by '} 
-                <strong className="text-[var(--colorPrimary)]">{rsvp.deadline}</strong> 
+                {layout === 8 ? 'කරුණාකර ' : 'Kindly respond by '}
+                <strong className="text-[var(--colorPrimary)]">{rsvp.deadline}</strong>
                 {layout === 8 ? ' දිනට පෙර දන්වන්න' : ''}
               </p>
             </>
@@ -243,7 +243,7 @@ export default function RSVPSection({ config }) {
               <label className={`${labelCls} text-center`}>{layout === 8 ? 'ඔබ සහභාගී වනවාද?' : 'Will you be attending? *'}</label>
               <div className="flex gap-3 flex-wrap justify-center">
                 {[
-                  { value: 'Attending', label: layout === 8 ? 'පැමිණෙනවා 🎉' : 'Joyfully Accept 🎉' }, 
+                  { value: 'Attending', label: layout === 8 ? 'පැමිණෙනවා 🎉' : 'Joyfully Accept 🎉' },
                   { value: 'Not Attending', label: layout === 8 ? 'අකමැත්තෙන් වුවත් සහභාගී විය නොහැක' : 'Regretfully Decline' }
                 ].map(({ value, label }) => (
                   <label key={value} className={optionBtnCls(formData.attendance === value)}>
@@ -286,7 +286,7 @@ export default function RSVPSection({ config }) {
                 />
                 {errors.name && <p className="text-red-500 text-[10px] mt-1 font-bold uppercase tracking-widest">{errors.name}</p>}
               </div>
- 
+
               <div>
                 <label className={`${labelCls} ${layout === 9 ? 'text-[var(--colorPrimary)]' : ''}`}>{layout === 8 ? 'දුරකථන අංකය' : 'Phone Number'}</label>
                 <input
