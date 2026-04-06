@@ -84,6 +84,18 @@ export default function RSVPSection({ config }) {
     inputCls = `w-full px-6 py-4 rounded-none font-serif text-lg bg-white border border-[var(--colorTextDark)]/10 focus:border-[var(--colorPrimary)] outline-none transition-all duration-300 placeholder:opacity-30`;
     btnCls = "w-full flex items-center justify-center py-5 bg-[var(--colorTextDark)] text-white font-sans text-[10px] font-bold tracking-[0.4em] uppercase hover:bg-[var(--colorPrimary)] transition-all duration-500 shadow-2xl";
     optionBtnCls = (active) => `flex items-center gap-3 cursor-pointer font-serif text-lg px-6 py-3 border transition-all duration-300 ${active ? 'bg-[var(--colorPrimary)] text-white border-[var(--colorPrimary)] shadow-lg scale-105' : 'bg-white border-[var(--colorTextDark)]/10 text-[var(--colorTextDark)]/60 hover:border-[var(--colorPrimary)]'}`;
+  } else if (layout === 5) {
+    inputCls = `w-full px-4 py-3 rounded-none border-2 border-[var(--colorTextDark)] bg-white focus:bg-[var(--colorPrimary)]/5 outline-none transition-all font-sans text-sm uppercase tracking-widest`;
+    btnCls = "w-full py-4 bg-[var(--colorTextDark)] text-white font-sans text-xs font-black uppercase tracking-[0.5em] hover:bg-white hover:text-[var(--colorTextDark)] border-2 border-[var(--colorTextDark)] transition-all shadow-[8px_8px_0_var(--colorPrimary)]";
+  } else if (layout === 6) {
+    inputCls = `w-full px-5 py-3 rounded-[30px] border border-[var(--colorPrimary)]/20 bg-white/50 focus:bg-white outline-none transition-all font-serif italic text-lg`;
+    btnCls = "w-full py-4 rounded-[30px] bg-[var(--colorPrimary)] text-white font-sans text-xs font-bold tracking-widest uppercase hover:opacity-80 transition-opacity shadow-lg";
+  } else if (layout === 7) {
+    inputCls = `w-full px-4 py-3 bg-white border-b-2 border-slate-200 focus:border-[var(--colorPrimary)] outline-none transition-all font-script text-xl`;
+    btnCls = "w-full py-3 bg-slate-800 text-white font-script text-2xl hover:bg-[var(--colorPrimary)] transition-all rounded-sm shadow-md";
+  } else if (layout === 8) {
+    inputCls = `w-full px-4 py-3 rounded-lg border-2 border-[var(--colorPrimary)]/30 bg-white focus:border-[var(--colorPrimary)] outline-none transition-all font-sinhala text-base`;
+    btnCls = "w-full py-4 rounded-xl bg-[var(--colorPrimary)] text-white font-sinhala text-lg hover:bg-[var(--colorTextDark)] transition-all shadow-[0_10px_30px_rgba(0,0,0,0.1)]";
   }
 
   if (status === 'success') {
@@ -97,7 +109,6 @@ export default function RSVPSection({ config }) {
             backgroundImage: `url(${config.sectionBackgrounds.rsvp})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundAttachment: 'fixed',
           } : {})
         }}
       >
@@ -128,7 +139,6 @@ export default function RSVPSection({ config }) {
             backgroundImage: `url(${config.sectionBackgrounds.rsvp})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundAttachment: 'fixed',
             filter: 'blur(15px)',
             transform: 'scale(1.05)',
             opacity: 0.5
@@ -146,7 +156,7 @@ export default function RSVPSection({ config }) {
         </>
       )}
 
-      <div className={`relative max-w-2xl mx-auto px-6 transition-        layout === 4 ? 'bg-white p-10 md:p-16 shadow-2xl border-t-[12px] border-[var(--colorPrimary)]'
+      <div className={`relative max-w-2xl mx-auto px-6 transition-all ${layout === 4 ? 'bg-white p-10 md:p-16 shadow-2xl border-t-[12px] border-[var(--colorPrimary)]'
         : layout === 3 ? 'bg-[var(--colorBg)] p-8 md:p-14 shadow-2xl border border-[var(--colorPrimary)]/30' 
         : layout === 2 ? 'bg-white/40 p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.05)] rounded-[40px] border border-white/60 backdrop-blur-md'
         : 'bg-[var(--colorPrimary)]/5 p-6 md:p-10 border border-[var(--colorPrimary)]/20'
@@ -175,10 +185,16 @@ export default function RSVPSection({ config }) {
             </>
           ) : (
             <>
-              <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">We Hope to See You</p>
-              <h2 className="font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3">Please Confirm</h2>
+              <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">{layout === 8 ? 'අපි ඔබ එනතුරු බලා සිටිමු' : 'We Hope to See You'}</p>
+              <h2 className={layout === 8 ? 'font-sinhala text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3' : 'font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3'}>
+                {layout === 8 ? 'ඔබේ සහභාගීත්වය තහවුරු කරන්න' : 'Please Confirm'}
+              </h2>
               <span className="text-[var(--colorPrimary)]/60 text-2xl">❧</span>
-              <p className="font-sans text-sm text-[var(--colorTextDark)]/55 mt-3">Kindly respond by <strong className="text-[var(--colorPrimary)]">{rsvp.deadline}</strong></p>
+              <p className="font-sans text-sm text-[var(--colorTextDark)]/55 mt-3">
+                {layout === 8 ? 'කරුණාකර ' : 'Kindly respond by '} 
+                <strong className="text-[var(--colorPrimary)]">{rsvp.deadline}</strong> 
+                {layout === 8 ? ' දිනට පෙර දන්වන්න' : ''}
+              </p>
             </>
           )}
         </div>
@@ -211,9 +227,12 @@ export default function RSVPSection({ config }) {
             </div>
           ) : (
             <div>
-              <label className={`${labelCls} text-center`}>Will you be attending? *</label>
+              <label className={`${labelCls} text-center`}>{layout === 8 ? 'ඔබ සහභාගී වනවාද?' : 'Will you be attending? *'}</label>
               <div className="flex gap-3 flex-wrap justify-center">
-                {[{ value: 'Attending', label: 'Joyfully Accept 🎉' }, { value: 'Not Attending', label: 'Regretfully Decline' }].map(({ value, label }) => (
+                {[
+                  { value: 'Attending', label: layout === 8 ? 'පැමිණෙනවා 🎉' : 'Joyfully Accept 🎉' }, 
+                  { value: 'Not Attending', label: layout === 8 ? 'අකමැත්තෙන් වුවත් සහභාගී විය නොහැක' : 'Regretfully Decline' }
+                ].map(({ value, label }) => (
                   <label key={value} className={optionBtnCls(formData.attendance === value)}>
                     <input type="radio" name="attendance" value={value} className="sr-only" checked={formData.attendance === value} onChange={() => setFormData(f => ({ ...f, attendance: value }))} />
                     {label}
@@ -224,10 +243,12 @@ export default function RSVPSection({ config }) {
             </div>
           )}
 
-          {/* ── GUEST SELECTION (Layout 4 style) ── */}
-          {formData.attendance === 'Attending' && layout === 4 && (
+          {/* ── GUEST SELECTION ── */}
+          {formData.attendance === 'Attending' && (
             <div className="flex items-center justify-center gap-4 py-4 border-y border-gray-100">
-              <span className="font-sans text-sm text-[var(--colorTextDark)] opacity-60">How many guests will attend?</span>
+              <span className="font-sans text-sm text-[var(--colorTextDark)] opacity-60">
+                {layout === 8 ? 'පැමිණෙන අමුත්තන් සංඛ්‍යාව?' : 'How many guests will attend?'}
+              </span>
               <select
                 className="w-16 h-10 border border-gray-300 rounded text-center font-sans font-bold text-sm cursor-pointer hover:border-[var(--colorPrimary)] transition-colors"
                 value={formData.guests}
@@ -240,27 +261,29 @@ export default function RSVPSection({ config }) {
 
           {/* ── NAME & CONTACT (Updated Layout 4) ── */}
           <div className="flex flex-col gap-6">
-            <div className="flex flex-col items-center w-full">
-              <label className={`${labelCls} !text-[var(--colorTextDark)] !opacity-100 !mb-2 !font-bold`}>Your Name</label>
-              <input
-                type="text"
-                placeholder=""
-                className={`${inputCls} text-center border-gray-200 focus:border-[var(--colorPrimary)] ${errors.name ? '!border-red-400' : ''}`}
-                value={formData.name}
-                onChange={e => { setFormData(f => ({ ...f, name: e.target.value })); setErrors(x => ({ ...x, name: '' })); }}
-              />
-              {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
-            </div>
+            <div className="space-y-6">
+              <div>
+                <label className={labelCls}>{layout === 8 ? 'සම්පූර්ණ නම' : 'Full Name'}</label>
+                <input
+                  type="text"
+                  className={inputCls}
+                  placeholder={layout === 8 ? 'ඔබේ නම මෙහි සටහන් කරන්න...' : "e.g. Kasun Perera"}
+                  value={formData.name}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
+                />
+                {errors.name && <p className="text-red-500 text-[10px] mt-1 font-bold uppercase tracking-widest">{errors.name}</p>}
+              </div>
 
-            <div className="flex flex-col items-center w-full">
-              <label className={`${labelCls} !text-[var(--colorTextDark)] !opacity-100 !mb-2 !font-bold`}>Your Contact Number:</label>
-              <input
-                type="tel"
-                placeholder=""
-                className={`${inputCls} text-center border-gray-200 focus:border-[var(--colorPrimary)]`}
-                value={formData.phone}
-                onChange={e => setFormData(f => ({ ...f, phone: e.target.value }))}
-              />
+              <div>
+                <label className={labelCls}>{layout === 8 ? 'දුරකථන අංකය' : 'Phone Number'}</label>
+                <input
+                  type="tel"
+                  className={inputCls}
+                  placeholder={layout === 8 ? '07x xxxxxxx' : "e.g. 071 234 5678"}
+                  value={formData.phone}
+                  onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                />
+              </div>
             </div>
           </div>
 
@@ -275,9 +298,15 @@ export default function RSVPSection({ config }) {
           <button
             type="submit"
             disabled={status === 'loading'}
-            className={`${layout === 4 ? 'bg-[var(--colorPrimary)] text-white py-5 rounded shadow-lg hover:brightness-110 active:scale-[0.98] transition-all !font-bold tracking-widest uppercase text-sm' : btnCls} mt-4`}
+            className={btnCls}
           >
-            {status === 'loading' ? <span className="w-5 h-5 rounded-full border-2 border-[var(--colorBg)] border-t-transparent animate-spin mx-auto" /> : (layout === 4 ? 'SEND' : 'Send My Reply')}
+            {status === 'loading' ? (
+              <span className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+            ) : status === 'success' ? (
+              <>{layout === 8 ? 'සාර්ථකයි ✨' : 'Sent ✨'}</>
+            ) : (
+              <>{layout === 8 ? 'සහභාගීත්වය දන්වන්න (WhatsApp)' : 'Confirm via WhatsApp'}</>
+            )}
           </button>
 
           {status === 'error' && (

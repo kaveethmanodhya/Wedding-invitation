@@ -51,10 +51,10 @@ export async function POST(req) {
     const buffer = Buffer.from(bytes);
 
     const isGif = file.type === 'image/gif' || file.name.toLowerCase().endsWith('.gif');
-
+    const isAudio = type === 'audio' || file.type.startsWith('audio/');
     let finalBuffer;
     
-    if (isGif) {
+    if (isGif || isAudio) {
       finalBuffer = buffer;
     } else {
       let pipeline = sharp(buffer);

@@ -274,7 +274,6 @@ export default function Hero({ config }) {
             backgroundImage: `url(${config.sectionBackgrounds.hero})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundAttachment: 'fixed',
             filter: 'blur(15px)',
             transform: 'scale(1.05)',
             opacity: 0.6
@@ -286,7 +285,13 @@ export default function Hero({ config }) {
 
       <div className="absolute inset-0 pointer-events-none z-[1]" style={{ background: 'radial-gradient(circle at 50% 50%, var(--colorPrimary) 0%, transparent 60%)', opacity: 0.03 }} />
       <div className="relative z-10 w-full flex justify-center py-20 px-4">
-        {layout === 4 ? <Layout4 config={config} /> : layout === 3 ? <Layout3 config={config} /> : layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
+        {layout === 8 ? <Layout8 config={config} /> : 
+         layout === 7 ? <Layout7 config={config} /> : 
+         layout === 6 ? <Layout6 config={config} /> : 
+         layout === 5 ? <Layout5 config={config} /> : 
+         layout === 4 ? <Layout4 config={config} /> : 
+         layout === 3 ? <Layout3 config={config} /> : 
+         layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
       </div>
     </section>
   );
@@ -377,6 +382,209 @@ function Layout4({ config }) {
 
       {/* Extra Liquid Corner Flair */}
       <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-[var(--colorPrimary)]/5 to-transparent opacity-30 pointer-events-none" />
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   LAYOUT 5 — Modern Minimalist High-Contrast
+───────────────────────────────────────────────────────── */
+function Layout5({ config }) {
+  const { couple = {}, wedding = {}, heroImage } = config;
+  const year = wedding?.dateTimeISO ? new Date(wedding.dateTimeISO).getFullYear() : '';
+
+  return (
+    <div className="flex flex-col items-center w-full px-6 py-20 text-center">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.2, ease: "circOut" }}
+        className="relative mb-12"
+      >
+        <div className="w-1 h-32 bg-[var(--colorPrimary)] mx-auto mb-8 opacity-40" />
+        <h1 className="font-serif text-[clamp(64px,15vw,120px)] leading-[0.8] tracking-tighter text-[var(--colorTextDark)] mb-4">
+          {couple?.groom?.firstName?.[0]}<span className="text-[var(--colorPrimary)]">&</span>{couple?.bride?.firstName?.[0]}
+        </h1>
+        <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-[var(--colorTextDark)] opacity-60">
+          The Wedding of {couple?.groom?.firstName} & {couple?.bride?.firstName}
+        </p>
+      </motion.div>
+
+      <div className="flex flex-col items-center gap-4">
+        <p className="font-serif text-3xl italic text-[var(--colorTextDark)]">{wedding?.displayDate}</p>
+        <div className="h-px w-12 bg-[var(--colorPrimary)]" />
+        <p className="font-sans text-xs tracking-[0.3em] uppercase opacity-70">{year} • SAVE THE DATE</p>
+      </div>
+
+      {heroImage && (
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 1 }}
+          className="mt-16 w-full max-w-sm aspect-[4/5] rounded-full overflow-hidden border border-[var(--colorPrimary)]/20 p-4"
+        >
+          <img src={heroImage} className="w-full h-full object-cover rounded-full grayscale hover:grayscale-0 transition-all duration-1000" />
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   LAYOUT 6 — Watercolor Floral (Garden Theme)
+───────────────────────────────────────────────────────── */
+function Layout6({ config }) {
+  const { couple = {}, wedding = {}, heroImage } = config;
+
+  return (
+    <div className="flex flex-col items-center w-full min-h-[80vh] justify-center px-8 relative">
+      {/* Decorative Floral background blobs */}
+      <div className="absolute top-0 left-0 w-64 h-64 bg-[var(--colorPrimary)]/5 rounded-full blur-[100px] -z-10" />
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-[var(--colorSecondary)]/5 rounded-full blur-[120px] -z-10" />
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center"
+      >
+        <span className="text-4xl mb-4 block">🌸</span>
+        <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-[var(--colorTextDark)]/60 mb-6 font-bold">You are cordially invited</p>
+        
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-8">
+          <h1 className="font-script text-6xl md:text-8xl text-[var(--colorPrimary)]">{couple?.groom?.firstName}</h1>
+          <span className="font-serif text-2xl text-[var(--colorSecondary)]/50 italic">and</span>
+          <h1 className="font-script text-6xl md:text-8xl text-[var(--colorPrimary)]">{couple?.bride?.firstName}</h1>
+        </div>
+
+        <div className="relative inline-block px-12 py-6 border border-[var(--colorPrimary)]/10 rounded-[40px_10px_40px_10px]">
+          <p className="font-serif text-2xl md:text-3xl text-[var(--colorTextDark)]">{wedding?.displayDate}</p>
+          <div className="absolute -top-3 -left-3 text-2xl">🍃</div>
+          <div className="absolute -bottom-3 -right-3 text-2xl">🌿</div>
+        </div>
+      </motion.div>
+
+      {heroImage && (
+        <div className="mt-12 w-full max-w-md aspect-video rounded-3xl overflow-hidden shadow-2xl relative">
+          <img src={heroImage} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 ring-1 ring-inset ring-white/20" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   LAYOUT 7 — Retro Polaroid / Scrapbook
+───────────────────────────────────────────────────────── */
+function Layout7({ config }) {
+  const { couple = {}, wedding = {}, heroImage } = config;
+
+  return (
+    <div className="flex flex-col items-center w-full py-16 px-6">
+      <motion.div
+        initial={{ rotate: -3, opacity: 0, scale: 0.9 }}
+        animate={{ rotate: -2, opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8 }}
+        className="bg-white p-6 pb-20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 max-w-sm w-full relative z-10"
+      >
+        <div className="aspect-square bg-slate-100 overflow-hidden mb-6">
+          <img src={heroImage || '/images/hero.png'} className="w-full h-full object-cover sepia-[0.3]" />
+        </div>
+        <div className="text-center">
+          <h1 className="font-script text-4xl text-slate-800 mb-2">Our Wedding Day</h1>
+          <p className="font-sans text-xs tracking-widest uppercase text-slate-400">{wedding?.displayDate}</p>
+        </div>
+        {/* Tape effect */}
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-32 h-10 bg-white/40 backdrop-blur-sm border border-white/20 rotate-1 shadow-sm mix-blend-overlay" />
+      </motion.div>
+
+      <motion.div 
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.4 }}
+        className="mt-12 text-center"
+      >
+        <h2 className="font-serif text-4xl text-[var(--colorPrimary)] mb-4">
+          {couple?.groom?.firstName} <span className="text-2xl font-script">&</span> {couple?.bride?.firstName}
+        </h2>
+        <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-[var(--colorTextDark)]/60">
+          Capture these moments with us
+        </p>
+      </motion.div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   LAYOUT 8 — Sinhala Traditional (Sri Lankan style)
+───────────────────────────────────────────────────────── */
+function Layout8({ config }) {
+  const { couple = {}, wedding = {}, events = {}, heroImage } = config;
+  const ceremony = events?.ceremony || {};
+
+  return (
+    <div className="flex flex-col items-center w-full min-h-[85vh] relative overflow-hidden bg-[var(--colorBg)] px-6">
+      {/* Traditional Bo Leaf pattern hints in background */}
+      <div className="absolute top-0 right-0 w-64 h-64 opacity-5 pointer-events-none">
+        <svg viewBox="0 0 200 200" fill="var(--colorPrimary)">
+          <path d="M100,20 C100,20 160,80 160,120 C160,160 130,180 100,180 C70,180 40,160 40,120 C40,80 100,20 100,20 Z" />
+        </svg>
+      </div>
+
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="relative z-10 w-full max-w-xl bg-white/50 backdrop-blur-md rounded-[40px] border-4 border-double border-[var(--colorPrimary)] p-8 md:p-12 text-center my-12 shadow-2xl"
+      >
+        {/* Traditional Symbol */}
+        <div className="mb-8 flex justify-center">
+          <div className="w-16 h-16 rounded-full border-2 border-[var(--colorPrimary)] flex items-center justify-center">
+            <span className="text-2xl text-[var(--colorPrimary)]">🪔</span>
+          </div>
+        </div>
+
+        <p className="font-sinhala text-lg md:text-xl text-[var(--colorTextDark)] mb-6 leading-relaxed">
+          ශුභ මංගලම් <br />
+          <span className="text-sm opacity-60">Subha Mangalam</span>
+        </p>
+
+        <h1 className="font-sinhala text-3xl md:text-6xl text-[var(--colorPrimary)] mb-4 tracking-tight">
+          {couple?.groom?.firstName} සහ {couple?.bride?.firstName}
+        </h1>
+
+        <div className="flex items-center justify-center gap-4 my-8">
+          <div className="h-px flex-1 bg-[var(--colorPrimary)]/30" />
+          <div className="w-3 h-3 rotate-45 bg-[var(--colorPrimary)]" />
+          <div className="h-px flex-1 bg-[var(--colorPrimary)]/30" />
+        </div>
+
+        <div className="space-y-4">
+          <p className="font-sinhala text-2xl text-[var(--colorTextDark)]">
+            {wedding?.displayDate}
+          </p>
+          <p className="font-sans text-[10px] tracking-[0.4em] uppercase opacity-50 mb-4">Wedding Celebration</p>
+          
+          {ceremony?.venueName && (
+            <div className="bg-[var(--colorPrimary)]/5 p-4 rounded-2xl inline-block w-full max-w-xs">
+              <p className="font-sinhala text-sm text-[var(--colorTextDark)]/80 mb-1 font-bold">පින්බර උත්සව අවස්ථාව</p>
+              <p className="font-sans text-xs font-bold uppercase">{ceremony?.venueName}</p>
+            </div>
+          )}
+        </div>
+
+        <div className="mt-12 text-[var(--colorPrimary)] opacity-40 text-3xl">✾</div>
+      </motion.div>
+
+      {heroImage && (
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          className="w-full h-64 md:h-96 -mt-32 relative z-0"
+        >
+          <img src={heroImage} className="w-full h-full object-cover" style={{ maskImage: 'linear-gradient(to top, transparent, black)' }} />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--colorBg)] to-transparent" />
+        </motion.div>
+      )}
     </div>
   );
 }

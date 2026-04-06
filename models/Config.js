@@ -34,6 +34,7 @@ export const getDefaultConfig = (slug) => ({
     }
   },
   gallery: [],
+  audioUrl: '',
   heroImage: '',
   heroLayout: 1,
   revealStyle: 'envelope',

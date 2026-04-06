@@ -185,6 +185,153 @@ function Layout4({ config, ref1, ref2, ref3 }) {
   );
 }
 
+// ── LAYOUT 5 — Modern Minimalist Story ──
+function Layout5({ config, ref1, ref2, ref3 }) {
+  const { story } = config;
+  return (
+    <div className="max-w-5xl mx-auto px-6 py-24 flex flex-col md:flex-row gap-16 items-center">
+      <div className="md:w-1/2">
+        <div ref={ref1} className="opacity-0 translate-y-8 transition-all duration-700 mb-12">
+          <h2 className="font-sans text-[clamp(48px,10vw,80px)] font-black uppercase tracking-tighter text-[var(--colorTextDark)] leading-[0.8] mb-6">
+            The<br />Story
+          </h2>
+          <div className="w-16 h-2 bg-[var(--colorPrimary)]" />
+        </div>
+        <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-700 delay-200">
+           <p className="font-serif text-2xl text-[var(--colorTextDark)] mb-8 font-medium">
+             {story.invitationText}
+           </p>
+           <div className="space-y-6">
+             {story.paragraphs.map((p, i) => (
+                <p key={i} className="font-sans text-sm tracking-wide text-[var(--colorTextDark)] opacity-60 leading-relaxed">
+                   {p}
+                </p>
+             ))}
+           </div>
+        </div>
+      </div>
+      <div ref={ref3} className="md:w-1/2 grid grid-cols-2 gap-4 opacity-0 translate-y-8 transition-all duration-700 delay-400">
+        <div className="aspect-[3/4] bg-slate-200 rounded-none overflow-hidden mt-12">
+          <img src={config.gallery?.[0]?.src} className="w-full h-full object-cover grayscale" />
+        </div>
+        <div className="aspect-[3/4] bg-slate-200 rounded-none overflow-hidden">
+          <img src={config.gallery?.[1]?.src} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── LAYOUT 6 — Watercolor Floral Story ──
+function Layout6({ config, ref1, ref2, ref3 }) {
+  const { story } = config;
+  return (
+    <div className="max-w-4xl mx-auto px-6 py-24 text-center">
+      <div ref={ref1} className="opacity-0 translate-y-8 transition-all duration-1000 mb-16">
+        <span className="text-4xl mb-4 block">🌸</span>
+        <h2 className="font-script text-6xl text-[var(--colorPrimary)] mb-2">Our Love Story</h2>
+        <div className="flex justify-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-[var(--colorPrimary)]/20" />
+          <div className="w-2 h-2 rounded-full bg-[var(--colorPrimary)]/40" />
+          <div className="w-2 h-2 rounded-full bg-[var(--colorPrimary)]/60" />
+        </div>
+      </div>
+      <div className="bg-white/40 backdrop-blur-md p-10 md:p-16 rounded-[100px_20px_100px_20px] border border-[var(--colorPrimary)]/10 shadow-xl relative overflow-hidden">
+        <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-1000 delay-300">
+          <p className="font-serif text-2xl md:text-3xl text-[var(--colorTextDark)] mb-10 italic">
+            {story.invitationText}
+          </p>
+          <div className="space-y-8 text-center max-w-2xl mx-auto">
+            {story.paragraphs.map((p, i) => (
+               <p key={i} className="font-sans text-sm md:text-base text-[var(--colorTextDark)]/70 leading-relaxed tracking-wide">
+                  {p}
+               </p>
+            ))}
+          </div>
+        </div>
+        <div className="absolute top-0 right-0 p-8 opacity-10">🌿</div>
+        <div className="absolute bottom-0 left-0 p-8 opacity-10">🍃</div>
+      </div>
+    </div>
+  );
+}
+
+// ── LAYOUT 7 — Polaroid Scrapbook Story ──
+function Layout7({ config, ref1, ref2, ref3 }) {
+  const { story } = config;
+  return (
+    <div className="max-w-5xl mx-auto px-6 py-24">
+      <div className="flex flex-col md:flex-row gap-12 items-center">
+        <div className="md:w-1/2 relative">
+          <div className="absolute -top-4 -left-4 w-24 h-24 bg-[var(--colorPrimary)]/10 rounded-full blur-3xl" />
+          <div ref={ref1} className="opacity-0 translate-y-8 transition-all duration-700 bg-white p-4 pb-16 shadow-2xl border border-slate-100 -rotate-3 relative z-10 w-full max-w-sm ml-auto">
+            <div className="aspect-square bg-slate-100 overflow-hidden mb-4">
+               <img src={config.gallery?.[2]?.src || config.heroImage} className="w-full h-full object-cover sepia-[0.2]" />
+            </div>
+            <p className="font-script text-3xl text-slate-700 text-center">Moments Together</p>
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-white/60 backdrop-blur-sm border border-white/20 shadow-sm" />
+          </div>
+        </div>
+        <div className="md:w-1/2">
+          <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-700 delay-300">
+            <h2 className="font-script text-5xl text-slate-800 mb-6 font-bold underline decoration-[var(--colorPrimary)]/20 decoration-8 underline-offset-[-2px]">Our Journey</h2>
+            <p className="font-serif text-xl text-slate-700 mb-8 italic leading-relaxed">
+              {story.invitationText}
+            </p>
+            <div className="space-y-6">
+              {story.paragraphs.map((p, i) => (
+                 <p key={i} className="font-sans text-sm text-slate-500 leading-[1.8] tracking-wide">
+                    {p}
+                 </p>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── LAYOUT 8 — Sinhala Traditional Story ──
+function Layout8({ config, ref1, ref2, ref3 }) {
+  const { story } = config;
+  return (
+    <div className="max-w-5xl mx-auto px-6 py-24 md:py-32 relative">
+      <div className="absolute top-10 right-10 w-32 h-32 opacity-5 pointer-events-none">
+         <svg viewBox="0 0 100 100" fill="var(--colorPrimary)"><path d="M50,10 C50,10 80,40 80,60 C80,80 65,90 50,90 C35,90 20,80 20,60 C20,40 50,10 50,10 Z" /></svg>
+      </div>
+
+      <div ref={ref1} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-1000">
+        <p className="font-sinhala text-xl text-[var(--colorPrimary)] mb-2">ආදර චාරිකාව</p>
+        <h2 className="font-sinhala text-4xl md:text-6xl text-[var(--colorTextDark)] mb-6">අපේ කතාව</h2>
+        <div className="flex justify-center gap-4 items-center">
+          <div className="h-px w-16 bg-[var(--colorPrimary)]" />
+          <span className="text-2xl text-[var(--colorPrimary)]">❦</span>
+          <div className="h-px w-16 bg-[var(--colorPrimary)]" />
+        </div>
+      </div>
+
+      <div className="bg-[var(--colorPrimary)]/5 p-10 md:p-16 border-2 border-double border-[var(--colorPrimary)]/30 rounded-[40px] relative shadow-inner">
+        <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-1000 delay-300 text-center">
+          <p className="font-sinhala text-2xl md:text-3xl text-[var(--colorTextDark)] mb-12 leading-relaxed">
+            {story.invitationText}
+          </p>
+          <div className="space-y-10 text-center max-w-3xl mx-auto">
+            {story.paragraphs.map((p, i) => (
+               <p key={i} className="font-sinhala text-lg md:text-xl text-[var(--colorTextDark)]/70 leading-loose">
+                  {p}
+               </p>
+            ))}
+          </div>
+        </div>
+        <div className="mt-16 text-center">
+           <span className="font-script text-4xl text-[var(--colorPrimary)] opacity-50">Thank You for Being a Part of Us</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function StorySection({ config }) {
   const ref1 = useReveal();
   const ref2 = useReveal();
@@ -207,7 +354,6 @@ export default function StorySection({ config }) {
             backgroundImage: `url(${config.sectionBackgrounds.story})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundAttachment: 'fixed',
             filter: 'blur(15px)',
             transform: 'scale(1.05)',
             opacity: 0.5
@@ -215,7 +361,15 @@ export default function StorySection({ config }) {
         />
       )}
       <div className="absolute inset-0 bg-white/5 z-[1] pointer-events-none" />
-      {layout === 4 ? (
+      {layout === 8 ? (
+        <Layout8 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
+      ) : layout === 7 ? (
+        <Layout7 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
+      ) : layout === 6 ? (
+        <Layout6 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
+      ) : layout === 5 ? (
+        <Layout5 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
+      ) : layout === 4 ? (
         <Layout4 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
       ) : layout === 3 ? (
         <Layout3 config={config} ref1={ref1} ref2={ref2} ref3={ref3} ref4={ref4} />

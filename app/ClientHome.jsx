@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Envelope from './components/Envelope';
 import CoupleReveal from './components/CoupleReveal';
@@ -16,6 +16,8 @@ import Footer from './components/Footer';
 import { PRESET_THEMES } from '../lib/themes';
 
 export default function ClientHome({ config }) {
+  const audioRef = useRef(null);
+  const [audioPlaying, setAudioPlaying] = useState(false);
   const [hasOpened, setHasOpened] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -23,9 +25,27 @@ export default function ClientHome({ config }) {
     setMounted(true);
   }, []);
 
+  // Play audio after user opens invitation
   const handleOpen = () => {
     setHasOpened(true);
+    if (audioRef.current && config.audioUrl) {
+      audioRef.current.play().catch(() => {});
+      setAudioPlaying(true);
+    }
   };
+
+  const toggleAudio = () => {
+    if (!audioRef.current) return;
+    if (audioPlaying) {
+      audioRef.current.pause();
+      setAudioPlaying(false);
+    } else {
+      audioRef.current.play().catch(() => {});
+      setAudioPlaying(true);
+    }
+  };
+
+
 
   const revealStyle = config.revealStyle || 'envelope';
   const themeId = config.themeId || config.theme || 'gold';
@@ -62,6 +82,9 @@ export default function ClientHome({ config }) {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: themeStyles }} />
+      {config.audioUrl && (
+        <audio ref={audioRef} src={config.audioUrl} loop preload="auto" style={{ display: 'none' }} />
+      )}
       <AnimatePresence mode="wait">
         {!hasOpened && (
           revealStyle === 'cover' ? (
@@ -80,6 +103,16 @@ export default function ClientHome({ config }) {
         transition={{ duration: 1, delay: 0.5 }}
       >
         {mainContent}
+        {/* Floating audio toggle */}
+        {config.audioUrl && (
+          <button
+            onClick={toggleAudio}
+            className="fixed bottom-4 right-4 z-50 bg-white/80 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-white transition"
+            aria-label={audioPlaying ? 'Pause background music' : 'Play background music'}
+          >
+            {audioPlaying ? '🔊' : '🔈'}
+          </button>
+        )}
       </motion.div>
     </>
   );

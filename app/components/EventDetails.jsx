@@ -179,6 +179,181 @@ function Layout3({ config }) {
   );
 }
 
+// ── LAYOUT 5 — Modern Minimalist Events ──
+function EventCard5({ event, delay }) {
+  const ref = useReveal(delay);
+  return (
+    <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 flex flex-col md:flex-row items-center border-t border-[var(--colorTextDark)]/10 py-12 w-full group">
+      <div className="md:w-1/4 mb-4 md:mb-0">
+        <p className="font-serif text-3xl text-[var(--colorTextDark)]">{event.time}</p>
+      </div>
+      <div className="md:w-2/4 text-center md:text-left mb-6 md:mb-0">
+        <h3 className="font-sans text-[clamp(24px,4vw,36px)] font-bold uppercase tracking-tighter text-[var(--colorTextDark)] mb-2 group-hover:text-[var(--colorPrimary)] transition-colors">{event.title}</h3>
+        <p className="font-serif italic text-lg text-[var(--colorTextDark)]/60">{event.venueName}</p>
+      </div>
+      <div className="md:w-1/4 flex justify-center md:justify-end">
+        <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-full border border-[var(--colorTextDark)]/20 hover:border-[var(--colorPrimary)] hover:bg-[var(--colorPrimary)] hover:text-white transition-all">
+          <PlaneIcon />
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function Layout5({ config }) {
+  const { events } = config;
+  return (
+    <div className="max-w-4xl mx-auto px-6 py-24">
+      <div className="mb-20">
+        <h2 className="font-sans text-[clamp(40px,8vw,80px)] font-extrabold uppercase tracking-tighter text-[var(--colorTextDark)]/10 leading-none mb-[-20px] text-center md:text-left">Details</h2>
+        <p className="font-serif text-3xl italic text-[var(--colorTextDark)] relative z-10 text-center md:text-left md:pl-4">Where it all begins</p>
+      </div>
+      <div className="flex flex-col">
+        {Object.entries(events).map(([key, event], idx) => (
+          <EventCard5 key={key} event={event} delay={idx * 100} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── LAYOUT 6 — Watercolor Floral Events ──
+function EventCard6({ event, delay }) {
+  const ref = useReveal(delay);
+  return (
+    <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 bg-white/40 p-8 rounded-[60px_20px_60px_20px] border border-[var(--colorPrimary)]/10 text-center shadow-lg relative overflow-hidden group">
+      <div className="absolute -top-10 -right-10 w-24 h-24 bg-[var(--colorPrimary)]/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+      <span className="text-3xl mb-4 block">💮</span>
+      <h3 className="font-script text-4xl text-[var(--colorPrimary)] mb-2">{event.title}</h3>
+      <p className="font-sans text-[10px] tracking-widest uppercase font-bold text-[var(--colorTextDark)]/60 mb-6">{event.time}</p>
+      <div className="space-y-2 mb-8">
+        <p className="font-serif text-lg text-[var(--colorTextDark)]">{event.venueName}</p>
+        <p className="font-sans text-[10px] uppercase text-[var(--colorTextDark)]/40 tracking-widest">{event.address}</p>
+      </div>
+      <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="px-8 py-2.5 rounded-full bg-[var(--colorPrimary)]/10 text-[var(--colorPrimary)] font-bold text-[10px] uppercase tracking-widest hover:bg-[var(--colorPrimary)] hover:text-white transition-all shadow-sm">
+        Directions
+      </a>
+    </div>
+  );
+}
+
+function Layout6({ config }) {
+  const { events } = config;
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-24 text-center">
+      <div className="mb-16">
+        <span className="text-2xl mb-4 block opacity-40">❦</span>
+        <h2 className="font-serif text-5xl text-[var(--colorTextDark)] mb-2">The Celebration</h2>
+        <p className="font-script text-3xl text-[var(--colorPrimary)] opacity-70">Lovely moments together</p>
+      </div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {Object.entries(events).map(([key, event], idx) => (
+          <EventCard6 key={key} event={event} delay={idx * 150} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── LAYOUT 7 — Polaroid Scrapbook Events ──
+function EventCard7({ event, delay }) {
+  const ref = useReveal(delay);
+  return (
+    <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 bg-white p-4 pb-12 shadow-xl border border-slate-100 rotate-1 group hover:rotate-0 transition-all duration-500 max-w-xs mx-auto">
+      <div className="aspect-square bg-slate-50 mb-4 overflow-hidden relative">
+        {event.image ? (
+          <img src={event.image} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-slate-200">
+            <span className="text-5xl">📍</span>
+          </div>
+        )}
+        <div className="absolute inset-0 bg-black/5" />
+      </div>
+      <div className="text-center px-2">
+        <h3 className="font-script text-3xl text-slate-800 mb-1">{event.title}</h3>
+        <p className="font-sans text-[10px] text-slate-400 uppercase tracking-widest mb-4">{event.time}</p>
+        <p className="font-serif text-sm text-slate-600 mb-6 leading-tight">{event.venueName}</p>
+        <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold uppercase tracking-widest text-[var(--colorPrimary)] hover:underline">
+          View on Maps →
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function Layout7({ config }) {
+  const { events } = config;
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-24 text-center">
+      <div className="mb-20">
+        <h2 className="font-script text-5xl text-slate-800 mb-2 underline decoration-[var(--colorPrimary)]/30 underline-offset-8">Our Plans</h2>
+      </div>
+      <div className="grid md:grid-cols-3 gap-12">
+        {Object.entries(events).map(([key, event], idx) => (
+          <EventCard7 key={key} event={event} delay={idx * 100} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── LAYOUT 8 — Sinhala Traditional Events ──
+function EventCard8({ event, delay }) {
+  const ref = useReveal(delay);
+  return (
+    <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 bg-[var(--colorPrimary)]/5 border-2 border-double border-[var(--colorPrimary)]/40 p-8 md:p-12 text-center relative group">
+      <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-[var(--colorPrimary)]" />
+      <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-[var(--colorPrimary)]" />
+      
+      <h3 className="font-sinhala text-3xl text-[var(--colorPrimary)] mb-1">
+        {event.title}
+      </h3>
+      <p className="font-sans text-[10px] tracking-widest opacity-40 uppercase mb-6">{event.title}</p>
+      
+      <div className="flex flex-col items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 w-full">
+          <div className="h-px flex-1 bg-[var(--colorPrimary)]/20" />
+          <span className="text-xl">❉</span>
+          <div className="h-px flex-1 bg-[var(--colorPrimary)]/20" />
+        </div>
+        <div>
+          <p className="font-serif text-xl font-bold text-[var(--colorTextDark)] mb-1">{event.time}</p>
+          <p className="font-sinhala text-xs text-[var(--colorTextDark)]/60">වේලාව (Time)</p>
+        </div>
+      </div>
+
+      <div className="space-y-3 mb-10">
+        <p className="font-sinhala text-lg text-[var(--colorTextDark)] font-bold">{event.venueName}</p>
+        <p className="font-sans text-[10px] uppercase tracking-widest opacity-60 leading-relaxed max-w-[200px] mx-auto">{event.address}</p>
+      </div>
+
+      <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="px-10 py-3 bg-[var(--colorPrimary)] text-white font-sans text-[10px] font-bold uppercase tracking-widest shadow-xl hover:bg-[var(--colorTextDark)] transition-colors">
+        සිිතියම (Map)
+      </a>
+    </div>
+  );
+}
+
+function Layout8({ config }) {
+  const { events } = config;
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-28">
+      <div className="text-center mb-20">
+        <h2 className="font-sinhala text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 leading-relaxed">
+          පින්බර උත්සව අවස්ථාවන්හි තොරතුරු
+        </h2>
+        <div className="w-16 h-1 bg-[var(--colorPrimary)] mx-auto rounded-full" />
+      </div>
+      <div className="grid md:grid-cols-2 gap-12">
+        {Object.entries(events).map(([key, event], idx) => (
+          <EventCard8 key={key} event={event} delay={idx * 150} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function EventDetails({ config }) {
   const layout = config?.heroLayout ?? 1;
 
@@ -196,7 +371,6 @@ export default function EventDetails({ config }) {
             backgroundImage: `url(${config.sectionBackgrounds.events})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundAttachment: 'fixed',
             filter: 'blur(15px)',
             transform: 'scale(1.05)',
             opacity: 0.5
@@ -204,7 +378,13 @@ export default function EventDetails({ config }) {
         />
       )}
       <div className="absolute inset-0 bg-white/5 z-[1] pointer-events-none" />
-      {layout === 4 ? <Layout4 config={config} /> : layout === 3 ? <Layout3 config={config} /> : layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
+      {layout === 8 ? <Layout8 config={config} /> : 
+       layout === 7 ? <Layout7 config={config} /> : 
+       layout === 6 ? <Layout6 config={config} /> : 
+       layout === 5 ? <Layout5 config={config} /> : 
+       layout === 4 ? <Layout4 config={config} /> : 
+       layout === 3 ? <Layout3 config={config} /> : 
+       layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
     </section>
   );
 }

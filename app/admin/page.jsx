@@ -4,7 +4,7 @@ import AdminLogin from './components/AdminLogin';
 import { motion, AnimatePresence } from 'framer-motion';
 import ImageCropper from './components/ImageCropper';
 import imageCompression from 'browser-image-compression';
-import { Trash2, ImageIcon, Upload, X, Heart, Calendar, Book, MapPin, Image, Mail, Palette, Search, Layers, Sparkles, CheckCircle, AlertCircle, Save, ExternalLink } from 'lucide-react';
+import { Trash2, ImageIcon, Upload, X, Heart, Calendar, Book, MapPin, Image, Mail, Palette, Search, Layers, Sparkles, CheckCircle, AlertCircle, Save, ExternalLink, Music } from 'lucide-react';
 import { PRESET_THEMES } from '../../lib/themes';
 
 const ImageField = ({ label, hint, value, path, type, onUpload, onDelete }) => (
@@ -545,8 +545,9 @@ function AdminDashboard({ slug, onBack, showToast }) {
     // 1. Initial Compression (Reduce huge files before cropping/sending)
     let processedFile = file;
     const isGif = file.type === 'image/gif' || file.name.toLowerCase().endsWith('.gif');
+    const isAudio = type === 'audio' || file.type.startsWith('audio/');
 
-    if (!isGif && file.size > 1024 * 1024) { // Only compress non-GIFs > 1MB
+    if (!isGif && !isAudio && file.size > 1024 * 1024) { // Only compress non-GIFs/non-Audio > 1MB
       showToast('success', 'Optimizing file size...');
       try {
         const options = {
@@ -921,10 +922,14 @@ function AdminDashboard({ slug, onBack, showToast }) {
               <FieldGroup label="Invitation Card Layout" hint="Choose the hero card style for your invitation">
                 <div className="col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
                   {[
-                    { id: 1, label: 'Layout 1: Script Overlay', desc: 'Photo on top - "forever" cursive straddling photo & text - Clean details below' },
-                    { id: 2, label: 'Layout 2: Names on Photo', desc: 'Full-bleed photo fading to white - Names overlaid - Large numeric date below' },
-                    { id: 3, label: 'Layout 3 --- Royal Arch', desc: 'Ornate Indian-style arches -- Warm pink/peach aesthetics -- Traditional fonts and decorative motifs' },
-                    { id: 4, label: 'Layout 4: Nature Arch', desc: 'Premium forest archway design with central couple illustration and refined typography.' },
+                    { id: 1, label: 'Layout 1: Script Overlay', desc: 'Classic cursive styling with photo and details' },
+                    { id: 2, label: 'Layout 2: Clean Fade', desc: 'Names on photo with large numeric date' },
+                    { id: 3, label: 'Layout 3: Royal Arch', desc: 'Traditional borders and elegant arches' },
+                    { id: 4, label: 'Layout 4: Nature Arch', desc: 'Premium forest-inspired archway' },
+                    { id: 5, label: 'Layout 5: Minimalist', desc: 'Modern high-contrast typography' },
+                    { id: 6, label: 'Layout 6: Floral Garden', desc: 'Watercolor blooms and garden theme' },
+                    { id: 7, label: 'Layout 7: Polaroid', desc: 'Retro scrapbook style with taped photo' },
+                    { id: 8, label: 'Layout 8: Sinhala Traditional', desc: 'Traditional Sri Lankan style with Sinhala fonts' },
                   ].map(layout => {
                     const active = (config.heroLayout ?? 1) === layout.id;
                     return (
@@ -1365,6 +1370,45 @@ function AdminDashboard({ slug, onBack, showToast }) {
                       </button>
                     )}
                   </div>
+                </div>
+              </FieldGroup>
+            </SectionCard>
+          )}
+
+          {activeTab === 'decor' && (
+            <SectionCard title="Background Music" icon={<Music size={18} className="text-purple-500" />}>
+              <FieldGroup label="Audio File URL" hint="Paste a URL or upload an MP3 file. This music will play after common interaction.">
+                <div className="flex flex-col gap-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      className={inputCls}
+                      value={config.audioUrl || ''}
+                      onChange={e => setPath('audioUrl', e.target.value)}
+                      placeholder="https://example.com/music.mp3"
+                    />
+                    <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center transition-colors">
+                      Upload
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="audio/*" 
+                        onChange={e => handleUpload(e.target.files[0], 'audioUrl', 'audio')} 
+                      />
+                    </label>
+                    {config.audioUrl && (
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteImage('audioUrl', config.audioUrl)}
+                        className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  {config.audioUrl && (
+                    <audio src={config.audioUrl} controls className="w-full h-8 mt-2" />
+                  )}
                 </div>
               </FieldGroup>
             </SectionCard>
