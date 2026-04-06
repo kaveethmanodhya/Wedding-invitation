@@ -361,7 +361,7 @@ export default function EventDetails({ config }) {
     <section 
       id="events" 
       className="overflow-hidden transition-colors duration-500 relative"
-      style={{ backgroundColor: 'var(--colorBg)' }}
+      style={{ backgroundColor: layout === 9 ? '#020617' : 'var(--colorBg)' }}
     >
       {/* ── BLURRED BACKGROUND LAYER ── */}
       {config.sectionBackgrounds?.events && (
@@ -377,8 +377,9 @@ export default function EventDetails({ config }) {
           }} 
         />
       )}
-      <div className="absolute inset-0 bg-white/5 z-[1] pointer-events-none" />
-      {layout === 8 ? <Layout8 config={config} /> : 
+      <div className={`absolute inset-0 z-[1] pointer-events-none ${layout === 9 ? 'bg-black/40' : 'bg-white/5'}`} />
+      {layout === 9 ? <Layout9 config={config} /> : 
+       layout === 8 ? <Layout8 config={config} /> : 
        layout === 7 ? <Layout7 config={config} /> : 
        layout === 6 ? <Layout6 config={config} /> : 
        layout === 5 ? <Layout5 config={config} /> : 
@@ -386,6 +387,53 @@ export default function EventDetails({ config }) {
        layout === 3 ? <Layout3 config={config} /> : 
        layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
     </section>
+  );
+}
+
+// ── LAYOUT 9 — Modern Dark Events ──
+function EventCard9({ event, delay }) {
+  const ref = useReveal(delay);
+  return (
+    <article
+      ref={ref}
+      className="opacity-0 translate-y-8 transition-all duration-1000 bg-white/95 rounded-[2.5rem] p-10 flex flex-col items-center text-center gap-4 w-full max-w-sm relative group transition-all duration-500 shadow-2xl"
+    >
+      <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center text-3xl mb-2">
+        {event.icon || '📍'}
+      </div>
+      <h3 className="font-sans text-3xl md:text-4xl font-black uppercase tracking-tighter text-slate-900">{event.title}</h3>
+      <p className="font-sans text-xs tracking-[0.4em] uppercase text-[var(--colorPrimary)] font-bold">{event.time}</p>
+      
+      <div className="h-px w-12 bg-slate-200 my-2" />
+
+      <div className="flex flex-col gap-1 w-full max-w-xs text-center mb-8">
+        <span className="font-sans font-bold uppercase tracking-widest text-[10px] text-slate-700">{event.venueName}</span>
+        <span className="font-sans text-xs text-slate-500 mt-1 leading-relaxed">{event.address}</span>
+      </div>
+
+      <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="mt-auto flex items-center gap-3 px-10 py-4 bg-white text-black font-sans text-[10px] font-bold tracking-[0.3em] uppercase hover:bg-[var(--colorPrimary)] hover:text-white transition-all duration-500 rounded-xl shadow-xl shadow-black/20">
+        <PlaneIcon /> Get Directions
+      </a>
+    </article>
+  );
+}
+
+function Layout9({ config }) {
+  const headerRef = useReveal(0);
+  const { events } = config;
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-24 md:py-32">
+      <div ref={headerRef} className="text-center mb-20 opacity-0 translate-y-8 transition-all duration-1000">
+        <h2 className="font-sans text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-4 bg-gradient-to-r from-white via-white/80 to-white/40 bg-clip-text text-transparent">The Events</h2>
+        <p className="font-sans text-[10px] tracking-[0.6em] uppercase text-white/40 font-bold">Time & Locations</p>
+      </div>
+
+      <div className={`flex flex-wrap justify-center gap-8 ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
+        {Object.entries(events).map(([key, event], idx) => (
+          <EventCard9 key={key} event={event} delay={idx * 150} />
+        ))}
+      </div>
+    </div>
   );
 }
 

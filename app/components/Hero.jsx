@@ -263,7 +263,7 @@ export default function Hero({ config }) {
   return (
     <section
       id="hero"
-      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden transition-all duration-500"
+      className={`min-h-screen flex flex-col items-center ${layout === 9 ? 'justify-start' : 'justify-center'} relative overflow-hidden transition-all duration-500`}
       style={{ backgroundColor: 'var(--colorBg)' }}
     >
       {/* ── BLURRED BACKGROUND LAYER ── */}
@@ -284,8 +284,9 @@ export default function Hero({ config }) {
       <div className="absolute inset-0 bg-white/5 z-[1] pointer-events-none" />
 
       <div className="absolute inset-0 pointer-events-none z-[1]" style={{ background: 'radial-gradient(circle at 50% 50%, var(--colorPrimary) 0%, transparent 60%)', opacity: 0.03 }} />
-      <div className="relative z-10 w-full flex justify-center py-20 px-4">
-        {layout === 8 ? <Layout8 config={config} /> : 
+      <div className={`relative z-10 w-full flex justify-center ${layout === 9 ? 'p-0' : 'py-20 px-4'}`}>
+        {layout === 9 ? <Layout9 config={config} /> : 
+         layout === 8 ? <Layout8 config={config} /> : 
          layout === 7 ? <Layout7 config={config} /> : 
          layout === 6 ? <Layout6 config={config} /> : 
          layout === 5 ? <Layout5 config={config} /> : 
@@ -294,6 +295,44 @@ export default function Hero({ config }) {
          layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
       </div>
     </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   LAYOUT 9 — Modern Full Cover (Textless)
+───────────────────────────────────────────────────────── */
+function Layout9({ config }) {
+  const { heroImage, sectionBackgrounds } = config;
+  const heroBg = sectionBackgrounds?.hero || heroImage || '/images/nature-arch-bg.png';
+
+  return (
+    <div className="w-full relative bg-black">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5, ease: 'easeOut' }}
+        className="w-full relative"
+      >
+        <img 
+          src={heroBg} 
+          className="w-full h-auto block" 
+          alt="Wedding Hero" 
+        />
+        {/* Very Subtle Gradient Overlay for bottom transition */}
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+      </motion.div>
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 opacity-50 text-white">
+        <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Scroll</span>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M7 13l5 5 5-5M7 6l5 5 5-5" />
+          </svg>
+        </motion.div>
+      </div>
+    </div>
   );
 }
 

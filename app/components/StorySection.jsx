@@ -344,7 +344,7 @@ export default function StorySection({ config }) {
     <section 
       id="story" 
       className="overflow-hidden transition-colors duration-500 relative"
-      style={{ backgroundColor: 'var(--colorBg)' }}
+      style={{ backgroundColor: layout === 9 ? '#020617' : 'var(--colorBg)' }}
     >
       {/* ── BLURRED BACKGROUND LAYER ── */}
       {config.sectionBackgrounds?.story && (
@@ -360,8 +360,10 @@ export default function StorySection({ config }) {
           }} 
         />
       )}
-      <div className="absolute inset-0 bg-white/5 z-[1] pointer-events-none" />
-      {layout === 8 ? (
+      <div className={`absolute inset-0 z-[1] pointer-events-none ${layout === 9 ? 'bg-black/40' : 'bg-white/5'}`} />
+      {layout === 9 ? (
+        <Layout9 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
+      ) : layout === 8 ? (
         <Layout8 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
       ) : layout === 7 ? (
         <Layout7 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
@@ -379,5 +381,39 @@ export default function StorySection({ config }) {
         <Layout1 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
       )}
     </section>
+  );
+}
+
+// ── LAYOUT 9 — Modern Dark Story ──
+function Layout9({ config, ref1, ref2, ref3 }) {
+  const { story } = config;
+  return (
+    <div className="max-w-5xl mx-auto px-6 py-24 md:py-32 relative text-white">
+      <div ref={ref1} className="opacity-0 translate-y-8 transition-all duration-1000 mb-16 text-center">
+        <h2 className="font-sans text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4 leading-none bg-gradient-to-r from-white via-white/80 to-white/40 bg-clip-text text-transparent">
+          The Story
+        </h2>
+        <div className="h-1 w-24 bg-[var(--colorPrimary)] mx-auto rounded-full" />
+      </div>
+
+      <div className="relative z-10 bg-white/5 backdrop-blur-2xl p-10 md:p-20 rounded-[40px] border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden">
+        {/* Glow effect */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--colorPrimary)]/10 rounded-full blur-[100px] -z-10" />
+        
+        <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-1000 delay-300 mb-12">
+          <p className="font-serif text-3xl md:text-4xl text-white font-medium leading-tight mb-8">
+            {story.invitationText}
+          </p>
+        </div>
+
+        <div ref={ref3} className="opacity-0 translate-y-8 transition-all duration-1000 delay-500 grid md:grid-cols-2 gap-8">
+          {story.paragraphs.map((p, i) => (
+            <p key={i} className="font-sans text-base md:text-lg text-white/70 leading-relaxed font-light">
+              {p}
+            </p>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

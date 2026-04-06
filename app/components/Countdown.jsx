@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 
-function CountdownBlock({ value, unit }) {
+function CountdownBlock({ value, unit, isLayout9 }) {
   const [prev, setPrev]   = useState(value);
   const [flip, setFlip]   = useState(false);
   const ref = useRef(null);
@@ -17,18 +17,19 @@ function CountdownBlock({ value, unit }) {
   const formatted = String(value).padStart(2, '0');
 
   return (
-    <div className="flex flex-col items-center bg-white/5 border border-[var(--colorSecondary)]/20
-      rounded-xl px-1.5 py-3 sm:px-6 sm:py-5 min-w-[62px] sm:min-w-[100px] backdrop-blur-sm transition-all duration-300"
+    <div className={`flex flex-col items-center backdrop-blur-md transition-all duration-300
+      rounded-2xl px-1.5 py-4 sm:px-6 sm:py-6 min-w-[62px] sm:min-w-[110px]
+      ${isLayout9 ? 'bg-white/5 border border-white/10 shadow-inner' : 'bg-white/5 border border-[var(--colorSecondary)]/20'}`}
     >
       <span
         ref={ref}
-        className={`font-serif font-light text-[var(--colorSecondary)] leading-none
-          text-3xl sm:text-5xl tracking-tight ${flip ? 'flip' : ''}`}
+        className={`font-sans font-black leading-none text-3xl sm:text-5xl tracking-tighter
+          ${isLayout9 ? 'text-white' : 'text-[var(--colorSecondary)]'} ${flip ? 'flip' : ''}`}
       >
         {formatted}
       </span>
-      <span className="font-sans text-[0.5rem] sm:text-[0.58rem] tracking-[0.1em] sm:tracking-[0.2em] uppercase
-        text-[var(--colorTextLight)]/40 mt-1 sm:mt-2"
+      <span className={`font-sans text-[0.5rem] sm:text-[0.6rem] tracking-[0.2em] sm:tracking-[0.3em] uppercase mt-2
+        ${isLayout9 ? 'text-white/40' : 'text-[var(--colorTextLight)]/40'}`}
       >
         {unit}
       </span>
@@ -66,14 +67,13 @@ export default function Countdown({ config }) {
     return () => clearInterval(id);
   }, [target]);
 
+  const layout = config?.heroLayout ?? 1;
+  const isLayout9 = layout === 9;
+
   // If not mounted, render the section structure with empty blocks
-  // to avoid layout shift while preventing hydration mismatch
   if (!isMounted) {
     return (
-      <section id="countdown" className="bg-[var(--colorTextDark)] text-[var(--colorTextLight)] py-16 md:py-20 text-center overflow-hidden">
-        <p className="font-serif text-xs tracking-[0.24em] uppercase text-[var(--colorSecondary)] mb-8 invisible">
-          Counting down to the big day
-        </p>
+      <section id="countdown" className={`${isLayout9 ? 'bg-slate-900' : 'bg-[var(--colorTextDark)]'} text-[var(--colorTextLight)] py-16 md:py-24 text-center overflow-hidden`}>
         <div className="flex justify-center items-center gap-1 sm:gap-5 flex-nowrap px-1 sm:px-4 opacity-0 scale-95 sm:scale-100 transition-transform">
            <div className="min-w-[62px] sm:min-w-[100px] h-20 sm:h-24 bg-white/5 rounded-xl transition-all" />
            <div className="min-w-[62px] sm:min-w-[100px] h-20 sm:h-24 bg-white/5 rounded-xl transition-all" />
@@ -87,11 +87,11 @@ export default function Countdown({ config }) {
   return (
     <section
       id="countdown"
-      className="bg-[var(--colorTextDark)] text-[var(--colorTextLight)] py-16 md:py-20 text-center overflow-hidden"
+      className={`${isLayout9 ? 'bg-[#020617] border-y border-white/5 shadow-2xl relative z-10 text-white' : 'bg-[var(--colorTextDark)] text-[var(--colorTextLight)]'} py-16 md:py-24 text-center overflow-hidden`}
     >
-      <p className="font-serif text-xs tracking-[0.24em] uppercase text-[var(--colorSecondary)] mb-8">
+      <div className={`font-sans text-[10px] tracking-[0.6em] uppercase font-bold mb-10 ${isLayout9 ? 'text-white/40' : 'text-[var(--colorSecondary)]'}`}>
         Counting down to the big day
-      </p>
+      </div>
 
       {done ? (
         <p className="font-script text-3xl text-[var(--colorSecondary)] px-4">
@@ -99,13 +99,13 @@ export default function Countdown({ config }) {
         </p>
       ) : timeLeft && (
         <div className="flex justify-center items-center gap-1 sm:gap-5 flex-nowrap px-1 sm:px-4 overflow-hidden">
-          <CountdownBlock value={timeLeft.days}    unit="Days" />
-          <span className="font-serif text-xl sm:text-3xl text-[var(--colorSecondary)]/40 mb-3 sm:mb-5">:</span>
-          <CountdownBlock value={timeLeft.hours}   unit="Hours" />
-          <span className="font-serif text-xl sm:text-3xl text-[var(--colorSecondary)]/40 mb-3 sm:mb-5">:</span>
-          <CountdownBlock value={timeLeft.minutes} unit="Minutes" />
-          <span className="font-serif text-xl sm:text-3xl text-[var(--colorSecondary)]/40 mb-3 sm:mb-5">:</span>
-          <CountdownBlock value={timeLeft.seconds} unit="Seconds" />
+          <CountdownBlock value={timeLeft.days}    unit="Days" isLayout9={isLayout9} />
+          <span className={`font-serif text-xl sm:text-3xl mb-3 sm:mb-5 opacity-20 ${isLayout9 ? 'text-white' : 'text-[var(--colorSecondary)]'}`}>:</span>
+          <CountdownBlock value={timeLeft.hours}   unit="Hours" isLayout9={isLayout9} />
+          <span className={`font-serif text-xl sm:text-3xl mb-3 sm:mb-5 opacity-20 ${isLayout9 ? 'text-white' : 'text-[var(--colorSecondary)]'}`}>:</span>
+          <CountdownBlock value={timeLeft.minutes} unit="Minutes" isLayout9={isLayout9} />
+          <span className={`font-serif text-xl sm:text-3xl mb-3 sm:mb-5 opacity-20 ${isLayout9 ? 'text-white' : 'text-[var(--colorSecondary)]'}`}>:</span>
+          <CountdownBlock value={timeLeft.seconds} unit="Seconds" isLayout9={isLayout9} />
         </div>
       )}
     </section>

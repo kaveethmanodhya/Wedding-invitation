@@ -35,7 +35,7 @@ export default function Gallery({ config }) {
     <section 
       id="gallery" 
       className="py-20 md:py-28 transition-colors duration-500 relative overflow-hidden"
-      style={{ backgroundColor: 'var(--colorBg)' }}
+      style={{ backgroundColor: layout === 9 ? '#020617' : 'var(--colorBg)' }}
     >
       {/* ── BLURRED BACKGROUND LAYER ── */}
       {config.sectionBackgrounds?.gallery && (
@@ -51,12 +51,12 @@ export default function Gallery({ config }) {
           }} 
         />
       )}
-      <div className="absolute inset-0 bg-white/5 z-[1] pointer-events-none" />
+      <div className={`absolute inset-0 z-[1] pointer-events-none ${layout === 9 ? 'bg-black/40' : 'bg-white/5'}`} />
       <div className="max-w-5xl mx-auto px-6">
         
 
-        {/* Header Layout 1, 3, 5, 6, 7, 8 */}
-        {(layout === 1 || layout === 3 || layout === 5 || layout === 6 || layout === 7 || layout === 8) && (
+        {/* Header Layouts */}
+        {(layout === 1 || layout === 3 || layout === 5 || layout === 6 || layout === 7 || layout === 8 || layout === 9) && (
           <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
             {layout === 1 && (
               <>
@@ -96,6 +96,12 @@ export default function Gallery({ config }) {
                 <p className="font-sinhala text-xl text-[var(--colorPrimary)] mb-2">මතක සටහන්</p>
                 <h2 className="font-sinhala text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4">ඡායාරූප එකතුව</h2>
                 <div className="w-16 h-1.5 bg-[var(--colorPrimary)] mx-auto rounded-full" />
+              </div>
+            )}
+            {layout === 9 && (
+              <div className="text-center">
+                <h2 className="font-sans text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-4 bg-gradient-to-r from-white via-white/80 to-white/40 bg-clip-text text-transparent">Gallery</h2>
+                <p className="font-sans text-[10px] tracking-[0.6em] uppercase text-white/40 font-bold">The Moments Captured In Time</p>
               </div>
             )}
           </div>
@@ -203,6 +209,21 @@ export default function Gallery({ config }) {
             >
               <div className="relative w-full h-full bg-[var(--colorBg)]">
                 <Image src={photo.src} alt={photo.alt} width={800} height={800} className="w-full h-full object-cover saturate-50 opacity-80 hover:saturate-100 hover:opacity-100 transition-all duration-700 hover:scale-110" />
+              </div>
+            </button>
+          ))}
+        </div>
+      ) : layout === 9 ? (
+        // Layout 9: Modern Dark Glass Grid
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-6 max-w-7xl mx-auto">
+          {gallery.map((photo, idx) => (
+            <button
+              key={idx} onClick={() => setLightbox(idx)}
+              className="group relative cursor-zoom-in focus:outline-none aspect-[3/4] overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl transition-all duration-700 hover:scale-[1.03] hover:border-[var(--colorPrimary)]/30"
+            >
+              <Image src={photo.src} alt={photo.alt} width={800} height={1000} className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-6">
+                <span className="text-[10px] text-white font-bold tracking-[0.3em] uppercase opacity-90">View Moment</span>
               </div>
             </button>
           ))}

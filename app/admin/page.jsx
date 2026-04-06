@@ -930,6 +930,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     { id: 6, label: 'Layout 6: Floral Garden', desc: 'Watercolor blooms and garden theme' },
                     { id: 7, label: 'Layout 7: Polaroid', desc: 'Retro scrapbook style with taped photo' },
                     { id: 8, label: 'Layout 8: Sinhala Traditional', desc: 'Traditional Sri Lankan style with Sinhala fonts' },
+                    { id: 9, label: 'Layout 9: Modern Full Cover', desc: 'Natural height background with no text; modern dark/gradient UI' },
                   ].map(layout => {
                     const active = (config.heroLayout ?? 1) === layout.id;
                     return (
@@ -949,6 +950,20 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   })}
                 </div>
               </FieldGroup>
+
+              {config.heroLayout === 9 && (
+                <div className="col-span-2 mt-4 pt-6 border-t border-slate-50">
+                  <ImageField 
+                    label="Layout 9 Full-Cover Background (Large Image)" 
+                    hint="For Layout 9, upload the large background image here. It will be shown in full height."
+                    value={config.sectionBackgrounds?.hero}
+                    path="sectionBackgrounds.hero"
+                    type="general"
+                    onUpload={handleUpload}
+                    onDelete={handleDeleteImage}
+                  />
+                </div>
+              )}
             </SectionCard>
           )}
 
@@ -1148,6 +1163,21 @@ function AdminDashboard({ slug, onBack, showToast }) {
                         onChange={() => setPath('revealStyle', 'cover')} 
                       />
                       <span className={`text-sm font-medium ${config.revealStyle === 'cover' ? 'text-slate-900' : 'text-slate-500'}`}>Cover Page</span>
+                    </label>
+
+                    <label className="flex items-center gap-2.5 cursor-pointer group">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${config.revealStyle === 'fade' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
+                        {config.revealStyle === 'fade' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
+                      </div>
+                      <input 
+                        type="radio" 
+                        className="hidden"
+                        name="revealStyle" 
+                        value="fade" 
+                        checked={config.revealStyle === 'fade'} 
+                        onChange={() => setPath('revealStyle', 'fade')} 
+                      />
+                      <span className={`text-sm font-medium ${config.revealStyle === 'fade' ? 'text-slate-900' : 'text-slate-500'}`}>Auto Fade Reveal</span>
                     </label>
                   </div>
                 </FieldGroup>

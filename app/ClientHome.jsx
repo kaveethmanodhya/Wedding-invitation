@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Envelope from './components/Envelope';
 import CoupleReveal from './components/CoupleReveal';
 import CoverReveal from './components/CoverReveal';
+import FadeReveal from './components/FadeReveal';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Countdown from './components/Countdown';
@@ -67,7 +68,7 @@ export default function ClientHome({ config }) {
   `;
 
   const mainContent = (
-    <main className={`min-h-screen theme-${themeId} ${!hasOpened ? 'h-screen overflow-hidden' : 'bg-[var(--colorBg)] text-[var(--colorTextDark)]'}`}>
+    <main className={`min-h-screen theme-${themeId} ${!hasOpened ? 'h-screen overflow-hidden' : (config.heroLayout === 9 ? 'bg-slate-950 text-white' : 'bg-[var(--colorBg)] text-[var(--colorTextDark)]')}`}>
       <Navbar config={config} />
       <Hero config={config} />
       <Countdown config={config} />
@@ -91,6 +92,8 @@ export default function ClientHome({ config }) {
             <CoverReveal key="cover-reveal" config={config} onOpen={handleOpen} />
           ) : revealStyle === 'couple' ? (
             <CoupleReveal key="couple-reveal" config={config} onOpen={handleOpen} />
+          ) : revealStyle === 'fade' ? (
+            <FadeReveal key="fade-reveal" config={config} onOpen={handleOpen} />
           ) : (
             <Envelope key="envelope-layer" config={config} onOpen={handleOpen} />
           )
