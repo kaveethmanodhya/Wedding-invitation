@@ -121,6 +121,7 @@ export default function RoyalEnvelope({ config, onOpen }) {
             style={{ 
               backgroundColor: primaryColor,
               backgroundImage: 'url("https://www.transparenttextures.com/patterns/natural-paper.png")',
+              backgroundBlendMode: 'multiply',
               borderRadius: '8px'
             }}
           >
@@ -161,14 +162,16 @@ export default function RoyalEnvelope({ config, onOpen }) {
                  style={{ 
                    backgroundColor: primaryColor,
                    clipPath: 'polygon(0% 0%, 100% 50%, 0% 100%)', 
-                   backgroundImage: 'url("https://www.transparenttextures.com/patterns/natural-paper.png")' 
+                   backgroundImage: 'url("https://www.transparenttextures.com/patterns/natural-paper.png")',
+                   backgroundBlendMode: 'multiply'
                  }} />
             {/* Right */}
             <div className="absolute inset-y-0 right-0 w-[51%]" 
                  style={{ 
                    backgroundColor: primaryColor,
                    clipPath: 'polygon(100% 0%, 0% 50%, 100% 100%)', 
-                   backgroundImage: 'url("https://www.transparenttextures.com/patterns/natural-paper.png")' 
+                   backgroundImage: 'url("https://www.transparenttextures.com/patterns/natural-paper.png")',
+                   backgroundBlendMode: 'multiply'
                  }} />
             {/* Bottom */}
             <div className="absolute inset-x-0 bottom-0 h-3/5" 
@@ -176,7 +179,8 @@ export default function RoyalEnvelope({ config, onOpen }) {
                    backgroundColor: primaryColor,
                    filter: 'brightness(0.9)',
                    clipPath: 'polygon(0% 100%, 50% 20%, 100% 100%)', 
-                   backgroundImage: 'url("https://www.transparenttextures.com/patterns/natural-paper.png")' 
+                   backgroundImage: 'url("https://www.transparenttextures.com/patterns/natural-paper.png")',
+                   backgroundBlendMode: 'multiply'
                  }} />
           </div>
 
@@ -208,6 +212,7 @@ export default function RoyalEnvelope({ config, onOpen }) {
               clipPath: 'polygon(0% 0%, 100% 0%, 50% 100%)',
               transformStyle: 'preserve-3d',
               backgroundImage: 'url("https://www.transparenttextures.com/patterns/natural-paper.png")',
+              backgroundBlendMode: 'multiply',
               boxShadow: stage === 'closed' ? '0 15px 30px rgba(0,0,0,0.4)' : 'none'
             }}
           >

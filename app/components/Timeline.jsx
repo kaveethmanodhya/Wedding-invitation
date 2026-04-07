@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 
 export default function Timeline({ config }) {
-  const { timeline, theme } = config;
+  const { timeline = [], theme = {} } = config || {};
   const listRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 

@@ -1,7 +1,7 @@
 'use client';
 
 export default function Footer({ config }) {
-  const { couple, wedding, heroLayout } = config;
+  const { couple = {}, wedding = {}, heroLayout = 1 } = config || {};
   const isLayout9 = heroLayout === 9;
 
   return (
@@ -25,16 +25,16 @@ export default function Footer({ config }) {
 
       <div className="relative z-10">
         <p className={`font-script text-5xl mb-2 drop-shadow-md ${isLayout9 ? 'text-white' : 'text-[var(--colorSecondary)]'}`}>
-          {couple.displayNames}
+          {couple?.displayNames || ''}
         </p>
         <p className={`font-serif text-sm tracking-[0.3em] uppercase mb-8 ${isLayout9 ? 'text-white/40' : 'text-[var(--colorSecondary)]/60'}`}>
-          {wedding.displayDate}
+          {wedding?.displayDate || ''}
         </p>
         
         <div className={`w-12 h-px mx-auto mb-8 ${isLayout9 ? 'bg-white/10' : 'bg-[var(--colorSecondary)]/20'}`} />
         
         <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-white/30">
-          Handcrafted with Love — &copy; {wedding.year} KodeX
+          Handcrafted with Love — &copy; {wedding?.year || new Date().getFullYear()} KodeX
         </p>
       </div>
     </footer>

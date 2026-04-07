@@ -36,7 +36,7 @@ function Layout1({ config, ref1, ref2, ref3 }) {
         <div className="relative text-center py-8 px-6 md:px-16 mb-10">
           <div className="h-px bg-gradient-to-r from-transparent via-[var(--colorPrimary)] to-transparent mb-6 opacity-60" />
           <p className="font-serif text-xl md:text-2xl leading-relaxed text-[var(--colorTextDark)] max-w-2xl mx-auto">
-            {story.invitationText}
+            {story?.invitationText || ''}
           </p>
           <div className="h-px bg-gradient-to-r from-transparent via-[var(--colorPrimary)] to-transparent mt-6 opacity-60" />
         </div>
@@ -44,7 +44,7 @@ function Layout1({ config, ref1, ref2, ref3 }) {
 
       <div className="grid md:grid-cols-2 gap-10 items-center relative z-10 pb-16 px-6 max-w-5xl mx-auto">
         <div ref={ref3} className="opacity-0 translate-y-8 transition-all duration-700 delay-200 flex flex-col gap-6 text-center md:text-left">
-          {story.paragraphs.map((p, i) => (
+          {(story?.paragraphs || []).map((p, i) => (
             <p key={i} className="font-serif text-base md:text-lg leading-[1.8] text-[var(--colorTextDark)]/80">
               {p}
             </p>
@@ -75,12 +75,12 @@ function Layout2({ config, ref1, ref2, ref3 }) {
             Journey of Love
           </h2>
           <p className="font-serif text-2xl md:text-3xl leading-snug text-[var(--colorTextDark)] mb-10 tracking-wide">
-            {story.invitationText}
+            {story?.invitationText || ''}
           </p>
         </div>
 
         <div ref={ref2} className="lg:col-span-7 flex flex-col gap-6 opacity-0 translate-y-8 transition-all duration-700 delay-100">
-          {story.paragraphs.map((p, i) => (
+          {(story?.paragraphs || []).map((p, i) => (
             <p key={i} className="font-serif text-lg leading-[1.8] text-[var(--colorTextDark)] opacity-80 bg-white/40 p-6 rounded-2xl border border-white/50 backdrop-blur-sm">
               {p}
             </p>
@@ -116,12 +116,12 @@ function Layout3({ config, ref1, ref2, ref3, ref4 }) {
           <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-[var(--colorPrimary)]" />
           
           <p className="font-serif text-xl md:text-2xl leading-loose text-[var(--colorTextDark)] mb-4">
-            {story.invitationText}
+            {story?.invitationText || ''}
           </p>
         </div>
 
         <div ref={ref3} className="opacity-0 translate-y-8 transition-all duration-700 delay-200 space-y-8 mb-20">
-          {story.paragraphs.map((p, i) => (
+          {(story?.paragraphs || []).map((p, i) => (
             <p key={i} className="font-sans text-sm md:text-base leading-relaxed tracking-wide text-[var(--colorTextDark)] opacity-80 text-justify md:text-center">
               {p}
             </p>
@@ -166,7 +166,7 @@ function Layout4({ config, ref1, ref2, ref3 }) {
 
       <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-1000 delay-300 mb-20 max-w-2xl mx-auto">
         <p className="font-serif text-2xl md:text-3xl leading-relaxed text-[var(--colorTextDark)] italic">
-          "{story.invitationText}"
+          "{story?.invitationText || ''}"
         </p>
       </div>
 
@@ -199,10 +199,10 @@ function Layout5({ config, ref1, ref2, ref3 }) {
         </div>
         <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-700 delay-200">
            <p className="font-serif text-2xl text-[var(--colorTextDark)] mb-8 font-medium">
-             {story.invitationText}
+             {story?.invitationText || ''}
            </p>
            <div className="space-y-6">
-             {story.paragraphs.map((p, i) => (
+             {(story?.paragraphs || []).map((p, i) => (
                 <p key={i} className="font-sans text-sm tracking-wide text-[var(--colorTextDark)] opacity-60 leading-relaxed">
                    {p}
                 </p>
@@ -239,10 +239,10 @@ function Layout6({ config, ref1, ref2, ref3 }) {
       <div className="bg-white/40 backdrop-blur-md p-10 md:p-16 rounded-[100px_20px_100px_20px] border border-[var(--colorPrimary)]/10 shadow-xl relative overflow-hidden">
         <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-1000 delay-300">
           <p className="font-serif text-2xl md:text-3xl text-[var(--colorTextDark)] mb-10 italic">
-            {story.invitationText}
+            {story?.invitationText || ''}
           </p>
           <div className="space-y-8 text-center max-w-2xl mx-auto">
-            {story.paragraphs.map((p, i) => (
+            {(story?.paragraphs || []).map((p, i) => (
                <p key={i} className="font-sans text-sm md:text-base text-[var(--colorTextDark)]/70 leading-relaxed tracking-wide">
                   {p}
                </p>
@@ -276,10 +276,10 @@ function Layout7({ config, ref1, ref2, ref3 }) {
           <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-700 delay-300">
             <h2 className="font-script text-5xl text-slate-800 mb-6 font-bold underline decoration-[var(--colorPrimary)]/20 decoration-8 underline-offset-[-2px]">Our Journey</h2>
             <p className="font-serif text-xl text-slate-700 mb-8 italic leading-relaxed">
-              {story.invitationText}
+              {story?.invitationText || ''}
             </p>
             <div className="space-y-6">
-              {story.paragraphs.map((p, i) => (
+              {(story?.paragraphs || []).map((p, i) => (
                  <p key={i} className="font-sans text-sm text-slate-500 leading-[1.8] tracking-wide">
                     {p}
                  </p>
@@ -314,10 +314,10 @@ function Layout8({ config, ref1, ref2, ref3 }) {
       <div className="bg-[var(--colorPrimary)]/5 p-10 md:p-16 border-2 border-double border-[var(--colorPrimary)]/30 rounded-[40px] relative shadow-inner">
         <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-1000 delay-300 text-center">
           <p className="font-sinhala text-2xl md:text-3xl text-[var(--colorTextDark)] mb-12 leading-relaxed">
-            {story.invitationText}
+            {story?.invitationText || ''}
           </p>
           <div className="space-y-10 text-center max-w-3xl mx-auto">
-            {story.paragraphs.map((p, i) => (
+            {(story?.paragraphs || []).map((p, i) => (
                <p key={i} className="font-sinhala text-lg md:text-xl text-[var(--colorTextDark)]/70 leading-loose">
                   {p}
                </p>
@@ -402,12 +402,12 @@ function Layout9({ config, ref1, ref2, ref3 }) {
         
         <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-1000 delay-300 mb-12">
           <p className="font-serif text-3xl md:text-4xl text-white font-medium leading-tight mb-8">
-            {story.invitationText}
+            {story?.invitationText || ''}
           </p>
         </div>
 
         <div ref={ref3} className="opacity-0 translate-y-8 transition-all duration-1000 delay-500 grid md:grid-cols-2 gap-8">
-          {story.paragraphs.map((p, i) => (
+          {(story?.paragraphs || []).map((p, i) => (
             <p key={i} className="font-sans text-base md:text-lg text-white/70 leading-relaxed font-light">
               {p}
             </p>

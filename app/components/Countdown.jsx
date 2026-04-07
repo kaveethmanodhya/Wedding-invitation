@@ -39,7 +39,7 @@ function CountdownBlock({ value, unit, isLayout9 }) {
 
 export default function Countdown({ config }) {
   const [isMounted, setIsMounted] = useState(false);
-  const target = new Date(config.wedding.dateTimeISO).getTime();
+  const target = new Date(config?.wedding?.dateTimeISO || Date.now()).getTime();
 
   const [timeLeft, setTimeLeft] = useState(null);
   const [done,     setDone]     = useState(false);

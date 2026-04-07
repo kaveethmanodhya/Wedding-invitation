@@ -27,13 +27,13 @@ const CalendarIcon = () => (<svg className="w-4 h-4" viewBox="0 0 24 24" fill="n
 
 function ActionButtons({ event, config }) {
   const handleAddToCalendar = () => {
-    const title = encodeURIComponent(`${config.couple.displayNames}'s ${event.title}`);
-    const details = encodeURIComponent(`We would love to see you at our ${event.title}! \n\nVenue: ${event.venueName}\nAddress: ${event.address}`);
-    const location = encodeURIComponent(event.address || event.venueName);
+    const title = encodeURIComponent(`${config?.couple?.displayNames || 'Wedding'}'s ${event?.title || 'Event'}`);
+    const details = encodeURIComponent(`We would love to see you at our ${event?.title || 'Event'}! \n\nVenue: ${event?.venueName || ''}\nAddress: ${event?.address || ''}`);
+    const location = encodeURIComponent(event?.address || event?.venueName || '');
     
     // Extract dates from config
-    const dateStr = config.wedding.dateTimeISO; // e.g. 2026-12-19T10:00:00
-    const start = dateStr.replace(/[-:]/g, '').split('.')[0];
+    const dateStr = config?.wedding?.dateTimeISO || ''; // e.g. 2026-12-19T10:00:00
+    const start = dateStr.replace(/[-:]/g, '').split('.')[0] || '';
     const end = start; // Same day usually
     
     const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}&dates=${start}/${end}`;
@@ -89,12 +89,12 @@ function EventCard1({ event, delay, config }) {
 
 function Layout1({ config }) {
   const headerRef = useReveal(0);
-  const { events } = config;
+  const events = config?.events || {};
   return (
     <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
-      {(config.layout1EventBanner || config.gallery?.[2]) && (
+      {(config?.layout1EventBanner || config?.gallery?.[2]) && (
         <div className="w-full h-64 md:h-80 relative overflow-hidden mb-16 rounded-[2rem] shadow-xl isolate">
-          <img src={config.layout1EventBanner || config.gallery[2]?.src} alt="Banner" className="absolute inset-0 w-full h-full object-cover attachment-fixed object-[center_30%]" style={{ transform: 'scale(1.05)' }} />
+          <img src={config?.layout1EventBanner || config?.gallery?.[2]?.src} alt="Banner" className="absolute inset-0 w-full h-full object-cover attachment-fixed object-[center_30%]" style={{ transform: 'scale(1.05)' }} />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--colorBg)] to-transparent opacity-80" />
           <div ref={headerRef} className="absolute inset-0 flex flex-col items-center justify-center opacity-0 translate-y-8 transition-all duration-700">
             <p className="font-sans text-[0.7rem] md:text-xs tracking-[0.3em] uppercase text-[var(--colorBg)] drop-shadow-md mb-2">Mark Your Calendar</p>
@@ -103,7 +103,7 @@ function Layout1({ config }) {
         </div>
       )}
 
-      {!config.layout1EventBanner && !config.gallery?.[2] && (
+      {!config?.layout1EventBanner && !config?.gallery?.[2] && (
         <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
           <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">Mark Your Calendar</p>
           <h2 className="font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-4 tracking-wide">Event Details</h2>
@@ -143,7 +143,7 @@ function EventCard2({ event, delay, config }) {
 
 function Layout2({ config }) {
   const headerRef = useReveal(0);
-  const { events } = config;
+  const events = config?.events || {};
   return (
     <div className="max-w-6xl mx-auto px-6 py-24 md:py-32 relative">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[var(--colorPrimary)] opacity-5 rounded-full blur-3xl pointer-events-none" />
@@ -192,7 +192,7 @@ function EventCard3({ event, delay }) {
 
 function Layout3({ config }) {
   const headerRef = useReveal(0);
-  const { events } = config;
+  const events = config?.events || {};
   return (
     <div className="max-w-6xl mx-auto px-6 py-28 md:py-36 rounded-[3rem] border border-[var(--colorPrimary)]/20 mt-12 mb-12 shadow-sm bg-[var(--colorBg)]/50 backdrop-blur-[2px]">
       <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
@@ -234,7 +234,7 @@ function EventCard5({ event, delay }) {
 }
 
 function Layout5({ config }) {
-  const { events } = config;
+  const events = config?.events || {};
   return (
     <div className="max-w-4xl mx-auto px-6 py-24">
       <div className="mb-20">
@@ -272,7 +272,7 @@ function EventCard6({ event, delay }) {
 }
 
 function Layout6({ config }) {
-  const { events } = config;
+  const events = config?.events || {};
   return (
     <div className="max-w-6xl mx-auto px-6 py-24 text-center relative z-10">
       <div className="mb-16">
@@ -317,7 +317,7 @@ function EventCard7({ event, delay }) {
 }
 
 function Layout7({ config }) {
-  const { events } = config;
+  const events = config?.events || {};
   return (
     <div className="max-w-6xl mx-auto px-6 py-24 text-center">
       <div className="mb-20">
@@ -370,7 +370,7 @@ function EventCard8({ event, delay }) {
 }
 
 function Layout8({ config }) {
-  const { events } = config;
+  const events = config?.events || {};
   return (
     <div className="max-w-6xl mx-auto px-6 py-28">
       <div className="text-center mb-20">
@@ -454,7 +454,7 @@ function EventCard9({ event, delay }) {
 
 function Layout9({ config }) {
   const headerRef = useReveal(0);
-  const { events } = config;
+  const events = config?.events || {};
   return (
     <div className="max-w-6xl mx-auto px-6 py-24 md:py-32">
       <div ref={headerRef} className="text-center mb-20 opacity-0 translate-y-8 transition-all duration-1000">

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 
 export default function Gallery({ config }) {
-  const { gallery } = config;
+  const gallery = config?.gallery || [];
   const [lightbox, setLightbox] = useState(null);
   const headerRef = useRef(null);
   const layout = config?.heroLayout ?? 1;
@@ -185,7 +185,7 @@ export default function Gallery({ config }) {
                 ${idx % 2 === 0 ? 'aspect-square' : 'aspect-[3/4] mt-12'}`}
             >
               <div className="relative w-full h-full bg-[var(--colorBg)]">
-                <Image src={photo.src} alt={photo.alt} width={800} height={800} className="w-full h-full object-cover saturate-50 opacity-80 hover:saturate-100 hover:opacity-100 transition-all duration-700 hover:scale-110" />
+                <Image src={photo?.src || ''} alt={photo?.alt || ''} width={800} height={800} className="w-full h-full object-cover saturate-50 opacity-80 hover:saturate-100 hover:opacity-100 transition-all duration-700 hover:scale-110" />
               </div>
             </button>
           ))}
@@ -226,7 +226,7 @@ export default function Gallery({ config }) {
           <button onClick={(e) => { e.stopPropagation(); setLightbox(i => (i - 1 + gallery.length) % gallery.length); }} className="absolute left-3 md:left-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-white text-2xl hover:bg-[var(--colorPrimary)] transition-colors">‹</button>
           <button onClick={(e) => { e.stopPropagation(); setLightbox(i => (i + 1) % gallery.length); }} className="absolute right-3 md:right-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-white text-2xl hover:bg-[var(--colorPrimary)] transition-colors">›</button>
           <div className="relative max-w-4xl w-full max-h-[90vh] flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
-            <Image src={gallery[lightbox].src} alt={gallery[lightbox].alt} width={1200} height={1600} className={`max-w-full max-h-[90vh] object-contain shadow-[0_0_50px_rgba(0,0,0,0.5)] ${layout === 3 ? 'border-[3px] border-[var(--colorPrimary)] rounded-t-full' : layout === 2 ? 'rounded-full border-2 border-[var(--colorPrimary)]' : 'border-4 border-white'}`} style={{ maxHeight: '90vh' }} />
+            <Image src={gallery[lightbox]?.src || ''} alt={gallery[lightbox]?.alt || ''} width={1200} height={1600} className={`max-w-full max-h-[90vh] object-contain shadow-[0_0_50px_rgba(0,0,0,0.5)] ${layout === 3 ? 'border-[3px] border-[var(--colorPrimary)] rounded-t-full' : layout === 2 ? 'rounded-full border-2 border-[var(--colorPrimary)]' : 'border-4 border-white'}`} style={{ maxHeight: '90vh' }} />
           </div>
         </div>
       )}

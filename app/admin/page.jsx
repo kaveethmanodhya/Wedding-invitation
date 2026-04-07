@@ -294,21 +294,30 @@ export default function AdminPage() {
 function InvitationList({ onEdit, showToast }) {
   const [invitations, setInvitations] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [creating, setCreating] = useState(false);
   const [newSlug, setNewSlug] = useState('');
   const [confirmDeleteSlug, setConfirmDeleteSlug] = useState(null);
 
   const fetchInvitations = async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch('/api/config');
       const data = await res.json();
+      
+      if (!Array.isArray(data)) {
+        throw new Error(data.error || 'Server returned invalid data format');
+      }
+
       setInvitations(data.map(item => ({
         ...item,
         slug: item.slug || 'global_config',
         displayNames: item.couple?.displayNames || item.displayNames || 'Legacy Invitation'
       })));
     } catch (err) {
+      console.error('[InvitationList] Fetch error:', err);
+      setError(err.message);
       showToast('error', 'Failed to load invitations.');
     } finally {
       setLoading(false);
@@ -386,6 +395,34 @@ function InvitationList({ onEdit, showToast }) {
           <div className="text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm">
             <div className="w-10 h-10 border-4 border-[#C9956A]/20 border-t-[#C9956A] rounded-full animate-spin mx-auto mb-4" />
             <p className="text-slate-400 font-medium">Loading invitations...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-20 bg-white rounded-3xl border border-rose-100 shadow-sm">
+            <div className="w-12 h-12 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <AlertCircle size={24} />
+            </div>
+            <h3 className="text-lg font-serif text-slate-800 mb-2">Failed to Load</h3>
+            <p className="text-slate-400 text-sm mb-6 max-w-xs mx-auto">{error}</p>
+            <button
+              onClick={fetchInvitations}
+              className="px-6 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : invitations.length === 0 ? (
+          <div className="text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm">
+            <div className="w-12 h-12 bg-slate-50 text-slate-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Search size={24} />
+            </div>
+            <h3 className="text-lg font-serif text-slate-800 mb-2">No Invitations Yet</h3>
+            <p className="text-slate-400 text-sm mb-8">Get started by creating your first wedding invitation.</p>
+            <button
+              onClick={() => setCreating(true)}
+              className="px-8 py-3 bg-[#C9956A] text-white rounded-xl font-bold uppercase text-xs shadow-lg hover:bg-[#b5845a] transition-all"
+            >
+              + Create First Invitation
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -516,6 +553,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
   const [activeTab, setActiveTab] = useState('couple');
 
   // ------ Cropper State ------------------------------------------------------------------------------------------------------------------------------
@@ -659,12 +697,15 @@ function AdminDashboard({ slug, onBack, showToast }) {
 
   const loadConfig = useCallback(async () => {
     setFetching(true);
+    setFetchError(null);
     try {
       const res = await fetch(`/api/config?slug=${slug}`);
       const data = await res.json();
-      if (data.success === false) throw new Error(data.error);
+      if (data.success === false) throw new Error(data.error || 'Failed to fetch invitation config');
       setConfig(data);
     } catch (err) {
+      console.error('[AdminDashboard] Load error:', err);
+      setFetchError(err.message);
       showToast('error', `Failed to load invitation '${slug}': ${err.message}`);
     } finally {
       setFetching(false);
@@ -710,7 +751,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
     // If it's a local placeholder /images/..., we just clear it from the state
     if (!oldImageUrl.includes('cloudinary.com')) {
       if (isGallery && index > -1) {
-        const newGallery = [...config.gallery];
+        const newGallery = [...(config?.gallery || [])];
         newGallery.splice(index, 1);
         setConfig(prev => ({ ...prev, gallery: newGallery }));
       } else {
@@ -750,12 +791,41 @@ function AdminDashboard({ slug, onBack, showToast }) {
     }
   };
 
-  if (fetching || !config) {
+  if (fetching || (!config && !fetchError)) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-10 h-10 rounded-full border-2 border-[#C9956A]/30 border-t-[#C9956A] animate-spin mx-auto mb-4" />
-          <p className="text-sm text-slate-500 font-sans">Loading config...</p>
+          <p className="text-sm text-slate-500 font-sans">Loading Dashboard Data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (fetchError || !config || !config.couple) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center mb-6">
+          <AlertCircle size={40} />
+        </div>
+        <h2 className="text-2xl font-serif text-slate-800 mb-2">Editor Error</h2>
+        <p className="text-slate-500 text-sm mb-8 leading-relaxed max-w-sm">
+          We couldn't load the configuration for <span className="font-bold text-slate-700">/{slug}</span>. 
+          {fetchError || 'Configuration data is missing or incomplete.'}
+        </p>
+        <div className="flex flex-col gap-3 w-full max-w-xs">
+          <button
+            onClick={loadConfig}
+            className="w-full py-4 bg-[#C9956A] text-white rounded-2xl font-bold uppercase text-xs tracking-widest shadow-lg hover:bg-[#b5845a] transition-all"
+          >
+            Try Again
+          </button>
+          <button
+            onClick={onBack}
+            className="w-full py-4 bg-white text-slate-400 rounded-2xl font-bold uppercase text-xs tracking-widest border border-slate-100 hover:bg-slate-50 transition-all"
+          >
+            Go Back to Dashboard
+          </button>
         </div>
       </div>
     );
@@ -850,7 +920,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <input
                   type="text"
                   className={inputCls}
-                  value={config.couple.bride.firstName}
+                  value={config?.couple?.bride?.firstName || ''}
                   onChange={e => setPath('couple.bride.firstName', e.target.value)}
                 />
               </FieldGroup>
@@ -858,7 +928,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <input
                   type="text"
                   className={inputCls}
-                  value={config.couple.bride.lastName}
+                  value={config?.couple?.bride?.lastName || ''}
                   onChange={e => setPath('couple.bride.lastName', e.target.value)}
                 />
               </FieldGroup>
@@ -866,7 +936,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <input
                   type="text"
                   className={inputCls}
-                  value={config.couple.bride.fullName}
+                  value={config?.couple?.bride?.fullName || ''}
                   onChange={e => setPath('couple.bride.fullName', e.target.value)}
                 />
               </FieldGroup>
@@ -875,7 +945,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <input
                   type="text"
                   className={inputCls}
-                  value={config.couple.groom.firstName}
+                  value={config?.couple?.groom?.firstName || ''}
                   onChange={e => setPath('couple.groom.firstName', e.target.value)}
                 />
               </FieldGroup>
@@ -883,7 +953,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <input
                   type="text"
                   className={inputCls}
-                  value={config.couple.groom.lastName}
+                  value={config?.couple?.groom?.lastName || ''}
                   onChange={e => setPath('couple.groom.lastName', e.target.value)}
                 />
               </FieldGroup>
@@ -891,7 +961,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <input
                   type="text"
                   className={inputCls}
-                  value={config.couple.groom.fullName}
+                  value={config?.couple?.groom?.fullName || ''}
                   onChange={e => setPath('couple.groom.fullName', e.target.value)}
                 />
               </FieldGroup>
@@ -900,12 +970,12 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <input
                   type="text"
                   className={inputCls}
-                  value={config.couple.displayNames}
+                  value={config?.couple?.displayNames || ''}
                   onChange={e => setPath('couple.displayNames', e.target.value)}
                 />
               </FieldGroup>
               <FieldGroup label="Tagline" hint='e.g. "Together Forever"'>
-                <input type="text" className={inputCls} value={config.couple.tagline} onChange={e => setPath('couple.tagline', e.target.value)} />
+                <input type="text" className={inputCls} value={config?.couple?.tagline || ''} onChange={e => setPath('couple.tagline', e.target.value)} />
               </FieldGroup>
             </SectionCard>
           )}
@@ -916,7 +986,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden mb-5 transition-all duration-500"
                 style={{ aspectRatio: '3 / 4' }}
               >
-                {config.heroImage ? (
+                {config?.heroImage ? (
                   <img src={config.heroImage} className="w-full h-full object-cover" alt="Hero Preview" />
                 ) : (
                   <div className="text-center p-6">
@@ -929,7 +999,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <ImageField
                   label="Hero Photo"
                   hint="Portrait (3:4) aspect recommended"
-                  value={config.heroImage}
+                  value={config?.heroImage || ''}
                   path="heroImage"
                   type="hero"
                   onUpload={handleUpload}
@@ -941,7 +1011,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <ImageField
                   label="Hero Video Loop"
                   hint="Provide a direct URL or upload a file"
-                  value={config.heroVideo}
+                  value={config?.heroVideo || ''}
                   path="heroVideo"
                   type="video"
                   onUpload={handleUpload}
@@ -952,7 +1022,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <input
                   type="datetime-local"
                   className={inputCls}
-                  value={config.wedding.dateTimeISO.slice(0, 16)}
+                  value={config?.wedding?.dateTimeISO?.slice(0, 16) || ''}
                   onChange={e => setPath('wedding.dateTimeISO', e.target.value + ':00')}
                 />
               </FieldGroup>
@@ -961,7 +1031,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   type="text"
                   placeholder="December 19, 2026"
                   className={inputCls}
-                  value={config.wedding.displayDate}
+                  value={config?.wedding?.displayDate || ''}
                   onChange={e => setPath('wedding.displayDate', e.target.value)}
                 />
               </FieldGroup>
@@ -970,7 +1040,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   type="text"
                   placeholder="2026"
                   className={inputCls}
-                  value={config.wedding.year}
+                  value={config?.wedding?.year || ''}
                   onChange={e => setPath('wedding.year', e.target.value)}
                 />
               </FieldGroup>
@@ -988,7 +1058,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     { id: 8, label: 'Layout 8: Premium 3D Reveal', desc: 'Immersive envelope opening with high-end typography' },
                     { id: 9, label: 'Layout 9: Modern Full Cover', desc: 'Natural height background with no text; modern dark/gradient UI' },
                   ].map(layout => {
-                    const active = (config.heroLayout ?? 1) === layout.id;
+                    const active = (config?.heroLayout ?? 1) === layout.id;
                     return (
                       <button
                         key={layout.id}
@@ -1006,7 +1076,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 </div>
               </FieldGroup>
 
-              {config.heroLayout === 9 && (
+              {config?.heroLayout === 9 && (
                 <div className="col-span-2 mt-4 pt-6 border-t border-slate-50">
                   <ImageField
                     label="Layout 9 Full-Cover Background (Large Image)"
@@ -1028,27 +1098,27 @@ function AdminDashboard({ slug, onBack, showToast }) {
               <FieldGroup label="Formal Invitation Text" hint="Shown in an elegant bordered box">
                 <textarea
                   className={`${textareaCls} col-span-2`}
-                  value={config.story.invitationText}
+                  value={config?.story?.invitationText || ''}
                   onChange={e => setPath('story.invitationText', e.target.value)}
                 />
               </FieldGroup>
               <div className="col-span-2 flex flex-col gap-3">
                 <p className="text-[0.7rem] font-bold tracking-[0.12em] uppercase text-slate-500">Story Paragraphs</p>
-                {config.story.paragraphs.map((p, i) => (
+                {(config?.story?.paragraphs || []).map((p, i) => (
                   <div key={i} className="flex gap-2 items-start">
                     <textarea
                       rows={3}
                       className={`${textareaCls} flex-1`}
                       value={p}
                       onChange={e => {
-                        const updated = [...config.story.paragraphs];
+                        const updated = [...(config?.story?.paragraphs || [])];
                         updated[i] = e.target.value;
                         setPath('story.paragraphs', updated);
                       }}
                     />
                     <button
                       type="button"
-                      onClick={() => setPath('story.paragraphs', config.story.paragraphs.filter((_, idx) => idx !== i))}
+                      onClick={() => setPath('story.paragraphs', (config?.story?.paragraphs || []).filter((_, idx) => idx !== i))}
                       className="w-9 h-9 flex items-center justify-center rounded-lg text-red-400 hover:bg-red-50 transition-colors text-lg mt-0.5"
                     >
                       --
@@ -1057,7 +1127,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 ))}
                 <button
                   type="button"
-                  onClick={() => setPath('story.paragraphs', [...config.story.paragraphs, ''])}
+                  onClick={() => setPath('story.paragraphs', [...(config?.story?.paragraphs || []), ''])}
                   className="self-start text-xs font-semibold text-[#C9956A] flex items-center gap-1 hover:underline"
                 >
                   + Add Paragraph
@@ -1072,7 +1142,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <input
                   type="text"
                   className={inputCls}
-                  value={config.events.ceremony.title}
+                  value={config?.events?.ceremony?.title || ''}
                   onChange={e => setPath('events.ceremony.title', e.target.value)}
                 />
               </FieldGroup>
@@ -1080,7 +1150,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <input
                   type="text"
                   className={inputCls}
-                  value={config.events.ceremony.icon}
+                  value={config?.events?.ceremony?.icon || ''}
                   onChange={e => setPath('events.ceremony.icon', e.target.value)}
                 />
               </FieldGroup>
@@ -1089,7 +1159,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   type="text"
                   className={inputCls}
                   placeholder="10:00 AM"
-                  value={config.events.ceremony.time}
+                  value={config?.events?.ceremony?.time || ''}
                   onChange={e => setPath('events.ceremony.time', e.target.value)}
                 />
               </FieldGroup>
@@ -1097,7 +1167,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <input
                   type="text"
                   className={inputCls}
-                  value={config.events.ceremony.venueName}
+                  value={config?.events?.ceremony?.venueName || ''}
                   onChange={e => setPath('events.ceremony.venueName', e.target.value)}
                 />
               </FieldGroup>
@@ -1105,7 +1175,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <input
                   type="text"
                   className={inputCls}
-                  value={config.events.ceremony.address}
+                  value={config?.events?.ceremony?.address || ''}
                   onChange={e => setPath('events.ceremony.address', e.target.value)}
                 />
               </FieldGroup>
@@ -1113,7 +1183,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <input
                   type="text"
                   className={inputCls}
-                  value={config.events.ceremony.dressCode}
+                  value={config?.events?.ceremony?.dressCode || ''}
                   onChange={e => setPath('events.ceremony.dressCode', e.target.value)}
                 />
               </FieldGroup>
@@ -1121,14 +1191,14 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <input
                   type="url"
                   className={inputCls}
-                  value={config.events.ceremony.mapsUrl}
+                  value={config?.events?.ceremony?.mapsUrl || ''}
                   onChange={e => setPath('events.ceremony.mapsUrl', e.target.value)}
                 />
               </FieldGroup>
               <ImageField
                 label="Event Image"
                 hint="Upload a photo for this event (appears on the left in Layout 4)"
-                value={config.events.ceremony.image}
+                value={config?.events?.ceremony?.image || ''}
                 path="events.ceremony.image"
                 type="general"
                 onUpload={handleUpload}
@@ -1140,7 +1210,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
           {activeTab === 'gallery' && (
             <SectionCard title="Gallery Photos" icon={<Image size={18} className="text-sky-400" />}>
               <GalleryEditor
-                gallery={config.gallery}
+                gallery={config?.gallery || []}
                 onChange={val => setPath('gallery', val)}
                 onUpload={handleUpload}
                 onDelete={handleDeleteImage}
@@ -1156,12 +1226,12 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     type="text"
                     className={inputCls}
                     placeholder="94771234567"
-                    value={config.rsvp.whatsappNumber}
+                    value={config?.rsvp?.whatsappNumber || ''}
                     onChange={e => setPath('rsvp.whatsappNumber', e.target.value)}
                   />
                 </FieldGroup>
                 <FieldGroup label="RSVP Deadline">
-                  <input type="text" className={inputCls} value={config.rsvp.deadline} onChange={e => setPath('rsvp.deadline', e.target.value)} />
+                  <input type="text" className={inputCls} value={config?.rsvp?.deadline || ''} onChange={e => setPath('rsvp.deadline', e.target.value)} />
                 </FieldGroup>
                 <FieldGroup label="Max Guests per RSVP">
                   <input
@@ -1169,7 +1239,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     min="1"
                     max="20"
                     className={inputCls}
-                    value={config.rsvp.maxGuests}
+                    value={config?.rsvp?.maxGuests || 2}
                     onChange={e => setPath('rsvp.maxGuests', Number(e.target.value))}
                   />
                 </FieldGroup>
@@ -1271,7 +1341,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <ImageField
                   label="Cover Image"
                   hint="Upload a high-quality photo for the cover page"
-                  value={config.revealCoverImage}
+                  value={config?.revealCoverImage || ''}
                   path="revealCoverImage"
                   type="general"
                   onUpload={handleUpload}
@@ -1323,13 +1393,13 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   onDelete={handleDeleteImage}
                 />
                 <FieldGroup label="Cover Title">
-                  <input type="text" className={inputCls} value={config.envelope.title} onChange={e => setPath('envelope.title', e.target.value)} />
+                  <input type="text" className={inputCls} value={config?.envelope?.title || ''} onChange={e => setPath('envelope.title', e.target.value)} />
                 </FieldGroup>
                 <FieldGroup label="Cover Subtitle">
                   <input
                     type="text"
                     className={inputCls}
-                    value={config.envelope.subtitle}
+                    value={config?.envelope?.subtitle || ''}
                     onChange={e => setPath('envelope.subtitle', e.target.value)}
                   />
                 </FieldGroup>
@@ -1337,7 +1407,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   <input
                     type="text"
                     className={inputCls}
-                    value={config.envelope.buttonText}
+                    value={config?.envelope?.buttonText || ''}
                     onChange={e => setPath('envelope.buttonText', e.target.value)}
                   />
                 </FieldGroup>
@@ -1351,10 +1421,10 @@ function AdminDashboard({ slug, onBack, showToast }) {
                           <button
                             type="button"
                             onClick={() => {
-                              setPath('envelope.royal.envelopeColor', config.theme.colorPrimary);
-                              setPath('envelope.royal.bgColor1', config.theme.colorBg);
-                              setPath('envelope.royal.bgColor2', config.theme.colorPrimary);
-                              setPath('envelope.royal.sealColor', config.theme.colorPrimary);
+                              setPath('envelope.royal.envelopeColor', config?.theme?.colorPrimary || '#91091E');
+                              setPath('envelope.royal.bgColor1', config?.theme?.colorBg || '#3D0010');
+                              setPath('envelope.royal.bgColor2', config?.theme?.colorPrimary || '#91091E');
+                              setPath('envelope.royal.sealColor', config?.theme?.colorPrimary || '#91091E');
                             }}
                             className="text-[0.6rem] text-[#C9956A] font-bold hover:underline"
                           >
@@ -1435,11 +1505,26 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   </div>
                 )}
                 
-                {config.revealStyle === 'premium-envelope' && (
+                {(config?.revealStyle === 'premium-envelope' || config?.revealStyle === 'premium_envelope') && (
                   <div className="col-span-2 mt-6 pt-6 border-t border-slate-100">
-                    <div className="mb-4 flex items-center gap-2">
-                       <Palette size={16} className="text-[#C9956A]" />
-                       <h4 className="text-sm font-semibold text-slate-700">Premium Envelope Details</h4>
+                    <div className="mb-4 flex items-center justify-between">
+                       <div className="flex items-center gap-2">
+                         <Palette size={16} className="text-[#C9956A]" />
+                         <h4 className="text-sm font-semibold text-slate-700">Premium Envelope Details</h4>
+                       </div>
+                       <button
+                         type="button"
+                         onClick={() => {
+                           setPath('envelopeColors.seal', config?.theme?.colorPrimary || '#dc2626');
+                           setPath('envelopeColors.back', config?.theme?.colorPrimary || '#064e3b');
+                           setPath('envelopeColors.pocket', config?.theme?.colorSecondary || '#047857');
+                           setPath('envelopeColors.flap', config?.theme?.colorPrimary || '#064e3b');
+                           setPath('envelopeColors.card', config?.theme?.colorBg || '#fef3c7');
+                         }}
+                         className="text-[0.6rem] text-[#C9956A] font-bold hover:underline"
+                       >
+                         Reset to Theme Colors
+                       </button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-6">
                       <FieldGroup label="Card Title" hint="E.g. 'A Wedding Invitation'">
@@ -1493,6 +1578,13 @@ function AdminDashboard({ slug, onBack, showToast }) {
                         setPath('envelope.royal.bgColor1', theme.colors.colorBg);
                         setPath('envelope.royal.bgColor2', theme.colors.colorPrimary);
                         setPath('envelope.royal.sealColor', theme.colors.colorPrimary);
+                        
+                        // Sync Premium Envelope colors automatically when theme is selected
+                        setPath('envelopeColors.seal', theme.colors.colorPrimary);
+                        setPath('envelopeColors.back', theme.colors.colorPrimary);
+                        setPath('envelopeColors.pocket', theme.colors.colorSecondary);
+                        setPath('envelopeColors.flap', theme.colors.colorPrimary);
+                        setPath('envelopeColors.card', theme.colors.colorBg);
                       }}
                       className="group relative flex flex-col items-start p-4 rounded-xl border border-slate-100 hover:border-[#C9956A] hover:shadow-md transition-all text-left"
                     >
@@ -1523,24 +1615,24 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   ['colorBg', 'Page Background'],
                   ['colorSurface', 'Card Background'],
                 ].map(([key, label]) => (
-                  <ColourField key={key} label={label} value={config.theme[key]} onChange={val => setPath(`theme.${key}`, val)} />
+                  <ColourField key={key} label={label} value={config?.theme?.[key] || ''} onChange={val => setPath(`theme.${key}`, val)} />
                 ))}
                 <FieldGroup label="Hero Overlay Start (rgba)">
                   <input
                     type="text"
                     className={inputCls}
-                    value={config.theme.heroOverlayStart}
+                    value={config?.theme?.heroOverlayStart || ''}
                     onChange={e => setPath('theme.heroOverlayStart', e.target.value)}
                   />
                 </FieldGroup>
                 <FieldGroup label="Hero Overlay End (rgba)">
-                  <input type="text" className={inputCls} value={config.theme.heroOverlayEnd} onChange={e => setPath('theme.heroOverlayEnd', e.target.value)} />
+                  <input type="text" className={inputCls} value={config?.theme?.heroOverlayEnd || ''} onChange={e => setPath('theme.heroOverlayEnd', e.target.value)} />
                 </FieldGroup>
 
                 <div className="col-span-2 mt-2 p-4 rounded-xl bg-slate-50 border border-slate-100">
                   <p className="text-[0.68rem] font-bold tracking-[0.1em] uppercase text-slate-400 mb-3">Live Colour Preview</p>
                   <div className="flex flex-wrap gap-2">
-                    {Object.entries(config.theme)
+                    {(Object.entries(config?.theme || {}))
                       .filter(([k]) => k.startsWith('color'))
                       .map(([k, v]) => (
                         <div key={k} className="flex flex-col items-center gap-1">
@@ -1618,18 +1710,18 @@ function AdminDashboard({ slug, onBack, showToast }) {
           {activeTab === 'meta' && (
             <SectionCard title="SEO & Social Sharing" icon={<Search size={18} className="text-slate-500" />}>
               <FieldGroup label="Page Title">
-                <input type="text" className={inputCls} value={config.meta.title} onChange={e => setPath('meta.title', e.target.value)} />
+                <input type="text" className={inputCls} value={config?.meta?.title || ''} onChange={e => setPath('meta.title', e.target.value)} />
               </FieldGroup>
               <FieldGroup label="Description">
                 <input
                   type="text"
                   className={inputCls}
-                  value={config.meta.description}
+                  value={config?.meta?.description || ''}
                   onChange={e => setPath('meta.description', e.target.value)}
                 />
               </FieldGroup>
               <FieldGroup label="OG Image">
-                <input type="text" className={inputCls} value={config.meta.ogImage} onChange={e => setPath('meta.ogImage', e.target.value)} />
+                <input type="text" className={inputCls} value={config?.meta?.ogImage || ''} onChange={e => setPath('meta.ogImage', e.target.value)} />
               </FieldGroup>
             </SectionCard>
           )}

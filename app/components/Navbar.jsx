@@ -39,7 +39,7 @@ export default function Navbar({ config }) {
               ? (isLayout9 ? 'text-white' : 'text-[var(--colorPrimary)]') 
               : (isLayout9 ? 'text-white' : 'text-[var(--colorTextDark)]')}`}
         >
-          {config.couple.displayNames}
+          {config?.couple?.displayNames || ''}
         </span>
 
         {/* Desktop links */}

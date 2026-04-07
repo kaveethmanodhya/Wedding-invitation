@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 
 export default function RSVPSection({ config }) {
-  const { rsvp } = config;
+  const rsvp = config?.rsvp || {};
   const [formData, setFormData] = useState({
     name: '', phone: '',
     attendance: '', guests: '1',
@@ -69,7 +69,7 @@ export default function RSVPSection({ config }) {
 
       // 1. WhatsApp redirect
       const encodedMessage = encodeURIComponent(waMessage);
-      const cleanNumber = rsvp.whatsappNumber.replace(/[+\s-]/g, '').replace(/^0+/, '');
+      const cleanNumber = (rsvp?.whatsappNumber || '').replace(/[+\s-]/g, '').replace(/^0+/, '');
       const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
       window.open(whatsappUrl, '_blank');
       
@@ -80,7 +80,7 @@ export default function RSVPSection({ config }) {
     }
   }
 
-  const guestOptions = Array.from({ length: rsvp.maxGuests }, (_, i) => i + 1);
+  const guestOptions = Array.from({ length: rsvp?.maxGuests || 2 }, (_, i) => i + 1);
 
   // Layout Styles
   let bgClass = "bg-[var(--colorBg)]";
@@ -127,7 +127,7 @@ export default function RSVPSection({ config }) {
         className="py-20 md:py-28 transition-colors duration-500"
         style={{
           backgroundColor: layout === 9 ? '#020617' : 'var(--colorBg)',
-          ...(config.sectionBackgrounds?.rsvp ? {
+          ...(config?.sectionBackgrounds?.rsvp ? {
             backgroundImage: `url(${config.sectionBackgrounds.rsvp})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
@@ -156,7 +156,7 @@ export default function RSVPSection({ config }) {
       style={{ backgroundColor: layout === 9 ? '#020617' : 'var(--colorBg)' }}
     >
       {/* ── SECTION BACKGROUND IMAGE ── */}
-      {config.sectionBackgrounds?.rsvp && (
+      {config?.sectionBackgrounds?.rsvp && (
         <div
           className="absolute inset-0 z-0 pointer-events-none transition-transform duration-1000"
           style={{
@@ -192,26 +192,26 @@ export default function RSVPSection({ config }) {
           {layout === 4 ? (
             <>
               <h2 className="font-sans text-5xl md:text-6xl font-bold text-[var(--colorTextDark)] mb-4 tracking-tighter">Please Confirm</h2>
-              <p className="font-sans text-xs md:text-sm text-[var(--colorTextDark)] opacity-70">Kindly respond by {rsvp.deadline}</p>
+              <p className="font-sans text-xs md:text-sm text-[var(--colorTextDark)] opacity-70">Kindly respond by {rsvp?.deadline || ''}</p>
             </>
           ) : layout === 9 ? (
             <>
               <h2 className="font-sans text-5xl md:text-6xl font-bold text-white mb-4 tracking-tighter">Please Confirm</h2>
-              <p className="font-sans text-xs md:text-sm text-white opacity-70 uppercase tracking-[0.2em]">Kindly respond by {rsvp.deadline}</p>
+              <p className="font-sans text-xs md:text-sm text-white opacity-70 uppercase tracking-[0.2em]">Kindly respond by {rsvp?.deadline || ''}</p>
             </>
           ) : layout === 3 ? (
             <>
               <span className="text-3xl text-[var(--colorPrimary)] mb-4 block">❀</span>
               <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 tracking-wide">Please Confirm</h2>
               <div className="w-24 h-0.5 bg-[var(--colorPrimary)] mx-auto opacity-60 mb-4" />
-              <p className="font-sans text-xs tracking-widest uppercase text-[var(--colorTextDark)]/80">Please respond by {rsvp.deadline}</p>
+              <p className="font-sans text-xs tracking-widest uppercase text-[var(--colorTextDark)]/80">Please respond by {rsvp?.deadline || ''}</p>
             </>
           ) : layout === 2 ? (
             <>
               <h2 className="font-serif text-4xl md:text-6xl font-bold uppercase tracking-widest text-[var(--colorTextDark)] mb-4 drop-shadow-sm">Please Confirm</h2>
               <p className="font-script text-3xl text-[var(--colorPrimary)] mb-6">We would love to see you</p>
               <div className="w-16 h-px bg-[var(--colorPrimary)] mx-auto opacity-70" />
-              <p className="font-sans text-xs tracking-widest uppercase text-[var(--colorTextDark)]/70 mt-6">Respond by {rsvp.deadline}</p>
+              <p className="font-sans text-xs tracking-widest uppercase text-[var(--colorTextDark)]/70 mt-6">Respond by {rsvp?.deadline || ''}</p>
             </>
           ) : (
             <>
@@ -222,7 +222,7 @@ export default function RSVPSection({ config }) {
               <span className="text-[var(--colorPrimary)]/60 text-2xl">❧</span>
               <p className="font-sans text-sm text-[var(--colorTextDark)]/55 mt-3">
                 {layout === 8 ? 'කරුණාකර ' : 'Kindly respond by '}
-                <strong className="text-[var(--colorPrimary)]">{rsvp.deadline}</strong>
+                <strong className="text-[var(--colorPrimary)]">{rsvp?.deadline || ''}</strong>
                 {layout === 8 ? ' දිනට පෙර දන්වන්න' : ''}
               </p>
             </>

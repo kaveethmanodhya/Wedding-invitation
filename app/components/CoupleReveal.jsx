@@ -96,7 +96,7 @@ export default function CoupleReveal({ config, onOpen, children }) {
               className="absolute -bottom-10 text-center"
             >
               <p className="font-script text-4xl text-[var(--colorPrimary)] drop-shadow-sm mb-2">
-                {config.couple.displayNames}
+                {config?.couple?.displayNames || ''}
               </p>
               <p className="text-[0.65rem] tracking-[0.2em] uppercase text-[var(--colorTextDark)] opacity-80 font-bold border-t border-[var(--colorPrimary)]/50 pt-2 inline-block">
                 Are Getting Married

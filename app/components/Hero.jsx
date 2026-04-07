@@ -364,13 +364,13 @@ function Layout9({ config }) {
    Inspired by a forest garden arch with central couple
 ───────────────────────────────────────────────────────── */
 function Layout4({ config }) {
-  const { couple, wedding, events, heroImage, coupleImages } = config;
+  const { couple = {}, wedding = {}, events = {}, heroImage, coupleImages } = config;
   const ceremony = events?.ceremony || {};
-  const dateObj = new Date(wedding?.dateTimeISO);
-  const dayLabel = dateObj.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
-  const month = dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
-  const dayNum = dateObj.getDate();
-  const year = dateObj.getFullYear();
+  const dateObj = new Date(wedding?.dateTimeISO || Date.now());
+  const dayLabel = isNaN(dateObj.getTime()) ? '' : dateObj.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+  const month = isNaN(dateObj.getTime()) ? '' : dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+  const dayNum = isNaN(dateObj.getTime()) ? '' : dateObj.getDate();
+  const year = isNaN(dateObj.getTime()) ? '' : dateObj.getFullYear();
 
   // Primary image from admin "Hero Background Image" field
   const heroBg = heroImage || '/images/nature-arch-bg.png';

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 
 export default function CoverReveal({ config, onOpen }) {
   const [mounted, setMounted] = useState(false);
-  const { couple, wedding, revealCoverImage } = config;
+  const { couple = {}, wedding = {}, revealCoverImage } = config || {};
 
   useEffect(() => {
     setMounted(true);
@@ -58,7 +58,7 @@ export default function CoverReveal({ config, onOpen }) {
           </div>
 
           <h1 className="font-serif text-4xl md:text-6xl font-bold tracking-tight text-[#2C2018] mb-12 leading-tight">
-            {couple.groom.firstName.toUpperCase()} & {couple.bride.firstName.toUpperCase()}
+            {(couple?.groom?.firstName || '').toUpperCase()} & {(couple?.bride?.firstName || '').toUpperCase()}
           </h1>
 
           <motion.button

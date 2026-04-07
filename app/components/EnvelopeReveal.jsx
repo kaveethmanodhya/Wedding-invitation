@@ -6,7 +6,7 @@ export default function EnvelopeReveal({ config, onOpenInvitation }) {
   const [isOpen, setIsOpen] = useState(false);
 
   // Dynamic Content mapping
-  const coupleNames = config?.envelope?.subtitle || (config?.couple ? `${config.couple.bride.firstName} & ${config.couple.groom.firstName}` : 'Nethmi & Isuru');
+  const coupleNames = config?.envelope?.subtitle || (config?.couple ? `${config?.couple?.bride?.firstName || ''} & ${config?.couple?.groom?.firstName || ''}` : 'Nethmi & Isuru');
   const initial = config?.couple?.bride?.firstName?.[0] || 'N';
   const envelopeTitle = config?.envelope?.title || 'A Wedding Invitation';
   
@@ -73,7 +73,7 @@ export default function EnvelopeReveal({ config, onOpenInvitation }) {
             backgroundColor: colors.card, 
             backgroundImage: "url('/images/cardboard-texture.png')",
             backgroundSize: 'cover',
-            backgroundBlendMode: 'overlay',
+            backgroundBlendMode: 'multiply',
             borderRadius: '4px', 
             display: 'flex', 
             flexDirection: 'column', 

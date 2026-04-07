@@ -64,6 +64,12 @@ export const getDefaultConfig = (slug) => ({
       waxSealColor: '#8a0303',
       envelopeColor: '#ffffff',
       liningColor: '#f3f4f6'
+    },
+    royal: {
+      envelopeColor: '#91091E',
+      bgColor1: '#3D0010',
+      bgColor2: '#91091E',
+      sealColor: '#91091E'
     }
   },
   envelopeColors: {

@@ -204,7 +204,7 @@ export default function Envelope({ config, onOpen }) {
                   opacity: 1,
                 }}
               >
-                {config.envelope?.subtitle || config.couple.displayNames}
+                {config.envelope?.subtitle || config?.couple?.displayNames || ''}
               </h1>
             </div>
 

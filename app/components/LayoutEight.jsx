@@ -125,13 +125,7 @@ export default function LayoutEight({ config }) {
 
                     <div className="space-y-16">
                        {/* Timeline Items (Static refined mockup based on typical event structure) */}
-                       {[
-                         { time: "4:00 PM", title: "Arrival & Welcome", desc: "Guests arrival and welcome drinks", icon: <Coffee size={18} /> },
-                         { time: "5:00 PM", title: "The Ceremony", desc: "Exchange of vows and ring ceremony", icon: <Heart size={18} /> },
-                         { time: "6:30 PM", title: "Cocktail Hour", desc: "Drinks and appetizers in the garden", icon: <Music size={18} /> },
-                         { time: "8:00 PM", title: "Grand Dinner", desc: "Formal dinner and celebratory toasts", icon: <Users size={18} /> },
-                         { time: "10:00 PM", title: "Party Time", desc: "Dancing and cake cutting ceremony", icon: <Music size={18} /> }
-                       ].map((item, idx) => (
+                       {(config.timeline || []).map((item, idx) => (
                         <motion.div 
                           key={idx}
                           initial={{ opacity: 0, x: idx % 2 === 0 ? -20 : 20 }}
@@ -141,14 +135,14 @@ export default function LayoutEight({ config }) {
                         >
                            {/* Icon Dot */}
                            <div className="absolute left-4 md:left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white border border-slate-100 shadow-lg flex items-center justify-center z-10 text-[#C9956A]">
-                              {item.icon}
+                              <span className="text-sm">{item.icon || '✨'}</span>
                            </div>
 
                            {/* Content Card */}
                            <div className="ml-16 md:ml-0 md:w-[42%] text-left md:text-right space-y-1">
                               <span className="font-sans text-[10px] font-black tracking-widest text-[#C9956A] uppercase">{item.time}</span>
                               <h3 className="font-serif text-xl font-bold text-slate-800">{item.title}</h3>
-                              <p className="font-serif text-sm italic text-slate-500">{item.desc}</p>
+                              <p className="font-serif text-sm italic text-slate-500">{item.description || item.desc}</p>
                            </div>
 
                            {/* Spacer for other side */}
@@ -211,8 +205,8 @@ export default function LayoutEight({ config }) {
                                <MapPin size={24} strokeWidth={1.5} />
                             </div>
                             <div>
-                               <h4 className="font-serif text-xl font-bold text-slate-800">{config.events.ceremony?.venueName}</h4>
-                               <p className="font-sans text-xs uppercase tracking-widest text-slate-400 mt-1">{config.events.ceremony?.address}</p>
+                               <h4 className="font-serif text-xl font-bold text-slate-800">{config?.events?.ceremony?.venueName || ''}</h4>
+                               <p className="font-sans text-xs uppercase tracking-widest text-slate-400 mt-1">{config?.events?.ceremony?.address || ''}</p>
                             </div>
                          </div>
                        </div>
