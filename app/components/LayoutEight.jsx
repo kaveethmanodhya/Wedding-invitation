@@ -44,29 +44,40 @@ export default function LayoutEight({ config }) {
             {/* ── HERO SECTION: Dynamic Breathing Feel ── */}
             <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
                {/* Ken Burns Background */}
-               <div className="absolute inset-0 z-0">
-                 <motion.div 
-                   animate={{ 
-                     scale: [1.1, 1.25, 1.1],
-                     x: [0, -20, 0],
-                     y: [0, -10, 0]
-                   }}
-                   transition={{ 
-                     duration: 30, 
-                     repeat: Infinity, 
-                     ease: "linear" 
-                   }}
-                   className="w-full h-full"
-                 >
-                   <img 
-                    src={config?.heroImage || config?.hero?.imageUrl || ''} 
-                    className="w-full h-full object-cover"
-                    alt="Wedding Hero"
-                   />
-                 </motion.div>
-                 <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
-                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-[#fdfaf5]" />
-               </div>
+                <div className="absolute inset-0 z-0">
+                  {config?.heroVideo ? (
+                    <video 
+                      src={config.heroVideo} 
+                      autoPlay 
+                      loop 
+                      muted 
+                      playsInline 
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  ) : (
+                    <motion.div 
+                      animate={{ 
+                        scale: [1.1, 1.25, 1.1],
+                        x: [0, -20, 0],
+                        y: [0, -10, 0]
+                      }}
+                      transition={{ 
+                        duration: 30, 
+                        repeat: Infinity, 
+                        ease: "linear" 
+                      }}
+                      className="w-full h-full"
+                    >
+                      <img 
+                       src={config?.heroImage || config?.hero?.imageUrl || ''} 
+                       className="w-full h-full object-cover"
+                       alt="Wedding Hero"
+                      />
+                    </motion.div>
+                  )}
+                  <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-[#fdfaf5]" />
+                </div>
 
                {/* Hero Content */}
                <div className="relative z-10 text-center px-4">

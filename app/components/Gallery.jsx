@@ -120,8 +120,8 @@ export default function Gallery({ config }) {
               className={`group relative cursor-zoom-in focus:outline-none bg-white p-3 pb-12 shadow-xl border border-slate-100 w-full max-w-[280px] transition-all duration-500 hover:rotate-0 hover:z-20
                 ${idx % 3 === 0 ? '-rotate-3 mt-4' : idx % 2 === 0 ? 'rotate-2 mb-4' : 'rotate-1'}`}
             >
-              <div className="aspect-square bg-slate-50 overflow-hidden relative">
-                <Image src={photo.src} alt={photo.alt} width={600} height={600} className="w-full h-full object-cover sepia-[0.3] group-hover:sepia-0 transition-all duration-500" />
+              <div className="aspect-[3/4] bg-slate-50 overflow-hidden relative">
+                <Image src={photo.src} alt={photo.alt} width={600} height={800} className="w-full h-full object-cover sepia-[0.3] group-hover:sepia-0 transition-all duration-500" />
                 <div className="absolute inset-0 bg-white/10 group-hover:bg-transparent transition-colors" />
               </div>
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-white/40 backdrop-blur-sm border border-white/20 shadow-sm" />
@@ -143,24 +143,24 @@ export default function Gallery({ config }) {
         </div>
       ) : layout === 5 ? (
         // Layout 5: Minimalist Modern Grid
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0.5 px-0.5 max-w-full">
+        <div className="grid grid-cols-2 lg:flex lg:flex-row lg:overflow-x-auto gap-4 px-4 max-w-full no-scrollbar pb-8">
           {gallery.map((photo, idx) => (
             <button
               key={idx} onClick={() => setLightbox(idx)}
-              className="group relative cursor-zoom-in focus:outline-none aspect-square overflow-hidden"
+              className="group relative cursor-zoom-in focus:outline-none aspect-square lg:aspect-[3/4] lg:min-w-[300px] overflow-hidden rounded-2xl"
             >
               <Image src={photo.src} alt={photo.alt} width={1000} height={1000} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white/50 text-xs tracking-[0.5em] uppercase">VIEW</div>
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white/50 text-xs tracking-[0.5em] uppercase font-bold">VIEW</div>
             </button>
           ))}
         </div>
       ) : layout === 4 ? (
         // Layout 4: Nature Arch Grid
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 px-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 lg:flex lg:flex-row lg:overflow-x-auto gap-10 px-6 max-w-full no-scrollbar pb-10 justify-center min-w-full">
           {gallery.map((photo, idx) => (
             <button
               key={idx} onClick={() => setLightbox(idx)}
-              className="group relative cursor-zoom-in focus:outline-none w-full bg-white p-3 shadow-md hover:shadow-xl transition-all duration-500"
+              className="group relative cursor-zoom-in focus:outline-none w-full max-w-[280px] lg:min-w-[300px] bg-white p-3 shadow-md hover:shadow-xl transition-all duration-500 shrink-0"
               style={{
                 borderRadius: '120px 120px 0 0',
                 border: '1px solid var(--colorPrimary)/20',

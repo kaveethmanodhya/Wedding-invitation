@@ -216,11 +216,11 @@ function Layout3({ config }) {
         {/* Content Box */}
         <div className="relative z-20 flex flex-col items-center justify-center pt-[20vh] px-8 pb-32 text-center h-full">
           
-          <h1 className="font-serif text-5xl md:text-6xl my-4 tracking-widest drop-shadow-sm" style={{ color: 'var(--colorPrimary)' }}>
+          <h1 className="font-serif text-5xl md:text-6xl my-4 tracking-widest drop-shadow-2xl bg-black/5 backdrop-blur-[2px] px-8 py-3 rounded-2xl border border-white/10" style={{ color: 'var(--colorPrimary)' }}>
             {(couple?.groom?.firstName || 'Groom').toUpperCase()}
           </h1>
-          <span className="font-sans text-[0.6rem] uppercase tracking-[0.3em] my-1" style={{ color: 'var(--colorTextDark)', opacity: 0.6 }}>With</span>
-          <h1 className="font-serif text-5xl md:text-6xl my-4 tracking-widest drop-shadow-sm" style={{ color: 'var(--colorPrimary)' }}>
+          <span className="font-sans text-[0.6rem] uppercase tracking-[0.3em] my-1 font-bold" style={{ color: 'var(--colorTextDark)', opacity: 0.8 }}>With</span>
+          <h1 className="font-serif text-5xl md:text-6xl my-4 tracking-widest drop-shadow-2xl bg-black/5 backdrop-blur-[2px] px-8 py-3 rounded-2xl border border-white/10" style={{ color: 'var(--colorPrimary)' }}>
             {(couple?.bride?.firstName || 'Bride').toUpperCase()}
           </h1>
 

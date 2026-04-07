@@ -189,34 +189,24 @@ function Layout4({ config, ref1, ref2, ref3 }) {
 function Layout5({ config, ref1, ref2, ref3 }) {
   const { story } = config;
   return (
-    <div className="max-w-5xl mx-auto px-6 py-24 flex flex-col md:flex-row gap-16 items-center">
-      <div className="md:w-1/2">
-        <div ref={ref1} className="opacity-0 translate-y-8 transition-all duration-700 mb-12">
-          <h2 className="font-sans text-[clamp(48px,10vw,80px)] font-black uppercase tracking-tighter text-[var(--colorTextDark)] leading-[0.8] mb-6">
-            The<br />Story
-          </h2>
-          <div className="w-16 h-2 bg-[var(--colorPrimary)]" />
-        </div>
-        <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-700 delay-200">
-           <p className="font-serif text-2xl text-[var(--colorTextDark)] mb-8 font-medium">
-             {story?.invitationText || ''}
-           </p>
-           <div className="space-y-6">
-             {(story?.paragraphs || []).map((p, i) => (
-                <p key={i} className="font-sans text-sm tracking-wide text-[var(--colorTextDark)] opacity-60 leading-relaxed">
-                   {p}
-                </p>
-             ))}
-           </div>
-        </div>
+    <div className="max-w-4xl mx-auto px-6 py-24 text-center">
+      <div ref={ref1} className="opacity-0 translate-y-8 transition-all duration-1000 mb-12">
+        <h2 className="font-sans text-[clamp(48px,10vw,80px)] font-black uppercase tracking-tighter text-[var(--colorTextDark)] leading-[0.8] mb-6">
+          The<br />Story
+        </h2>
+        <div className="w-16 h-2 bg-[var(--colorPrimary)] mx-auto" />
       </div>
-      <div ref={ref3} className="md:w-1/2 grid grid-cols-2 gap-4 opacity-0 translate-y-8 transition-all duration-700 delay-400">
-        <div className="aspect-[3/4] bg-slate-200 rounded-none overflow-hidden mt-12">
-          <img src={config.gallery?.[0]?.src} className="w-full h-full object-cover grayscale" />
-        </div>
-        <div className="aspect-[3/4] bg-slate-200 rounded-none overflow-hidden">
-          <img src={config.gallery?.[1]?.src} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
-        </div>
+      <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-1000 delay-200 max-w-2xl mx-auto">
+         <p className="font-serif text-2xl text-[var(--colorTextDark)] mb-8 font-medium italic">
+           {story?.invitationText || ''}
+         </p>
+         <div className="space-y-6">
+           {(story?.paragraphs || []).map((p, i) => (
+              <p key={i} className="font-sans text-base tracking-wide text-[var(--colorTextDark)] opacity-60 leading-relaxed">
+                 {p}
+              </p>
+           ))}
+         </div>
       </div>
     </div>
   );

@@ -7,62 +7,72 @@ import imageCompression from 'browser-image-compression';
 import { Trash2, ImageIcon, Upload, X, Heart, Calendar, Book, MapPin, Image, Mail, Palette, Search, Layers, Sparkles, CheckCircle, AlertCircle, Save, ExternalLink, Music, Crop } from 'lucide-react';
 import { PRESET_THEMES } from '../../lib/themes';
 
-const ImageField = ({ label, hint, value, path, type, onUpload, onDelete, onCrop }) => (
-  <FieldGroup label={label} hint={hint}>
-    <div className="flex flex-col gap-3">
-      {value ? (
-        <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-slate-200 bg-slate-50 group">
-          <img src={value} className="w-full h-full object-cover" alt={label} />
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-            {onCrop && (
+const ImageField = ({ label, hint, value, path, type, onUpload, onDelete, onCrop, accept = "image/*" }) => {
+  const isVideo = value?.toLowerCase()?.endsWith('.mp4') || value?.includes('video/upload');
+  
+  return (
+    <FieldGroup label={label} hint={hint}>
+      <div className="flex flex-col gap-3">
+        {value ? (
+          <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-slate-200 bg-slate-50 group">
+            {isVideo ? (
+              <video src={value} className="w-full h-full object-cover" muted playsInline />
+            ) : (
+              <img src={value} className="w-full h-full object-cover" alt={label} />
+            )}
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+              {onCrop && (
+                <button
+                  type="button"
+                  onClick={() => onCrop(path, value, type)}
+                  className="w-8 h-8 flex items-center justify-center bg-white text-slate-700 rounded-full shadow-lg hover:bg-slate-50 transition-colors"
+                  title="Crop Image"
+                >
+                  <Crop size={14} />
+                </button>
+              )}
               <button
                 type="button"
-                onClick={() => onCrop(path, value, type)}
-                className="w-8 h-8 flex items-center justify-center bg-white text-slate-700 rounded-full shadow-lg hover:bg-slate-50 transition-colors"
-                title="Crop Image"
+                onClick={() => onDelete(path, value)}
+                className="w-8 h-8 flex items-center justify-center bg-rose-500 text-white rounded-full shadow-lg hover:bg-rose-600 transition-colors"
+                title="Remove Image"
               >
-                <Crop size={14} />
+                <Trash2 size={14} />
               </button>
-            )}
-            <button
-              type="button"
-              onClick={() => onDelete(path, value)}
-              className="w-8 h-8 flex items-center justify-center bg-rose-500 text-white rounded-full shadow-lg hover:bg-rose-600 transition-colors"
-              title="Remove Image"
-            >
-              <Trash2 size={14} />
-            </button>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="w-full aspect-video rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center p-4 text-slate-400">
-          <ImageIcon size={24} className="mb-2 opacity-20" />
-          <p className="text-[10px] uppercase tracking-widest font-bold">No Image Selected</p>
-        </div>
-      )}
+        ) : (
+          <div className="w-full aspect-video rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center p-4 text-slate-400">
+            <ImageIcon size={24} className="mb-2 opacity-20" />
+            <p className="text-[10px] uppercase tracking-widest font-bold">No Image Selected</p>
+          </div>
+        )}
 
-      <div className="flex gap-2">
-        <input
-          type="text"
-          placeholder="Enter image URL..."
-          className={inputCls}
-          value={value || ''}
-          onChange={e => onUpload(null, path, type, e.target.value)}
-        />
-        <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors">
-          <Upload size={14} />
-          Upload
+        <div className="flex gap-2">
           <input
-            type="file"
-            className="hidden"
-            accept="image/*"
-            onChange={e => onUpload(e.target.files[0], path, type)}
+            type="text"
+            placeholder="Enter image URL..."
+            className={inputCls}
+            value={value || ''}
+            onChange={e => onUpload(null, path, type, e.target.value)}
+            maxLength={2000}
+            title={value || ''}
           />
-        </label>
+          <label className="shrink-0 cursor-pointer px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors">
+            <Upload size={14} />
+            Upload
+            <input
+              type="file"
+              className="hidden"
+              accept={accept}
+              onChange={e => onUpload(e.target.files[0], path, type)}
+            />
+          </label>
+        </div>
       </div>
-    </div>
-  </FieldGroup>
-);
+    </FieldGroup>
+  );
+};
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //  Tiny reusable field components
@@ -783,6 +793,14 @@ function AdminDashboard({ slug, onBack, showToast }) {
       } else {
         setPath(path, '');
       }
+      
+      // CRITICAL: We must auto-save the config after a successful cloud deletion 
+      // to ensure the null/empty value is persisted to the database.
+      setTimeout(() => {
+        const btn = document.getElementById('save-config-btn');
+        if (btn) btn.click();
+      }, 500);
+
       showToast('success', 'Image permanently deleted from cloud!');
     } catch (err) {
       showToast('error', `Delete failed: ${err.message}`);
@@ -1014,6 +1032,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   value={config?.heroVideo || ''}
                   path="heroVideo"
                   type="video"
+                  accept="video/*,image/*"
                   onUpload={handleUpload}
                   onDelete={handleDeleteImage}
                 />

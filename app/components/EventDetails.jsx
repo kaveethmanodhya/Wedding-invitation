@@ -280,9 +280,11 @@ function Layout6({ config }) {
         <h2 className="font-serif text-5xl text-[var(--colorTextDark)] mb-2 drop-shadow-[0_2px_10px_rgba(255,255,255,0.8)]">The Celebration</h2>
         <p className="font-script text-3xl text-[var(--colorPrimary)] opacity-90 drop-shadow-sm">Lovely moments together</p>
       </div>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="flex flex-wrap justify-center gap-8 px-4">
         {Object.entries(events).map(([key, event], idx) => (
-          <EventCard6 key={key} event={event} delay={idx * 150} />
+          <div key={key} className="w-full max-w-sm">
+            <EventCard6 event={event} delay={idx * 150} />
+          </div>
         ))}
       </div>
     </div>
