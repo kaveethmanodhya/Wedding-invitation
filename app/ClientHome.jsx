@@ -16,6 +16,7 @@ import Timeline from './components/Timeline';
 import Footer from './components/Footer';
 import EnvelopeReveal from './components/EnvelopeReveal';
 import LayoutEight from './components/LayoutEight';
+import RoyalEnvelope from './components/RoyalEnvelope';
 
 import { PRESET_THEMES } from '../lib/themes';
 
@@ -122,6 +123,8 @@ export default function ClientHome({ config }) {
             <FadeReveal key="fade-reveal" config={config} onOpen={handleOpen} />
           ) : revealStyle === 'premium_envelope' ? (
             <EnvelopeReveal key="premium-envelope" config={config} onOpen={handleOpen} />
+          ) : revealStyle === 'royal_envelope' ? (
+            <RoyalEnvelope key="royal-envelope" config={config} onOpen={handleOpen} />
           ) : (
             <Envelope key="envelope-layer" config={config} onOpen={handleOpen} />
           )
