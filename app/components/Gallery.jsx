@@ -37,17 +37,17 @@ export default function Gallery({ config }) {
       className="py-20 md:py-28 transition-colors duration-500 relative overflow-hidden"
       style={{ backgroundColor: layout === 9 ? '#020617' : 'var(--colorBg)' }}
     >
-      {/* ── BLURRED BACKGROUND LAYER ── */}
+      {/* ── SECTION BACKGROUND IMAGE ── */}
       {config.sectionBackgrounds?.gallery && (
         <div 
-          className="absolute inset-0 z-0 pointer-events-none transition-transform duration-1000"
+          className="absolute inset-0 pointer-events-none transition-transform duration-1000 z-0"
           style={{ 
             backgroundImage: `url(${config.sectionBackgrounds.gallery})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            filter: 'blur(15px)',
-            transform: 'scale(1.05)',
-            opacity: 0.5
+            filter: 'blur(8px)',
+            transform: 'scale(1.02)',
+            opacity: 0.85
           }} 
         />
       )}

@@ -4,16 +4,26 @@ import AdminLogin from './components/AdminLogin';
 import { motion, AnimatePresence } from 'framer-motion';
 import ImageCropper from './components/ImageCropper';
 import imageCompression from 'browser-image-compression';
-import { Trash2, ImageIcon, Upload, X, Heart, Calendar, Book, MapPin, Image, Mail, Palette, Search, Layers, Sparkles, CheckCircle, AlertCircle, Save, ExternalLink, Music } from 'lucide-react';
+import { Trash2, ImageIcon, Upload, X, Heart, Calendar, Book, MapPin, Image, Mail, Palette, Search, Layers, Sparkles, CheckCircle, AlertCircle, Save, ExternalLink, Music, Crop } from 'lucide-react';
 import { PRESET_THEMES } from '../../lib/themes';
 
-const ImageField = ({ label, hint, value, path, type, onUpload, onDelete }) => (
+const ImageField = ({ label, hint, value, path, type, onUpload, onDelete, onCrop }) => (
   <FieldGroup label={label} hint={hint}>
     <div className="flex flex-col gap-3">
       {value ? (
         <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-slate-200 bg-slate-50 group">
           <img src={value} className="w-full h-full object-cover" alt={label} />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+            {onCrop && (
+              <button
+                type="button"
+                onClick={() => onCrop(path, value, type)}
+                className="w-8 h-8 flex items-center justify-center bg-white text-slate-700 rounded-full shadow-lg hover:bg-slate-50 transition-colors"
+                title="Crop Image"
+              >
+                <Crop size={14} />
+              </button>
+            )}
             <button
               type="button"
               onClick={() => onDelete(path, value)}
@@ -534,6 +544,12 @@ function AdminDashboard({ slug, onBack, showToast }) {
     }
     if (!file) return;
 
+    // Reject files larger than 10MB
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('error', 'File too large! Maximum file size is 10MB.');
+      return;
+    }
+
     // Determine oldImage based on path
     const keys = path.split('.');
     let currentVal = config;
@@ -545,9 +561,10 @@ function AdminDashboard({ slug, onBack, showToast }) {
     // 1. Initial Compression (Reduce huge files before cropping/sending)
     let processedFile = file;
     const isGif = file.type === 'image/gif' || file.name.toLowerCase().endsWith('.gif');
-    const isAudio = type === 'audio' || file.type.startsWith('audio/');
+    const isVideo = file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.mp4');
+    const isAudio = type === 'audio' || file.type.startsWith('audio/') || file.name.toLowerCase().endsWith('.mp3');
 
-    if (!isGif && !isAudio && file.size > 1024 * 1024) { // Only compress non-GIFs/non-Audio > 1MB
+    if (!isGif && !isVideo && !isAudio && file.size > 1024 * 1024) { // Only compress non-GIFs/non-Audio/non-Video > 1MB
       showToast('success', 'Optimizing file size...');
       try {
         const options = {
@@ -561,8 +578,8 @@ function AdminDashboard({ slug, onBack, showToast }) {
       }
     }
 
-    // 2. Determine if cropping is needed
-    if (type === 'hero' || type === 'gallery' || type === 'banner') {
+    // 2. Determine if cropping is needed (But skip for GIFs, Videos, and Audio)
+    if ((type === 'hero' || type === 'gallery' || type === 'banner') && !isGif && !isVideo && !isAudio) {
       let aspect = 1.0;
       if (type === 'hero') {
         aspect = 3 / 4;
@@ -615,9 +632,28 @@ function AdminDashboard({ slug, onBack, showToast }) {
     }
   };
 
+  const handleCropExisting = (path, imageUrl, type) => {
+    let aspect = 1.0;
+    if (type === 'hero') aspect = 3 / 4;
+    else if (type === 'gallery') aspect = 0.75;
+    else if (type === 'banner') aspect = 3 / 1;
+
+    setCropping({
+      file: imageUrl,
+      path,
+      type,
+      aspect,
+      isExisting: true
+    });
+  };
+
   const onCropComplete = async (croppedBlob) => {
     if (!cropping) return;
-    await performUpload(croppedBlob, cropping.path, cropping.type, cropping.oldImage);
+    if (cropping.isExisting) {
+      await performUpload(croppedBlob, cropping.path, cropping.type, cropping.file);
+    } else {
+      await performUpload(croppedBlob, cropping.path, cropping.type, cropping.oldImage);
+    }
     setCropping(null);
   };
 
@@ -638,6 +674,12 @@ function AdminDashboard({ slug, onBack, showToast }) {
   useEffect(() => {
     loadConfig();
   }, [loadConfig]);
+
+  useEffect(() => {
+    if (activeTab === 'edit' || activeTab === 'list') {
+        // no-op here now
+    }
+  }, [activeTab]);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -725,7 +767,8 @@ function AdminDashboard({ slug, onBack, showToast }) {
     { id: 'story', label: '📖 Story' },
     { id: 'events', label: '📍 Events' },
     { id: 'gallery', label: '🖼 Gallery' },
-    { id: 'rsvp', label: '✉️ RSVP' },
+    { id: 'timeline', label: '⏳ Timeline' },
+    { id: 'rsvp', label: '✉️ RSVP Settings' },
     { id: 'theme', label: '🎨 Theme' },
     { id: 'meta', label: '🔍 SEO' },
     { id: 'backgrounds', label: '🖼️ Backgrounds' },
@@ -883,6 +926,29 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   </div>
                 )}
               </div>
+              <FieldGroup label="Hero Image" hint="The primary photo shown at the top of the invitation.">
+                <ImageField 
+                  label="Hero Photo"
+                  hint="Portrait (3:4) aspect recommended"
+                  value={config.heroImage}
+                  path="heroImage"
+                  type="hero"
+                  onUpload={handleUpload}
+                  onDelete={handleDeleteImage}
+                  onCrop={handleCropExisting}
+                />
+              </FieldGroup>
+              <FieldGroup label="Hero Background Video" hint="Autplaying loop for the hero background. Recommended: Lightweight .mp4">
+                <ImageField 
+                  label="Hero Video Loop"
+                  hint="Provide a direct URL or upload a file"
+                  value={config.heroVideo}
+                  path="heroVideo"
+                  type="video"
+                  onUpload={handleUpload}
+                  onDelete={handleDeleteImage}
+                />
+              </FieldGroup>
               <FieldGroup label="Wedding Date & Time (ISO 8601)" hint="Format: YYYY-MM-DDTHH:MM:SS">
                 <input
                   type="datetime-local"
@@ -909,15 +975,6 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   onChange={e => setPath('wedding.year', e.target.value)}
                 />
               </FieldGroup>
-              <ImageField 
-                label="Hero Background Image" 
-                hint="Upload directly or enter a URL"
-                value={config.heroImage}
-                path="heroImage"
-                type="hero"
-                onUpload={handleUpload}
-                onDelete={handleDeleteImage}
-              />
 
               <FieldGroup label="Invitation Card Layout" hint="Choose the hero card style for your invitation">
                 <div className="col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
@@ -929,7 +986,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     { id: 5, label: 'Layout 5: Minimalist', desc: 'Modern high-contrast typography' },
                     { id: 6, label: 'Layout 6: Floral Garden', desc: 'Watercolor blooms and garden theme' },
                     { id: 7, label: 'Layout 7: Polaroid', desc: 'Retro scrapbook style with taped photo' },
-                    { id: 8, label: 'Layout 8: Sinhala Traditional', desc: 'Traditional Sri Lankan style with Sinhala fonts' },
+                    { id: 8, label: 'Layout 8: Premium 3D Reveal', desc: 'Immersive envelope opening with high-end typography' },
                     { id: 9, label: 'Layout 9: Modern Full Cover', desc: 'Natural height background with no text; modern dark/gradient UI' },
                   ].map(layout => {
                     const active = (config.heroLayout ?? 1) === layout.id;
@@ -958,9 +1015,10 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     hint="For Layout 9, upload the large background image here. It will be shown in full height."
                     value={config.sectionBackgrounds?.hero}
                     path="sectionBackgrounds.hero"
-                    type="general"
+                    type="hero"
                     onUpload={handleUpload}
                     onDelete={handleDeleteImage}
+                    onCrop={handleCropExisting}
                   />
                 </div>
               )}
@@ -1164,7 +1222,6 @@ function AdminDashboard({ slug, onBack, showToast }) {
                       />
                       <span className={`text-sm font-medium ${config.revealStyle === 'cover' ? 'text-slate-900' : 'text-slate-500'}`}>Cover Page</span>
                     </label>
-
                     <label className="flex items-center gap-2.5 cursor-pointer group">
                       <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${config.revealStyle === 'fade' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
                         {config.revealStyle === 'fade' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
@@ -1178,6 +1235,21 @@ function AdminDashboard({ slug, onBack, showToast }) {
                         onChange={() => setPath('revealStyle', 'fade')} 
                       />
                       <span className={`text-sm font-medium ${config.revealStyle === 'fade' ? 'text-slate-900' : 'text-slate-500'}`}>Auto Fade Reveal</span>
+                    </label>
+
+                    <label className="flex items-center gap-2.5 cursor-pointer group">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${config.revealStyle === 'premium_envelope' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
+                        {config.revealStyle === 'premium_envelope' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
+                      </div>
+                      <input 
+                        type="radio" 
+                        className="hidden"
+                        name="revealStyle" 
+                        value="premium_envelope" 
+                        checked={config.revealStyle === 'premium_envelope'} 
+                        onChange={() => setPath('revealStyle', 'premium_envelope')} 
+                      />
+                      <span className={`text-sm font-medium ${config.revealStyle === 'premium_envelope' ? 'text-slate-900' : 'text-slate-500'}`}>Premium Envelope</span>
                     </label>
                   </div>
                 </FieldGroup>
@@ -1201,6 +1273,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                       type="general"
                       onUpload={handleUpload}
                       onDelete={handleDeleteImage}
+                      onCrop={handleCropExisting}
                     />
 
                     <ImageField 
@@ -1211,6 +1284,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                       type="general"
                       onUpload={handleUpload}
                       onDelete={handleDeleteImage}
+                      onCrop={handleCropExisting}
                     />
                 </div>
               </SectionCard>
@@ -1253,6 +1327,14 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     onChange={e => setPath('envelope.buttonText', e.target.value)}
                   />
                 </FieldGroup>
+                
+                {config.revealStyle === 'premium_envelope' && (
+                   <div className="col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-slate-100">
+                      <ColourField label="Wax Seal" value={config.envelope.premium?.waxSealColor || '#8a0303'} onChange={val => setPath('envelope.premium.waxSealColor', val)} />
+                      <ColourField label="Envelope" value={config.envelope.premium?.envelopeColor || '#ffffff'} onChange={val => setPath('envelope.premium.envelopeColor', val)} />
+                      <ColourField label="Lining" value={config.envelope.premium?.liningColor || '#f3f4f6'} onChange={val => setPath('envelope.premium.liningColor', val)} />
+                   </div>
+                )}
               </SectionCard>
             </>
           )}
@@ -1331,6 +1413,67 @@ function AdminDashboard({ slug, onBack, showToast }) {
           </div>
         )}
 
+          {activeTab === 'timeline' && (
+            <SectionCard title="Wedding Timeline" icon={<Calendar size={18} className="text-amber-500" />}>
+               <div className="col-span-2 flex flex-col gap-4">
+                  {config.timeline?.map((item, idx) => (
+                    <div key={idx} className="p-4 rounded-xl border border-slate-100 bg-slate-50 relative group">
+                       <button 
+                         type="button"
+                         onClick={() => {
+                            const updated = [...config.timeline];
+                            updated.splice(idx, 1);
+                            setPath('timeline', updated);
+                         }}
+                         className="absolute -top-2 -right-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                       >
+                         <X size={12} />
+                       </button>
+                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <FieldGroup label="Time">
+                             <input type="text" className={inputCls} value={item.time} onChange={e => {
+                                const updated = [...config.timeline];
+                                updated[idx].time = e.target.value;
+                                setPath('timeline', updated);
+                             }} />
+                          </FieldGroup>
+                          <FieldGroup label="Title">
+                             <input type="text" className={inputCls} value={item.title} onChange={e => {
+                                const updated = [...config.timeline];
+                                updated[idx].title = e.target.value;
+                                setPath('timeline', updated);
+                             }} />
+                          </FieldGroup>
+                          <FieldGroup label="Icon (Emoji)">
+                             <input type="text" className={inputCls} value={item.icon} onChange={e => {
+                                const updated = [...config.timeline];
+                                updated[idx].icon = e.target.value;
+                                setPath('timeline', updated);
+                             }} />
+                          </FieldGroup>
+                          <div className="sm:col-span-3">
+                            <FieldGroup label="Description">
+                               <input type="text" className={inputCls} value={item.description} onChange={e => {
+                                  const updated = [...config.timeline];
+                                  updated[idx].description = e.target.value;
+                                  setPath('timeline', updated);
+                               }} />
+                            </FieldGroup>
+                          </div>
+                       </div>
+                    </div>
+                  ))}
+                  <button 
+                    type="button" 
+                    onClick={() => setPath('timeline', [...(config.timeline || []), { time: '', title: '', description: '', icon: '✨' }])}
+                    className="self-start px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold transition-colors"
+                  >
+                    + Add Timeline Event
+                  </button>
+               </div>
+            </SectionCard>
+          )}
+
           {activeTab === 'meta' && (
             <SectionCard title="SEO & Social Sharing" icon={<Search size={18} className="text-slate-500" />}>
               <FieldGroup label="Page Title">
@@ -1363,6 +1506,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     type="general"
                     onUpload={handleUpload}
                     onDelete={handleDeleteImage}
+                    onCrop={handleCropExisting}
                   />
                 ))}
               </div>

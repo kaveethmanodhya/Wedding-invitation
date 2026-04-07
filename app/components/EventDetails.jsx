@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import { MapPin } from 'lucide-react';
 
 function useReveal(delay = 0) {
   const ref = useRef(null);
@@ -21,10 +22,46 @@ function useReveal(delay = 0) {
   return ref;
 }
 
-const PlaneIcon = () => (<svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 11l19-9-9 19-2-8-8-2z" /></svg>);
+const PlaneIcon = () => (<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 11l19-9-9 19-2-8-8-2z" /></svg>);
+const CalendarIcon = () => (<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>);
+
+function ActionButtons({ event, config }) {
+  const handleAddToCalendar = () => {
+    const title = encodeURIComponent(`${config.couple.displayNames}'s ${event.title}`);
+    const details = encodeURIComponent(`We would love to see you at our ${event.title}! \n\nVenue: ${event.venueName}\nAddress: ${event.address}`);
+    const location = encodeURIComponent(event.address || event.venueName);
+    
+    // Extract dates from config
+    const dateStr = config.wedding.dateTimeISO; // e.g. 2026-12-19T10:00:00
+    const start = dateStr.replace(/[-:]/g, '').split('.')[0];
+    const end = start; // Same day usually
+    
+    const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}&dates=${start}/${end}`;
+    window.open(googleUrl, '_blank');
+  };
+
+  return (
+    <div className="flex flex-col sm:flex-row gap-3 w-full mt-6">
+      <a 
+        href={event.mapsUrl} 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[var(--colorTextDark)] text-[var(--colorBg)] font-sans text-[10px] font-bold tracking-widest uppercase hover:bg-[var(--colorPrimary)] transition-all duration-300 rounded-lg shadow-md"
+      >
+        <PlaneIcon /> Google Maps
+      </a>
+      <button 
+        onClick={handleAddToCalendar}
+        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-[var(--colorTextDark)] text-[var(--colorTextDark)] font-sans text-[10px] font-bold tracking-widest uppercase hover:text-[var(--colorPrimary)] hover:border-[var(--colorPrimary)] transition-all duration-300 rounded-lg"
+      >
+        <CalendarIcon /> Add to Calendar
+      </button>
+    </div>
+  );
+}
 
 // ── LAYOUT 1 — Rectangular Ornate Cards ──
-function EventCard1({ event, delay }) {
+function EventCard1({ event, delay, config }) {
   const ref = useReveal(delay);
   return (
     <article
@@ -45,9 +82,7 @@ function EventCard1({ event, delay }) {
         )}
       </div>
 
-      <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="mt-auto flex items-center gap-2 px-8 py-3 bg-[var(--colorPrimary)] text-white font-sans text-[10px] font-bold tracking-widest uppercase hover:bg-transparent hover:text-[var(--colorPrimary)] border border-[var(--colorPrimary)] transition-all duration-300">
-        <PlaneIcon /> Directions
-      </a>
+      <ActionButtons event={event} config={config} />
     </article>
   );
 }
@@ -78,7 +113,7 @@ function Layout1({ config }) {
 
       <div className={`flex flex-wrap justify-center gap-8 md:gap-12 ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
         {Object.entries(events).map(([key, event], idx) => (
-          <EventCard1 key={key} event={event} delay={idx * 150} />
+          <EventCard1 key={key} event={event} delay={idx * 150} config={config} />
         ))}
       </div>
     </div>
@@ -86,7 +121,7 @@ function Layout1({ config }) {
 }
 
 // ── LAYOUT 2 — Floating Elegant Cards ──
-function EventCard2({ event, delay }) {
+function EventCard2({ event, delay, config }) {
   const ref = useReveal(delay);
   return (
     <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 w-full md:w-[48%] bg-white/70 backdrop-blur-md shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white/60 relative group hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] p-10 rounded-[32px] text-center flex flex-col items-center justify-center">
@@ -101,9 +136,7 @@ function EventCard2({ event, delay }) {
         )}
       </div>
 
-      <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 border border-[var(--colorTextDark)] text-[var(--colorTextDark)] font-sans text-xs font-bold tracking-widest uppercase hover:text-[var(--colorPrimary)] hover:border-[var(--colorPrimary)] transition-colors px-6 py-2 rounded-full">
-        <PlaneIcon /> Map
-      </a>
+      <ActionButtons event={event} config={config} />
     </div>
   );
 }
@@ -121,7 +154,7 @@ function Layout2({ config }) {
       </div>
       <div className={`flex flex-wrap justify-center gap-12 relative z-10 w-full ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
         {Object.entries(events).map(([key, event], idx) => (
-          <EventCard2 key={key} event={event} delay={idx * 150} />
+          <EventCard2 key={key} event={event} delay={idx * 150} config={config} />
         ))}
       </div>
     </div>
@@ -363,17 +396,17 @@ export default function EventDetails({ config }) {
       className="overflow-hidden transition-colors duration-500 relative"
       style={{ backgroundColor: layout === 9 ? '#020617' : 'var(--colorBg)' }}
     >
-      {/* ── BLURRED BACKGROUND LAYER ── */}
+      {/* ── SECTION BACKGROUND IMAGE ── */}
       {config.sectionBackgrounds?.events && (
         <div 
-          className="absolute inset-0 z-0 pointer-events-none transition-transform duration-1000"
+          className="absolute inset-x-0 inset-y-0 pointer-events-none transition-transform duration-1000 z-0"
           style={{ 
             backgroundImage: `url(${config.sectionBackgrounds.events})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            filter: 'blur(15px)',
-            transform: 'scale(1.05)',
-            opacity: 0.5
+            filter: 'blur(8px)',
+            transform: 'scale(1.02)',
+            opacity: 0.85
           }} 
         />
       )}
@@ -438,7 +471,7 @@ function Layout9({ config }) {
 }
 
 // ── LAYOUT 4 — Nature Arch Event Cards ──
-function EventCard4({ event, delay }) {
+function EventCard4({ event, delay, config }) {
   const ref = useReveal(delay);
   const hasImage = !!event.image;
 
@@ -472,6 +505,18 @@ function EventCard4({ event, delay }) {
              <span className="font-sans font-bold text-[8px] tracking-[0.4em] uppercase text-[var(--colorPrimary)]">{event.time}</span>
           </div>
 
+          <div className="w-full h-32 bg-slate-100 rounded-2xl overflow-hidden relative group/map mb-2 border border-slate-200">
+             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/gray-floral.png')] opacity-20" />
+             <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg transform transition-transform group-hover/map:scale-110">
+                   <MapPin size={24} className="text-[var(--colorPrimary)]" />
+                </div>
+             </div>
+             <div className="absolute bottom-2 left-2 px-2 py-1 bg-white/80 backdrop-blur-sm rounded text-[8px] font-bold uppercase tracking-widest text-slate-500">
+                Venue Location
+             </div>
+          </div>
+
           <h3 className="font-serif text-4xl md:text-5xl font-medium text-[var(--colorTextDark)] tracking-tight italic mb-2">
             {event.title}
           </h3>
@@ -496,18 +541,7 @@ function EventCard4({ event, delay }) {
             </div>
           )}
 
-          <a 
-            href={event.mapsUrl} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="mt-8 flex items-center gap-4 px-12 py-5 bg-[var(--colorTextDark)] text-white font-sans text-[10px] font-bold tracking-[0.4em] uppercase hover:bg-[var(--colorPrimary)] transition-all duration-500 rounded-full shadow-[0_15px_35px_rgba(0,0,0,0.12)] group/btn"
-          >
-            <PlaneIcon /> 
-            <span className="relative overflow-hidden flex flex-col h-4 overflow-hidden">
-               <span className="transition-transform duration-300 group-hover/btn:-translate-y-full">Directions</span>
-               <span className="absolute top-full transition-transform duration-300 group-hover/btn:-translate-y-full">Click Map</span>
-            </span>
-          </a>
+          <ActionButtons event={event} config={config} />
         </div>
       </div>
     </article>
@@ -527,7 +561,7 @@ function Layout4({ config }) {
 
       <div className={`flex flex-wrap justify-center gap-10 md:gap-14 ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
         {Object.entries(events).map(([key, event], idx) => (
-          <EventCard4 key={key} event={event} delay={idx * 200} />
+          <EventCard4 key={key} event={event} delay={idx * 200} config={config} />
         ))}
       </div>
       

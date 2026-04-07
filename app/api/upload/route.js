@@ -34,27 +34,21 @@ export async function POST(req) {
       return NextResponse.json({ success: false, error: 'No file uploaded' }, { status: 400 });
     }
 
-    // ── Delete old image from Cloudinary BEFORE uploading new one ───
+    // ── Delete old image/video/audio from Cloudinary BEFORE uploading new one ───
     if (oldImage) {
-      const publicId = getPublicId(oldImage);
-      if (publicId) {
-        try {
-          await cloudinary.uploader.destroy(publicId);
-          console.log(`[Cloudinary] Deleted old image: ${publicId}`);
-        } catch (delErr) {
-          console.warn(`[Cloudinary] Could not delete old image (${publicId}):`, delErr.message);
-        }
-      }
+      const { deleteFromCloudinary } = await import('@/lib/cloudinary');
+      await deleteFromCloudinary(oldImage);
     }
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
     const isGif = file.type === 'image/gif' || file.name.toLowerCase().endsWith('.gif');
-    const isAudio = type === 'audio' || file.type.startsWith('audio/');
+    const isVideo = file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.mp4');
+    const isAudio = type === 'audio' || file.type.startsWith('audio/') || file.name.toLowerCase().endsWith('.mp3');
     let finalBuffer;
     
-    if (isGif || isAudio) {
+    if (isGif || isVideo || isAudio) {
       finalBuffer = buffer;
     } else {
       let pipeline = sharp(buffer);
@@ -89,14 +83,9 @@ export async function DELETE(req) {
       return NextResponse.json({ success: false, error: 'No file URL provided' }, { status: 400 });
     }
 
-    const publicId = getPublicId(fileUrl);
-    if (!publicId) {
-      return NextResponse.json({ success: true, message: 'Non-Cloudinary URL — nothing to delete from cloud.' });
-    }
-
-    await cloudinary.uploader.destroy(publicId);
-    console.log(`[Cloudinary] Deleted: ${publicId}`);
-
+    const { deleteFromCloudinary } = await import('@/lib/cloudinary');
+    await deleteFromCloudinary(fileUrl);
+    
     return NextResponse.json({ success: true, message: 'Image deleted from Cloudinary.' });
   } catch (err) {
     console.error('Delete [Cloud] Error:', err);

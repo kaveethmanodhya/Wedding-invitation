@@ -36,8 +36,9 @@ export const getDefaultConfig = (slug) => ({
   gallery: [],
   audioUrl: '',
   heroImage: '',
+  heroVideo: '',
   heroLayout: 1,
-  revealStyle: 'envelope',
+  revealStyle: 'envelope', // 'envelope' | 'couple' | 'cover' | 'premium_envelope'
   theme: {
     colorPrimary: '#C9956A',
     colorSecondary: '#E8D5B7',
@@ -57,11 +58,30 @@ export const getDefaultConfig = (slug) => ({
     title: 'A Wedding Invitation',
     subtitle: 'Groom & Bride',
     buttonText: 'Open Invitation',
-    bgImage: ''
+    bgImage: '',
+    premium: {
+      waxSealColor: '#8a0303',
+      envelopeColor: '#ffffff',
+      liningColor: '#f3f4f6'
+    }
   },
+  timeline: [
+    { time: '04:00 PM', title: 'The Ceremony', description: 'Exchange of vows at the main altar', icon: '💍' },
+    { time: '05:30 PM', title: 'Cocktail Hour', description: 'Drinks and appetizers on the lawn', icon: '🍸' },
+    { time: '07:00 PM', title: 'Grand Dinner', description: 'A gourmet feast followed by toasts', icon: '🍽️' },
+    { time: '09:00 PM', title: 'The Party', description: 'Dancing and celebration all night long', icon: '💃' }
+  ],
   meta: {
     title: 'Wedding Invitation',
     description: 'Join us as we celebrate our union.',
     ogImage: ''
+  },
+  sectionBackgrounds: {
+    hero: '',
+    story: '',
+    events: '',
+    gallery: '',
+    rsvp: '',
+    footer: ''
   }
 });

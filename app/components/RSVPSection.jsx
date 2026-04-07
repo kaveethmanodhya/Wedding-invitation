@@ -7,6 +7,13 @@ export default function RSVPSection({ config }) {
     name: '', phone: '',
     attendance: '', guests: '1',
     events: { ceremony: true },
+    dietary: { 
+      vegetarian: false, 
+      vegan: false, 
+      glutenFree: false, 
+      noPorkBeef: false,
+      other: '' 
+    },
     message: ''
   });
   const [errors, setErrors] = useState({});
@@ -35,7 +42,7 @@ export default function RSVPSection({ config }) {
     return Object.keys(e).length === 0;
   }
 
-  function handleSubmit(ev) {
+  async function handleSubmit(ev) {
     ev.preventDefault();
     if (!validate()) return;
     setStatus('loading');
@@ -45,19 +52,27 @@ export default function RSVPSection({ config }) {
         .filter(([_, attended]) => attended)
         .map(([name]) => name.charAt(0).toUpperCase() + name.slice(1))
         .join(', ');
+      
+      const dietaryList = Object.entries(formData.dietary)
+        .filter(([key, val]) => val === true && key !== 'other')
+        .map(([key]) => key.charAt(0).toUpperCase() + key.slice(1))
+        .concat(formData.dietary.other ? [formData.dietary.other] : [])
+        .join(', ') || 'None';
 
-      const message =
+      const waMessage =
         `💍 *Wedding invitation Reply* 💍\n\n` +
         `*Guest Name:* ${formData.name}\n` +
         `*Phone:* ${formData.phone || 'Not provided'}\n` +
         `*Attendance:* ${formData.attendance === 'Attending' ? '✅ Joyfully Accepts' : '❌ Regretfully Declines'}\n` +
-        `${formData.attendance === 'Attending' ? `*Guests:* ${formData.guests}\n*Events:* ${selectedEvents}\n` : ''}` +
+        `${formData.attendance === 'Attending' ? `*Guests:* ${formData.guests}\n*Events:* ${selectedEvents}\n*Dietary:* ${dietaryList}\n` : ''}` +
         `*Message:* ${formData.message || 'No additional message'}`;
 
-      const encodedMessage = encodeURIComponent(message);
+      // 1. WhatsApp redirect
+      const encodedMessage = encodeURIComponent(waMessage);
       const cleanNumber = rsvp.whatsappNumber.replace(/[+\s-]/g, '').replace(/^0+/, '');
       const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
       window.open(whatsappUrl, '_blank');
+      
       setStatus('success');
     } catch (err) {
       console.error(err);
@@ -116,6 +131,8 @@ export default function RSVPSection({ config }) {
             backgroundImage: `url(${config.sectionBackgrounds.rsvp})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
+            backgroundBlendMode: 'overlay',
+            backgroundColor: 'rgba(255,255,255,0.8)'
           } : {})
         }}
       >
@@ -138,7 +155,7 @@ export default function RSVPSection({ config }) {
       className={`py-20 md:py-32 relative overflow-hidden transition-colors duration-500 ${layout === 9 ? 'text-white' : ''}`}
       style={{ backgroundColor: layout === 9 ? '#020617' : 'var(--colorBg)' }}
     >
-      {/* ── BLURRED BACKGROUND LAYER ── */}
+      {/* ── SECTION BACKGROUND IMAGE ── */}
       {config.sectionBackgrounds?.rsvp && (
         <div
           className="absolute inset-0 z-0 pointer-events-none transition-transform duration-1000"
@@ -146,9 +163,9 @@ export default function RSVPSection({ config }) {
             backgroundImage: `url(${config.sectionBackgrounds.rsvp})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            filter: 'blur(15px)',
-            transform: 'scale(1.05)',
-            opacity: 0.5
+            filter: 'blur(8px)',
+            transform: 'scale(1.02)',
+            opacity: 0.85
           }}
         />
       )}
@@ -258,17 +275,55 @@ export default function RSVPSection({ config }) {
 
           {/* ── GUEST SELECTION ── */}
           {formData.attendance === 'Attending' && (
-            <div className={`flex items-center justify-center gap-4 py-4 border-y ${layout === 9 ? 'border-white/10' : 'border-gray-100'}`}>
-              <span className={`font-sans text-sm ${layout === 9 ? 'text-white/60' : 'text-[var(--colorTextDark)] opacity-60'}`}>
-                {layout === 8 ? 'පැමිණෙන අමුත්තන් සංඛ්‍යාව?' : 'How many guests will attend?'}
-              </span>
-              <select
-                className={`w-16 h-10 border rounded text-center font-sans font-bold text-sm cursor-pointer transition-colors ${layout === 9 ? 'bg-white/10 border-white/20 text-white hover:border-[var(--colorPrimary)]' : 'border-gray-300 text-[var(--colorTextDark)] hover:border-[var(--colorPrimary)]'}`}
-                value={formData.guests}
-                onChange={e => setFormData(f => ({ ...f, guests: e.target.value }))}
-              >
-                {guestOptions.map(n => <option key={n} value={n} className={layout === 9 ? 'bg-slate-800' : ''}>{n}</option>)}
-              </select>
+            <div className={`flex flex-col gap-6 py-4 border-y ${layout === 9 ? 'border-white/10' : 'border-gray-100'}`}>
+              <div className="flex items-center justify-center gap-4">
+                <span className={`font-sans text-sm ${layout === 9 ? 'text-white/60' : 'text-[var(--colorTextDark)] opacity-60'}`}>
+                  {layout === 8 ? 'පැමිණෙන අමුත්තන් සංඛ්‍යාව?' : 'How many guests will attend?'}
+                </span>
+                <select
+                  className={`w-16 h-10 border rounded text-center font-sans font-bold text-sm cursor-pointer transition-colors ${layout === 9 ? 'bg-white/10 border-white/20 text-white hover:border-[var(--colorPrimary)]' : 'border-gray-300 text-[var(--colorTextDark)] hover:border-[var(--colorPrimary)]'}`}
+                  value={formData.guests}
+                  onChange={e => setFormData(f => ({ ...f, guests: e.target.value }))}
+                >
+                  {guestOptions.map(n => <option key={n} value={n} className={layout === 9 ? 'bg-slate-800' : ''}>{n}</option>)}
+                </select>
+              </div>
+
+              {/* ── DIETARY REQUIREMENTS ── */}
+              <div className="space-y-4">
+                <label className={labelCls}>Dietary Requirements & Allergies</label>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { key: 'vegetarian', label: 'Vegetarian' },
+                    { key: 'vegan', label: 'Vegan' },
+                    { key: 'glutenFree', label: 'Gluten-Free' },
+                    { key: 'noPorkBeef', label: 'No Pork/Beef' }
+                  ].map(option => (
+                    <label key={option.key} className="flex items-center gap-3 cursor-pointer group">
+                      <div className={`w-5 h-5 border-2 flex items-center justify-center transition-all ${formData.dietary[option.key] ? 'bg-[var(--colorPrimary)] border-[var(--colorPrimary)]' : (layout === 9 ? 'border-white/20' : 'border-gray-200')}`}>
+                        {formData.dietary[option.key] && <CheckIcon size={12} color="white" />}
+                      </div>
+                      <input 
+                        type="checkbox" 
+                        className="sr-only" 
+                        checked={formData.dietary[option.key]} 
+                        onChange={() => setFormData(f => ({ 
+                          ...f, 
+                          dietary: { ...f.dietary, [option.key]: !f.dietary[option.key] } 
+                        }))} 
+                      />
+                      <span className={`text-xs font-serif transition-colors ${layout === 9 ? 'text-white/70 group-hover:text-white' : 'text-[var(--colorTextDark)]/70 group-hover:text-[var(--colorTextDark)]'}`}>{option.label}</span>
+                    </label>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  placeholder="Other allergies or requirements..."
+                  className={`${inputCls} !py-2 !text-sm`}
+                  value={formData.dietary.other}
+                  onChange={e => setFormData(f => ({ ...f, dietary: { ...f.dietary, other: e.target.value } }))}
+                />
+              </div>
             </div>
           )}
 
@@ -344,6 +399,15 @@ function HeartIcon({ size = 60, fill = false }) {
       strokeLinecap="round" strokeLinejoin="round"
     >
       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.89-8.89 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+  );
+}
+
+// ── CheckIcon Helper ──
+function CheckIcon({ size = 16, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12" />
     </svg>
   );
 }

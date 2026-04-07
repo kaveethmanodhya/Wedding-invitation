@@ -266,8 +266,30 @@ export default function Hero({ config }) {
       className={`min-h-screen flex flex-col items-center ${layout === 9 ? 'justify-start' : 'justify-center'} relative overflow-hidden transition-all duration-500`}
       style={{ backgroundColor: 'var(--colorBg)' }}
     >
-      {/* ── BLURRED BACKGROUND LAYER ── */}
-      {config.sectionBackgrounds?.hero && (
+      {/* ── HERO VIDEO BACKGROUND ── */}
+      {config.heroVideo && (
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover opacity-80"
+          >
+            <source src={config.heroVideo} type="video/mp4" />
+          </video>
+          {/* Subtle Video Overlay */}
+          <div 
+            className="absolute inset-0 z-10" 
+            style={{ 
+              background: `linear-gradient(to bottom, ${config.theme?.heroOverlayStart || 'rgba(0,0,0,0.3)'}, ${config.theme?.heroOverlayEnd || 'rgba(0,0,0,0.1)'})` 
+            }} 
+          />
+        </div>
+      )}
+
+      {/* ── BLURRED BACKGROUND LAYER (Fallback or secondary) ── */}
+      {config.sectionBackgrounds?.hero && !config.heroVideo && (
         <div 
           className="absolute inset-0 pointer-events-none transition-transform duration-1000 z-0"
           style={{ 
@@ -280,8 +302,8 @@ export default function Hero({ config }) {
           }} 
         />
       )}
-      {/* Subtle overlay */}
-      <div className="absolute inset-0 bg-white/5 z-[1] pointer-events-none" />
+      {/* Subtle global overlay */}
+      <div className="absolute inset-0 bg-black/10 z-[1] pointer-events-none" />
 
       <div className="absolute inset-0 pointer-events-none z-[1]" style={{ background: 'radial-gradient(circle at 50% 50%, var(--colorPrimary) 0%, transparent 60%)', opacity: 0.03 }} />
       <div className={`relative z-10 w-full flex justify-center ${layout === 9 ? 'p-0' : 'py-20 px-4'}`}>
