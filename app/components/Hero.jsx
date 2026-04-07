@@ -525,7 +525,7 @@ function Layout6({ config }) {
       </motion.div>
 
       {heroImage && (
-        <div className="mt-12 w-full max-w-md aspect-video rounded-3xl overflow-hidden shadow-2xl relative">
+        <div className="mt-12 w-full max-w-md aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl relative">
           <img src={heroImage} className="w-full h-full object-cover" />
           <div className="absolute inset-0 ring-1 ring-inset ring-white/20" />
         </div>
@@ -548,7 +548,7 @@ function Layout7({ config }) {
         transition={{ duration: 0.8 }}
         className="bg-white p-6 pb-20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 max-w-sm w-full relative z-10"
       >
-        <div className="aspect-square bg-slate-100 overflow-hidden mb-6">
+        <div className="aspect-[3/4] bg-slate-100 overflow-hidden mb-6">
           <img src={heroImage || '/images/hero.png'} className="w-full h-full object-cover sepia-[0.3]" />
         </div>
         <div className="text-center">
