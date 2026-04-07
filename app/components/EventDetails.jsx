@@ -263,7 +263,8 @@ function EventCard6({ event, delay }) {
         <p className="font-serif text-lg text-[var(--colorTextDark)]">{event.venueName}</p>
         <p className="font-sans text-[10px] uppercase text-[var(--colorTextDark)]/40 tracking-widest">{event.address}</p>
       </div>
-      <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="px-8 py-2.5 rounded-full bg-[var(--colorPrimary)]/10 text-[var(--colorPrimary)] font-bold text-[10px] uppercase tracking-widest hover:bg-[var(--colorPrimary)] hover:text-white transition-all shadow-sm">
+      <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-8 py-2.5 rounded-full bg-[var(--colorPrimary)]/10 text-[var(--colorPrimary)] font-bold text-[10px] uppercase tracking-widest hover:bg-[var(--colorPrimary)] hover:text-white transition-all shadow-sm">
+        <MapPin size={12} />
         Directions
       </a>
     </div>
@@ -273,11 +274,11 @@ function EventCard6({ event, delay }) {
 function Layout6({ config }) {
   const { events } = config;
   return (
-    <div className="max-w-6xl mx-auto px-6 py-24 text-center">
+    <div className="max-w-6xl mx-auto px-6 py-24 text-center relative z-10">
       <div className="mb-16">
         <span className="text-2xl mb-4 block opacity-40">❦</span>
-        <h2 className="font-serif text-5xl text-[var(--colorTextDark)] mb-2">The Celebration</h2>
-        <p className="font-script text-3xl text-[var(--colorPrimary)] opacity-70">Lovely moments together</p>
+        <h2 className="font-serif text-5xl text-[var(--colorTextDark)] mb-2 drop-shadow-[0_2px_10px_rgba(255,255,255,0.8)]">The Celebration</h2>
+        <p className="font-script text-3xl text-[var(--colorPrimary)] opacity-90 drop-shadow-sm">Lovely moments together</p>
       </div>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {Object.entries(events).map(([key, event], idx) => (
