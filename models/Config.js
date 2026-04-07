@@ -59,11 +59,19 @@ export const getDefaultConfig = (slug) => ({
     subtitle: 'Groom & Bride',
     buttonText: 'Open Invitation',
     bgImage: '',
+    waxSealImage: '/images/wax-seal.png',
     premium: {
       waxSealColor: '#8a0303',
       envelopeColor: '#ffffff',
       liningColor: '#f3f4f6'
     }
+  },
+  envelopeColors: {
+    back: '#064e3b',
+    pocket: '#047857',
+    flap: '#064e3b',
+    card: '#fef3c7',
+    seal: '#dc2626'
   },
   timeline: [
     { time: '04:00 PM', title: 'The Ceremony', description: 'Exchange of vows at the main altar', icon: '💍' },

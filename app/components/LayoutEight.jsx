@@ -6,106 +6,8 @@ import {
   ArrowRight, Mail, Phone, ExternalLink, Plane, Navigation, Info, Users
 } from 'lucide-react';
 
-// ── Realistic 3D Envelope Component ──
-function EnvelopeWrapper({ config, onOpen }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [showContent, setShowContent] = useState(false);
-
-  const handleOpen = () => {
-    setIsOpen(true);
-    setTimeout(() => setShowContent(true), 1200);
-    setTimeout(() => onOpen(), 2500); // Trigger the next phase
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#fdfaf5] overflow-hidden">
-      {/* Subtle Noise Texture Overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]" />
-      
-      <motion.div 
-        initial={{ scale: 0.8, opacity: 0, y: 50 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-        className="relative w-[340px] h-[480px] sm:w-[450px] sm:h-[600px] perspective-[1500px]"
-      >
-        {/* ENVELOPE BACK */}
-        <div 
-          className="absolute inset-0 bg-[#f9f5f0] shadow-2xl rounded-lg border border-slate-200/50"
-          style={{ transformStyle: 'preserve-3d' }}
-        >
-          {/* THE POCKET (Bottom Flap) */}
-          <div className="absolute bottom-0 left-0 right-0 h-2/3 bg-[#f3efe8] z-20 rounded-b-lg border-t border-slate-200/40" 
-               style={{ clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 40%)' }}>
-            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/fabric-of-squares.png')]" />
-          </div>
-
-          {/* THE TOP FLAP */}
-          <motion.div 
-            initial={{ rotateX: 0 }}
-            animate={{ rotateX: isOpen ? -180 : 0 }}
-            transition={{ duration: 1.2, ease: [0.45, 0, 0.55, 1], delay: 0.5 }}
-            className="absolute top-0 left-0 right-0 h-1/2 bg-[#fdfaf5] origin-top z-40 rounded-t-lg shadow-inner border-b border-slate-200/30"
-            style={{ 
-              clipPath: 'polygon(0% 0%, 100% 0%, 50% 100%)',
-              backfaceVisibility: 'hidden'
-            }}
-          >
-             <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]" />
-          </motion.div>
-
-          {/* THE INVITATION CARD (Sliding out) */}
-          <motion.div 
-            initial={{ y: 0, z: -1 }}
-            animate={{ y: isOpen ? -450 : 0, scale: isOpen ? 1.05 : 1 }}
-            transition={{ duration: 1.5, ease: "easeInOut", delay: 1.2 }}
-            className="absolute inset-4 bg-white shadow-lg rounded p-8 z-10 flex flex-col items-center justify-center text-center border border-slate-100"
-          >
-             <div className="w-16 h-16 mb-6 opacity-20"><Heart size={64} strokeWidth={1} /></div>
-             <p className="font-serif italic text-slate-400 tracking-widest text-sm mb-4 uppercase">The Wedding of</p>
-             <h2 className="font-serif text-3xl sm:text-4xl text-slate-800 leading-tight mb-2">
-               {config.couple.bride.firstName} & {config.couple.groom.firstName}
-             </h2>
-             <div className="w-12 h-px bg-slate-200 my-6" />
-             <p className="font-sans text-xs tracking-[0.3em] font-bold text-slate-500 uppercase">
-               {config.wedding.date}
-             </p>
-          </motion.div>
-
-          {/* THE WAX SEAL */}
-          {!isOpen && (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleOpen}
-              className="absolute left-1/2 bottom-[45%] -translate-x-1/2 z-[100] w-16 h-16 cursor-pointer drop-shadow-[0_8px_15px_rgba(180,0,0,0.3)] group"
-            >
-               <div className="w-full h-full bg-[#b22222] rounded-full flex items-center justify-center relative overflow-hidden ring-4 ring-[#a52a2a]/20">
-                  {/* Embossed effect */}
-                  <div className="absolute inset-0 bg-gradient-radial from-transparent to-black/30 pointer-events-none" />
-                  <div className="absolute inset-[-4px] border-[6px] border-[#921c1c] rounded-full opacity-50" />
-                  <span className="text-white font-serif text-2xl font-bold tracking-tight drop-shadow-sm select-none">
-                    {config.couple.bride.firstName[0]}
-                  </span>
-               </div>
-               {/* Click Hint */}
-               <motion.span 
-                animate={{ y: [0, 5, 0] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 group-hover:text-slate-600 transition-colors"
-               >
-                 Tap to Open
-               </motion.span>
-            </motion.button>
-          )}
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
 // ── Main Page Layout Component ──
 export default function LayoutEight({ config }) {
-  const [hasOpened, setHasOpened] = useState(false);
   const [formData, setFormData] = useState({
     name: '', phone: '', attendance: '', guests: '1',
     dietary: { vegetarian: false, vegan: false, glutenFree: false, nutAllergy: false },
@@ -132,22 +34,13 @@ export default function LayoutEight({ config }) {
       `${formData.attendance === 'Accept' ? `*Guests:* ${formData.guests}\n*Dietary:* ${dietaryList}\n` : ''}` +
       `*Message:* ${formData.message || 'None'}`;
     
-    const cleanNumber = config.rsvp.whatsappNumber.replace(/[+\s-]/g, '');
+    const cleanNumber = config?.rsvp?.whatsappNumber?.replace(/[+\s-]/g, '') || '';
     window.open(`https://wa.me/${cleanNumber}?text=${encodeURIComponent(waMessage)}`, '_blank');
     setRsvpStatus('success');
   };
 
   return (
     <div className="relative min-h-screen bg-[#fdfaf5] text-slate-800 selection:bg-[#C9956A] selection:text-white overflow-x-hidden">
-      {!hasOpened && <EnvelopeWrapper config={config} onOpen={() => setHasOpened(true)} />}
-
-      <AnimatePresence>
-        {hasOpened && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-          >
             {/* ── HERO SECTION: Dynamic Breathing Feel ── */}
             <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
                {/* Ken Burns Background */}
@@ -166,7 +59,7 @@ export default function LayoutEight({ config }) {
                    className="w-full h-full"
                  >
                    <img 
-                    src={config.heroImage} 
+                    src={config?.heroImage || config?.hero?.imageUrl || ''} 
                     className="w-full h-full object-cover"
                     alt="Wedding Hero"
                    />
@@ -186,11 +79,11 @@ export default function LayoutEight({ config }) {
                       Join us for the wedding of
                     </p>
                     <h1 className="font-serif text-[clamp(48px,10vw,120px)] leading-tight text-white drop-shadow-2xl mb-4 italic px-2">
-                       {config.couple.bride.firstName} <span className="font-sans text-2xl md:text-5xl not-italic block md:inline mx-2">&</span> {config.couple.groom.firstName}
+                       {config?.couple?.bride?.firstName || ''} <span className="font-sans text-2xl md:text-5xl not-italic block md:inline mx-2">&</span> {config?.couple?.groom?.firstName || ''}
                     </h1>
                     <div className="w-16 h-px bg-white/40 mx-auto my-8" />
                     <p className="font-serif text-xl md:text-2xl text-white/90 tracking-widest uppercase drop-shadow-lg">
-                      {config.wedding.date}
+                      {config?.wedding?.date || ''}
                     </p>
                   </motion.div>
                </div>
@@ -211,7 +104,7 @@ export default function LayoutEight({ config }) {
                   <div className="relative px-8 md:px-16">
                     <div className="absolute -top-6 -left-0 text-7xl text-[#C9956A]/10 font-serif">“</div>
                     <p className="font-serif text-xl md:text-2xl text-slate-600 leading-relaxed italic">
-                      {config.story.invitationText}
+                      {config?.story?.invitationText || "We invite you to share our joy as we exchange vows. Your presence will make our celebration truly special."}
                     </p>
                     <div className="absolute -bottom-12 -right-0 text-7xl text-[#C9956A]/10 font-serif">”</div>
                   </div>
@@ -266,6 +159,42 @@ export default function LayoutEight({ config }) {
                   </div>
                </div>
             </section>
+
+            {/* ── GALLERY: Premium Collection ── */}
+            {config?.gallery && config.gallery.length > 0 && (
+              <section className="px-6 py-24 md:py-32 bg-[#fdfaf5] relative overflow-hidden">
+                <div className="max-w-6xl mx-auto flex flex-col items-center">
+                  <div className="text-center mb-16 space-y-4">
+                    <span className="font-sans text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400">Captured Moments</span>
+                    <h2 className="font-serif text-4xl md:text-5xl text-slate-800 italic">Love In Frames</h2>
+                  </div>
+
+                  <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full">
+                    {config.gallery.map((photo, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        transition={{ duration: 0.8, delay: (idx % 3) * 0.1 }}
+                        className="group relative overflow-hidden rounded-[20px] break-inside-avoid shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] transition-all duration-700 border-4 border-white"
+                      >
+                        <img 
+                          src={photo.src} 
+                          alt={photo.alt || 'Gallery photo'} 
+                          className="w-full h-auto block object-cover transition-transform duration-1000 group-hover:scale-[1.03]"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none" />
+                        <div className="absolute inset-x-0 bottom-0 p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 z-10 flex flex-col items-center text-center">
+                           <Heart size={20} className="text-white mb-2" strokeWidth={1} />
+                           <p className="font-serif text-lg md:text-xl text-white italic drop-shadow-md">Beautiful Moment</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
 
             {/* ── MAP & LOCATION: Interactive Display ── */}
             <section className="px-6 py-24 md:py-32 bg-white">
@@ -332,7 +261,7 @@ export default function LayoutEight({ config }) {
 
                   <div className="space-y-6 mb-12">
                      <h2 className="font-serif text-4xl md:text-5xl text-slate-800 leading-tight italic">RSVP Confirmation</h2>
-                     <p className="font-sans text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Kindly Reply by {config.rsvp.deadline}</p>
+                     <p className="font-sans text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Kindly Reply by {config?.rsvp?.deadline || ''}</p>
                      <div className="w-12 h-px bg-[#C9956A]/30 mx-auto" />
                   </div>
 
@@ -474,14 +403,10 @@ export default function LayoutEight({ config }) {
                     See you there
                   </h2>
                   <p className="font-sans text-[10px] font-black uppercase tracking-[0.6em] text-slate-400">
-                    {config.couple.bride.firstName} & {config.couple.groom.firstName} • {config.wedding.date}
+                    {config?.couple?.bride?.firstName || ''} & {config?.couple?.groom?.firstName || ''} • {config?.wedding?.date || ''}
                   </p>
                </div>
             </section>
-
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

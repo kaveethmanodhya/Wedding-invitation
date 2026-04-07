@@ -73,39 +73,23 @@ export default function ClientHome({ config }) {
 
   const mainContent = (
     <main className={`min-h-screen theme-${themeId} ${!hasOpened ? 'h-screen overflow-hidden' : (config.heroLayout === 9 ? 'bg-slate-950 text-white' : 'bg-[var(--colorBg)] text-[var(--colorTextDark)]')}`}>
-      <Navbar config={config} />
-      <Hero config={config} />
-      <Countdown config={config} />
-      <StorySection config={config} />
-      <Gallery config={config} />
-      <Timeline config={config} />
-      <EventDetails config={config} />
-      <RSVPSection config={config} />
-      <Footer config={config} />
+      {config.heroLayout === 8 ? (
+        <LayoutEight config={config} />
+      ) : (
+        <>
+          <Navbar config={config} />
+          <Hero config={config} />
+          <Countdown config={config} />
+          <StorySection config={config} />
+          <Gallery config={config} />
+          <Timeline config={config} />
+          <EventDetails config={config} />
+          <RSVPSection config={config} />
+          <Footer config={config} />
+        </>
+      )}
     </main>
   );
-
-  if (config.heroLayout === 8) {
-    return (
-      <>
-        <style dangerouslySetInnerHTML={{ __html: themeStyles }} />
-        {config.audioUrl && (
-          <audio ref={audioRef} src={config.audioUrl} loop preload="auto" style={{ display: 'none' }} />
-        )}
-        <LayoutEight config={config} />
-        
-        {/* Simple floating audio toggle for layout 8 */}
-        {config.audioUrl && (
-          <button
-            onClick={toggleAudio}
-            className="fixed bottom-4 right-4 z-50 bg-white/80 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-white transition"
-          >
-            {audioPlaying ? '🔊' : '🔈'}
-          </button>
-        )}
-      </>
-    );
-  }
 
   return (
     <>
@@ -121,9 +105,9 @@ export default function ClientHome({ config }) {
             <CoupleReveal key="couple-reveal" config={config} onOpen={handleOpen} />
           ) : revealStyle === 'fade' ? (
             <FadeReveal key="fade-reveal" config={config} onOpen={handleOpen} />
-          ) : revealStyle === 'premium_envelope' ? (
-            <EnvelopeReveal key="premium-envelope" config={config} onOpen={handleOpen} />
-          ) : revealStyle === 'royal_envelope' ? (
+          ) : revealStyle === 'premium-envelope' ? (
+            <EnvelopeReveal key="premium-envelope" config={config} onOpenInvitation={handleOpen} />
+          ) : (revealStyle === 'royal-envelope' || revealStyle === 'royal_envelope') ? (
             <RoyalEnvelope key="royal-envelope" config={config} onOpen={handleOpen} />
           ) : (
             <Envelope key="envelope-layer" config={config} onOpen={handleOpen} />

@@ -1236,18 +1236,19 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     </label>
 
                     <label className="flex items-center gap-2.5 cursor-pointer group">
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${config.revealStyle === 'premium_envelope' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
-                        {config.revealStyle === 'premium_envelope' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${config.revealStyle === 'premium-envelope' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
+                        {config.revealStyle === 'premium-envelope' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
                       </div>
                       <input
                         type="radio"
                         className="hidden"
-                        name="revealStyle"
-                        value="premium_envelope"
-                        checked={config.revealStyle === 'premium_envelope'}
-                        onChange={() => setPath('revealStyle', 'premium_envelope')}
+                        name="revealStyle" 
+                        value="premium-envelope" 
+                        checked={config.revealStyle === 'premium-envelope' || config.revealStyle === 'premium_envelope'} 
+                        onChange={() => setPath('revealStyle', 'premium-envelope')} 
+
                       />
-                      <span className={`text-sm font-medium ${config.revealStyle === 'premium_envelope' ? 'text-slate-900' : 'text-slate-500'}`}>Premium Envelope</span>
+                      <span className={`text-sm font-medium ${config.revealStyle === 'premium-envelope' ? 'text-slate-900' : 'text-slate-500'}`}>Premium Wax Seal Envelope</span>
                     </label>
 
                     <label className="flex items-center gap-2.5 cursor-pointer group">
@@ -1341,18 +1342,9 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   />
                 </FieldGroup>
 
-                {config.revealStyle === 'premium_envelope' && (
-                  <div className="col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-slate-100">
-                    <ColourField label="Wax Seal" value={config.envelope.premium?.waxSealColor || '#8a0303'} onChange={val => setPath('envelope.premium.waxSealColor', val)} />
-                    <ColourField label="Envelope" value={config.envelope.premium?.envelopeColor || '#ffffff'} onChange={val => setPath('envelope.premium.envelopeColor', val)} />
-                    <ColourField label="Lining" value={config.envelope.premium?.liningColor || '#f3f4f6'} onChange={val => setPath('envelope.premium.liningColor', val)} />
-                  </div>
-                )}
-
                 {config.revealStyle === 'royal_envelope' && (
                   <div className="col-span-2 mt-6 pt-6 border-t border-slate-100">
                     <div className="flex flex-col md:flex-row gap-8 items-start">
-                      {/* Controls */}
                       <div className="flex-1 grid grid-cols-1 gap-4 w-full">
                         <div className="flex items-center justify-between mb-1">
                           <p className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">Royal Envelope Tuning</p>
@@ -1394,7 +1386,6 @@ function AdminDashboard({ slug, onBack, showToast }) {
                         </p>
                       </div>
 
-                      {/* Mini Preview */}
                       <div className="shrink-0 w-full md:w-64">
                         <p className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest mb-3">Live Preview</p>
                         <div
@@ -1407,7 +1398,6 @@ function AdminDashboard({ slug, onBack, showToast }) {
                             className="relative w-4/5 h-4/5 rounded shadow-xl overflow-hidden border border-black/5 z-10"
                             style={{ backgroundColor: config.envelope?.royal?.envelopeColor || config.theme?.colorPrimary || '#91091E' }}
                           >
-                            {/* High-Fidelity 3D Gold Band */}
                             <div
                               className="absolute top-1/2 -translate-y-1/2 w-full h-3 md:h-4 z-40 shadow-sm overflow-hidden flex flex-col justify-between py-[0.5px]"
                               style={{
@@ -1417,7 +1407,6 @@ function AdminDashboard({ slug, onBack, showToast }) {
                               <div className="w-full h-[0.2px] bg-white/40" />
                               <div className="w-full h-[0.2px] bg-white/40" />
                             </div>
-                            {/* Refined Seal */}
                             <div
                               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full border border-[#D4AF37] shadow-md flex items-center justify-center text-[5px] font-serif text-[#D4AF37] font-bold overflow-hidden"
                               style={{
@@ -1438,11 +1427,45 @@ function AdminDashboard({ slug, onBack, showToast }) {
                                 </div>
                               </div>
                             </div>
-                            {/* Flap lines */}
                             <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ clipPath: 'polygon(0% 0%, 100% 0%, 50% 50%)', border: '1px solid black' }} />
                           </div>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                )}
+                
+                {config.revealStyle === 'premium-envelope' && (
+                  <div className="col-span-2 mt-6 pt-6 border-t border-slate-100">
+                    <div className="mb-4 flex items-center gap-2">
+                       <Palette size={16} className="text-[#C9956A]" />
+                       <h4 className="text-sm font-semibold text-slate-700">Premium Envelope Details</h4>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-6">
+                      <FieldGroup label="Card Title" hint="E.g. 'A Wedding Invitation'">
+                        <input type="text" className={inputCls} value={config.envelope?.title || ''} onChange={e => setPath('envelope.title', e.target.value)} />
+                      </FieldGroup>
+                      <FieldGroup label="Card Names" hint="E.g. 'Kasun & Nimesha'">
+                        <input type="text" className={inputCls} value={config.envelope?.subtitle || ''} onChange={e => setPath('envelope.subtitle', e.target.value)} />
+                      </FieldGroup>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4 mb-6">
+                      <ColourField label="Wax Seal Color" value={config.envelopeColors?.seal || '#dc2626'} onChange={val => setPath('envelopeColors.seal', val)} />
+                      <ColourField label="Envelope Back" value={config.envelopeColors?.back || '#064e3b'} onChange={val => setPath('envelopeColors.back', val)} />
+                      <ColourField label="Front Pocket" value={config.envelopeColors?.pocket || '#047857'} onChange={val => setPath('envelopeColors.pocket', val)} />
+                      <ColourField label="Top Flap" value={config.envelopeColors?.flap || '#064e3b'} onChange={val => setPath('envelopeColors.flap', val)} />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                      <ColourField label="Card Background" value={config.envelopeColors?.card || '#fef3c7'} onChange={val => setPath('envelopeColors.card', val)} />
+                      <ImageField 
+                        label="Custom Wax Seal Image"
+                        hint="Upload a photorealistic transparent PNG seal (e.g., gold or custom initials)"
+                        value={config.envelope?.waxSealImage}
+                        path="envelope.waxSealImage"
+                        type="general"
+                        onUpload={handleUpload}
+                        onDelete={handleDeleteImage}
+                      />
                     </div>
                   </div>
                 )}

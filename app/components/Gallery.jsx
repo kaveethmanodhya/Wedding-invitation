@@ -31,6 +31,10 @@ export default function Gallery({ config }) {
     return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
   }, [lightbox, gallery.length]);
 
+  if (layout === 1 || layout === 3) {
+    return null;
+  }
+
   return (
     <section 
       id="gallery" 
@@ -56,22 +60,8 @@ export default function Gallery({ config }) {
         
 
         {/* Header Layouts */}
-        {(layout === 1 || layout === 3 || layout === 5 || layout === 6 || layout === 7 || layout === 8 || layout === 9) && (
+        {(layout === 5 || layout === 6 || layout === 7 || layout === 8 || layout === 9) && (
           <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
-            {layout === 1 && (
-              <>
-                <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">Our Moments</p>
-                <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 tracking-wide">Captured Memories</h2>
-                <div className="w-24 h-px bg-[var(--colorPrimary)] mx-auto opacity-50" />
-              </>
-            )}
-            {layout === 3 && (
-              <>
-                <span className="text-3xl text-[var(--colorPrimary)] mb-4 block">❀</span>
-                <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 tracking-wide">The Gallery</h2>
-                <div className="w-24 h-0.5 bg-[var(--colorPrimary)] mx-auto opacity-60" />
-              </>
-            )}
             {layout === 5 && (
               <div className="text-left border-l-4 border-[var(--colorTextDark)] pl-8">
                 <h2 className="font-sans text-5xl md:text-7xl font-bold uppercase tracking-tighter text-[var(--colorTextDark)] opacity-80 leading-none mb-2">Moments</h2>
@@ -182,19 +172,6 @@ export default function Gallery({ config }) {
                   <span className="text-white text-4xl opacity-0 group-hover:opacity-100 transition-all duration-500 drop-shadow-md scale-50 group-hover:scale-100">🌿</span>
                 </div>
               </div>
-            </button>
-          ))}
-        </div>
-      ) : layout === 3 ? (
-        // Layout 3: Royal Arch Grid
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 px-6 max-w-6xl mx-auto">
-          {gallery.map((photo, idx) => (
-            <button
-              key={idx} onClick={() => setLightbox(idx)}
-              className="group relative cursor-zoom-in focus:outline-none w-full border-t-[3px] border-[var(--colorPrimary)] rounded-t-full overflow-hidden shadow-2xl transition-all duration-500 hover:-translate-y-2 aspect-[3/4]"
-            >
-               <Image src={photo.src} alt={photo.alt} width={800} height={800} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
-               <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
           ))}
         </div>
