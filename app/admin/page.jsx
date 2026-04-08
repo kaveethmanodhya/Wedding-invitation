@@ -33,7 +33,11 @@ const ImageField = ({ label, hint, value, path, type, onUpload, onDelete, onCrop
               )}
               <button
                 type="button"
-                onClick={() => onDelete(path, value)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onDelete(path, value);
+                }}
                 className="w-8 h-8 flex items-center justify-center bg-rose-500 text-white rounded-full shadow-lg hover:bg-rose-600 transition-colors"
                 title="Remove Image"
               >
@@ -462,7 +466,12 @@ function InvitationList({ onEdit, showToast }) {
                     Live View
                   </a>
                   <button
-                    onClick={() => setConfirmDeleteSlug(inv.slug)}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setConfirmDeleteSlug(inv.slug);
+                    }}
                     className="flex-1 flex items-center justify-center py-2.5 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-100 transition-colors"
                   >
                     <Trash2 size={14} />
@@ -475,40 +484,48 @@ function InvitationList({ onEdit, showToast }) {
 
         <AnimatePresence>
           {confirmDeleteSlug && (
-            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6">
+              {/* Premium Backdrop Overlay */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setConfirmDeleteSlug(null)}
-                className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+                className="absolute inset-0 bg-black/50 backdrop-blur-md"
               />
+              
+              {/* Premium Modal Box */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="relative bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl border border-slate-100 text-center"
+                initial={{ scale: 0.85, opacity: 0, y: 15 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.85, opacity: 0, y: 15 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="relative bg-white/95 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-2xl rounded-xl p-8 max-w-md w-full text-center"
               >
-                <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-6">
-                  <AlertCircle size={40} />
+                <div className="w-16 h-16 bg-rose-50 dark:bg-rose-950/30 text-rose-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-6">
+                  <AlertCircle size={32} />
                 </div>
-                <h2 className="text-2xl font-serif text-slate-800 mb-2">Delete Invitation?</h2>
-                <p className="text-slate-500 text-sm mb-8 leading-relaxed">
-                  Are you sure you want to delete <span className="font-bold text-slate-700">/{confirmDeleteSlug}</span>? This will permanently remove all data and linked photos.
+                <h2 className="text-2xl font-serif text-neutral-800 dark:text-neutral-100 mb-3">Delete Invitation?</h2>
+                <p className="text-neutral-500 dark:text-neutral-400 text-sm mb-8 leading-relaxed">
+                  Are you sure you want to delete <span className="font-bold text-neutral-700 dark:text-neutral-200">/{confirmDeleteSlug}</span>? This will permanently remove all data and linked photos. This action cannot be undone.
                 </p>
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <button
-                    onClick={() => handleDeleteInvitation(confirmDeleteSlug)}
-                    disabled={loading}
-                    className="w-full py-4 bg-rose-500 text-white rounded-2xl font-bold uppercase text-xs tracking-widest shadow-lg shadow-rose-500/30 hover:bg-rose-600 disabled:opacity-50 transition-all"
-                  >
-                    {loading ? 'Deleting...' : 'Yes, Delete Permanently'}
-                  </button>
-                  <button
+                    type="button"
                     onClick={() => setConfirmDeleteSlug(null)}
-                    className="w-full py-4 bg-slate-50 text-slate-400 rounded-2xl font-bold uppercase text-xs tracking-widest hover:bg-slate-100 transition-all"
+                    className="flex-1 py-3 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 rounded-lg font-bold uppercase text-[10px] tracking-widest hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all"
                   >
                     Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleDeleteInvitation(confirmDeleteSlug);
+                    }}
+                    disabled={loading}
+                    className="flex-1 py-3 px-4 bg-rose-500 text-white rounded-lg font-bold uppercase text-[10px] tracking-widest shadow-lg shadow-rose-500/20 hover:bg-rose-600 disabled:opacity-50 transition-all"
+                  >
+                    {loading ? 'Deleting...' : 'Yes, Delete Permanently'}
                   </button>
                 </div>
               </motion.div>
@@ -565,6 +582,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
   const [fetching, setFetching] = useState(false);
   const [fetchError, setFetchError] = useState(null);
   const [activeTab, setActiveTab] = useState('couple');
+  const [confirmDelete, setConfirmDelete] = useState(null); // { path, url, isGallery, index }
 
   // ------ Cropper State ------------------------------------------------------------------------------------------------------------------------------
   const [cropping, setCropping] = useState(null); // { file, path, type, aspect }
@@ -771,16 +789,20 @@ function AdminDashboard({ slug, onBack, showToast }) {
       return;
     }
 
-    // For Cloudinary images, we use a custom confirmation logic.
-    // Instead of window.confirm, we use a simple inline confirmation to match the professional management style.
-    if (!window.confirm('Are you sure you want to permanently delete this image from the cloud?')) return;
+    // For Cloudinary images, we use our premium custom confirmation modal.
+    setConfirmDelete({ path, url: oldImageUrl, isGallery, index });
+  };
+
+  const executeDeleteImage = async () => {
+    if (!confirmDelete) return;
+    const { path, url, isGallery, index } = confirmDelete;
 
     try {
       setLoading(true);
       const res = await fetch('/api/upload', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileUrl: oldImageUrl }),
+        body: JSON.stringify({ fileUrl: url }),
       });
       const data = await res.json();
 
@@ -806,6 +828,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
       showToast('error', `Delete failed: ${err.message}`);
     } finally {
       setLoading(false);
+      setConfirmDelete(null);
     }
   };
 
@@ -1562,11 +1585,12 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                       <ColourField label="Card Background" value={config.envelopeColors?.card || '#fef3c7'} onChange={val => setPath('envelopeColors.card', val)} />
                       <ImageField 
-                        label="Custom Wax Seal Image"
-                        hint="Upload a photorealistic transparent PNG seal (e.g., gold or custom initials)"
-                        value={config.envelope?.waxSealImage}
-                        path="envelope.waxSealImage"
-                        type="general"
+                        label="Envelope Opening Video"
+                        hint="The opening animation (transparent background MP4 recommended)"
+                        value={config.envelopeVideo}
+                        path="envelopeVideo"
+                        type="video"
+                        accept="video/*"
                         onUpload={handleUpload}
                         onDelete={handleDeleteImage}
                       />
@@ -1825,7 +1849,11 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     {config.audioUrl && (
                       <button
                         type="button"
-                        onClick={() => handleDeleteImage('audioUrl', config.audioUrl)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          handleDeleteImage('audioUrl', config.audioUrl);
+                        }}
                         className="shrink-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors"
                       >
                         Remove
@@ -1868,6 +1896,54 @@ function AdminDashboard({ slug, onBack, showToast }) {
           </button>
         </main>
       </form>
+
+      {/* Premium Media Delete Confirmation Modal */}
+      <AnimatePresence>
+        {confirmDelete && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setConfirmDelete(null)}
+              className="absolute inset-0 bg-black/50 backdrop-blur-md"
+            />
+            
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.85, opacity: 0, y: 15 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="relative bg-white/95 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-2xl rounded-xl p-8 max-w-md w-full text-center"
+            >
+              <div className="w-16 h-16 bg-rose-50 dark:bg-rose-950/30 text-rose-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-6">
+                <AlertCircle size={32} />
+              </div>
+              <h2 className="text-2xl font-serif text-neutral-800 dark:text-neutral-100 mb-3">Delete Media?</h2>
+              <p className="text-neutral-500 dark:text-neutral-400 text-sm mb-8 leading-relaxed">
+                Are you sure you want to permanently delete this file from the cloud? This action will remove the asset from all layouts.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(null)}
+                  className="flex-1 py-3 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 rounded-lg font-bold uppercase text-[10px] tracking-widest hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={executeDeleteImage}
+                  disabled={loading}
+                  className="flex-1 py-3 px-4 bg-rose-500 text-white rounded-lg font-bold uppercase text-[10px] tracking-widest shadow-lg shadow-rose-500/20 hover:bg-rose-600 disabled:opacity-50 transition-all"
+                >
+                  {loading ? 'Deleting...' : 'Yes, Delete'}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
