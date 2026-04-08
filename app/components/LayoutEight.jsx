@@ -5,9 +5,13 @@ import {
   Heart, Calendar, MapPin, Music, Coffee, Clock, Check, ChevronDown,
   ArrowRight, Mail, Phone, ExternalLink, Plane, Navigation, Info, Users
 } from 'lucide-react';
+import { PRESET_THEMES } from '../../lib/themes';
 
 // ── Main Page Layout Component ──
 export default function LayoutEight({ config }) {
+  const themeId = config.themeId || config.theme || 'gold';
+  const theme = PRESET_THEMES.find(t => t.id === themeId)?.colors || config.theme || PRESET_THEMES[0].colors;
+
   const [formData, setFormData] = useState({
     name: '', phone: '', attendance: '', guests: '1',
     dietary: { vegetarian: false, vegan: false, glutenFree: false, nutAllergy: false },
@@ -40,7 +44,13 @@ export default function LayoutEight({ config }) {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#fdfaf5] text-slate-800 selection:bg-[#C9956A] selection:text-white overflow-x-hidden">
+    <div 
+      className="relative min-h-screen overflow-x-hidden"
+      style={{ 
+        backgroundColor: theme.colorBg || '#fdfaf5', 
+        color: theme.colorTextDark || '#1e293b'
+      }}
+    >
       {/* ── HERO SECTION: Dynamic Breathing Feel ── */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
         {/* Ken Burns Background */}
@@ -76,7 +86,12 @@ export default function LayoutEight({ config }) {
             </motion.div>
           )}
           <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-[#fdfaf5]" />
+          <div 
+            className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10"
+            style={{ 
+              backgroundImage: `linear-gradient(to bottom, transparent, rgba(0,0,0,0.1), ${theme.colorBg || '#fdfaf5'})` 
+            }}
+          />
         </div>
 
         {/* Hero Content */}
@@ -106,33 +121,75 @@ export default function LayoutEight({ config }) {
       </section>
 
       {/* ── STORY SECTION: Elegant Typography ── */}
-      <section className="px-6 py-24 md:py-40 bg-white/50 relative">
+      <section 
+        className="px-6 py-24 md:py-40 relative"
+        style={{ backgroundColor: `${theme.colorSurface || '#ffffff'}80` }} // 80 is roughly 50% opacity
+      >
         <div className="max-w-3xl mx-auto text-center space-y-12">
           <div className="space-y-4">
-            <span className="font-sans text-[10px] font-black uppercase tracking-[0.4em] text-[#C9956A]">Our Journey</span>
-            <h2 className="font-serif text-4xl md:text-6xl text-slate-800 tracking-tight leading-none italic">Eternal Love</h2>
+            <span 
+              className="font-sans text-[10px] font-black uppercase tracking-[0.4em]"
+              style={{ color: theme.colorPrimary || '#C9956A' }}
+            >
+              Our Journey
+            </span>
+            <h2 
+              className="font-serif text-4xl md:text-6xl tracking-tight leading-none italic"
+              style={{ color: theme.colorTextDark || '#1e293b' }}
+            >
+              Eternal Love
+            </h2>
           </div>
           <div className="relative px-8 md:px-16">
-            <div className="absolute -top-6 -left-0 text-7xl text-[#C9956A]/10 font-serif">“</div>
-            <p className="font-serif text-xl md:text-2xl text-slate-600 leading-relaxed italic">
+            <div 
+              className="absolute -top-6 -left-0 text-7xl font-serif opacity-10"
+              style={{ color: theme.colorPrimary || '#C9956A' }}
+            >
+              “
+            </div>
+            <p 
+              className="font-serif text-xl md:text-2xl leading-relaxed italic"
+              style={{ color: theme.colorTextLight || '#4A5568' }}
+            >
               {config?.story?.invitationText || "We invite you to share our joy as we exchange vows. Your presence will make our celebration truly special."}
             </p>
-            <div className="absolute -bottom-12 -right-0 text-7xl text-[#C9956A]/10 font-serif">”</div>
+            <div 
+              className="absolute -bottom-12 -right-0 text-7xl font-serif opacity-10"
+              style={{ color: theme.colorPrimary || '#C9956A' }}
+            >
+              ”
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── TIMELINE: Vertical Programme du jour ── */}
-      <section className="px-6 py-24 md:py-32 bg-[#f9f6f1]">
+      <section 
+        className="px-6 py-24 md:py-32"
+        style={{ backgroundColor: theme.colorSecondary || '#f9f6f1' }}
+      >
         <div className="max-w-4xl mx-auto flex flex-col items-center">
           <div className="text-center mb-20 space-y-4">
-            <span className="font-sans text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400">Programme du jour</span>
-            <h2 className="font-serif text-4xl md:text-5xl text-slate-800 italic">Wedding Timeline</h2>
+            <span 
+              className="font-sans text-[10px] font-bold uppercase tracking-[0.4em]"
+              style={{ color: theme.colorTextLight || '#4A5568' }}
+            >
+              Programme du jour
+            </span>
+            <h2 
+              className="font-serif text-4xl md:text-5xl italic"
+              style={{ color: theme.colorTextDark || '#1e293b' }}
+            >
+              Wedding Timeline
+            </h2>
           </div>
 
           <div className="relative w-full max-w-lg">
             {/* The Line */}
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-slate-200 -translate-x-1/2" />
+            <div 
+              className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px -translate-x-1/2 opacity-20"
+              style={{ backgroundColor: theme.colorTextDark || '#1e293b' }}
+            />
 
             <div className="space-y-16">
               {/* Timeline Items (Static refined mockup based on typical event structure) */}
@@ -145,15 +202,37 @@ export default function LayoutEight({ config }) {
                   className={`relative flex items-center justify-between w-full ${idx % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
                 >
                   {/* Icon Dot */}
-                  <div className="absolute left-4 md:left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white border border-slate-100 shadow-lg flex items-center justify-center z-10 text-[#C9956A]">
+                  <div 
+                    className="absolute left-4 md:left-1/2 -translate-x-1/2 w-10 h-10 rounded-full shadow-lg flex items-center justify-center z-10"
+                    style={{ 
+                      backgroundColor: theme.colorSurface || '#ffffff',
+                      border: `1px solid ${theme.colorSecondary || '#f9f6f1'}`,
+                      color: theme.colorPrimary || '#C9956A'
+                    }}
+                  >
                     <span className="text-sm">{item.icon || '✨'}</span>
                   </div>
 
                   {/* Content Card */}
                   <div className="ml-16 md:ml-0 md:w-[42%] text-left md:text-right space-y-1">
-                    <span className="font-sans text-[10px] font-black tracking-widest text-[#C9956A] uppercase">{item.time}</span>
-                    <h3 className="font-serif text-xl font-bold text-slate-800">{item.title}</h3>
-                    <p className="font-serif text-sm italic text-slate-500">{item.description || item.desc}</p>
+                    <span 
+                      className="font-sans text-[10px] font-black tracking-widest uppercase"
+                      style={{ color: theme.colorPrimary || '#C9956A' }}
+                    >
+                      {item.time}
+                    </span>
+                    <h3 
+                      className="font-serif text-xl font-bold"
+                      style={{ color: theme.colorTextDark || '#1e293b' }}
+                    >
+                      {item.title}
+                    </h3>
+                    <p 
+                      className="font-serif text-sm italic"
+                      style={{ color: theme.colorTextLight || '#4A5568' }}
+                    >
+                      {item.description || item.desc}
+                    </p>
                   </div>
 
                   {/* Spacer for other side */}
@@ -167,11 +246,24 @@ export default function LayoutEight({ config }) {
 
       {/* ── GALLERY: Premium Collection ── */}
       {config?.gallery && config.gallery.length > 0 && (
-        <section className="px-6 py-24 md:py-32 bg-[#fdfaf5] relative overflow-hidden">
+        <section 
+          className="px-6 py-24 md:py-32 relative overflow-hidden"
+          style={{ backgroundColor: theme.colorBg || '#fdfaf5' }}
+        >
           <div className="max-w-6xl mx-auto flex flex-col items-center">
             <div className="text-center mb-16 space-y-4">
-              <span className="font-sans text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400">Captured Moments</span>
-              <h2 className="font-serif text-4xl md:text-5xl text-slate-800 italic">Love In Frames</h2>
+              <span 
+                className="font-sans text-[10px] font-bold uppercase tracking-[0.4em]"
+                style={{ color: theme.colorTextLight || '#4A5568' }}
+              >
+                Captured Moments
+              </span>
+              <h2 
+                className="font-serif text-4xl md:text-5xl italic"
+                style={{ color: theme.colorTextDark || '#1e293b' }}
+              >
+                Love In Frames
+              </h2>
             </div>
 
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full">
@@ -202,22 +294,51 @@ export default function LayoutEight({ config }) {
       )}
 
       {/* ── MAP & LOCATION: Interactive Display ── */}
-      <section className="px-6 py-24 md:py-32 bg-white">
+      <section 
+        className="px-6 py-24 md:py-32"
+        style={{ backgroundColor: theme.colorSurface || '#ffffff' }}
+      >
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-3">
-                <span className="font-sans text-[10px] font-black uppercase tracking-[0.4em] text-[#C9956A]">Join Us At</span>
-                <h2 className="font-serif text-4xl md:text-5xl text-slate-800 leading-tight italic">Our Venue</h2>
+                <span 
+                  className="font-sans text-[10px] font-black uppercase tracking-[0.4em]"
+                  style={{ color: theme.colorPrimary || '#C9956A' }}
+                >
+                  Join Us At
+                </span>
+                <h2 
+                  className="font-serif text-4xl md:text-5xl leading-tight italic"
+                  style={{ color: theme.colorTextDark || '#1e293b' }}
+                >
+                  Our Venue
+                </h2>
               </div>
               <div className="space-y-6">
                 <div className="flex gap-4">
-                  <div className="shrink-0 w-12 h-12 bg-[#fdfaf5] rounded-2xl flex items-center justify-center text-[#C9956A]">
+                  <div 
+                    className="shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center"
+                    style={{ 
+                      backgroundColor: theme.colorBg || '#fdfaf5',
+                      color: theme.colorPrimary || '#C9956A'
+                    }}
+                  >
                     <MapPin size={24} strokeWidth={1.5} />
                   </div>
                   <div>
-                    <h4 className="font-serif text-xl font-bold text-slate-800">{config?.events?.ceremony?.venueName || ''}</h4>
-                    <p className="font-sans text-xs uppercase tracking-widest text-slate-400 mt-1">{config?.events?.ceremony?.address || ''}</p>
+                    <h4 
+                      className="font-serif text-xl font-bold"
+                      style={{ color: theme.colorTextDark || '#1e293b' }}
+                    >
+                      {config?.events?.ceremony?.venueName || ''}
+                    </h4>
+                    <p 
+                      className="font-sans text-xs uppercase tracking-widest mt-1"
+                      style={{ color: theme.colorTextLight || '#4A5568' }}
+                    >
+                      {config?.events?.ceremony?.address || ''}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -225,13 +346,28 @@ export default function LayoutEight({ config }) {
               <div className="flex gap-4 pt-4">
                 <button
                   onClick={() => window.open(config.events.ceremony?.mapsUrl, '_blank')}
-                  className="flex-1 flex items-center justify-center gap-3 py-4 bg-slate-900 text-white font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-[#C9956A] transition-all duration-500 shadow-xl rounded-xl"
+                  className="flex-1 flex items-center justify-center gap-3 py-4 text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-all duration-500 shadow-xl rounded-xl"
+                  style={{ backgroundColor: theme.colorTextDark || '#1e293b' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme.colorPrimary || '#C9956A'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = theme.colorTextDark || '#1e293b'}
                 >
                   <Navigation size={14} /> Open in Maps
                 </button>
                 <button
                   onClick={() => console.log('Calendar clicked')}
-                  className="flex-1 flex items-center justify-center gap-3 py-4 border border-slate-200 text-slate-600 font-sans text-[10px] font-bold uppercase tracking-widest hover:border-[#C9956A] hover:text-[#C9956A] transition-all duration-500 rounded-xl"
+                  className="flex-1 flex items-center justify-center gap-3 py-4 border font-sans text-[10px] font-bold uppercase tracking-widest transition-all duration-500 rounded-xl"
+                  style={{ 
+                    borderColor: theme.colorSecondary || '#f9f6f1',
+                    color: theme.colorTextLight || '#4A5568'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = theme.colorPrimary || '#C9956A';
+                    e.currentTarget.style.color = theme.colorPrimary || '#C9956A';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = theme.colorSecondary || '#f9f6f1';
+                    e.currentTarget.style.color = theme.colorTextLight || '#4A5568';
+                  }}
                 >
                   <Calendar size={14} /> Add to Calendar
                 </button>
@@ -239,7 +375,10 @@ export default function LayoutEight({ config }) {
             </div>
 
             {/* Google Maps Preview Illusion */}
-            <div className="relative aspect-video md:aspect-[4/5] bg-slate-100 rounded-[40px] overflow-hidden shadow-2xl group border-[12px] border-white">
+            <div 
+              className="relative aspect-video md:aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl group border-[12px]"
+              style={{ backgroundColor: theme.colorSecondary || '#f9f6f1', borderColor: theme.colorSurface || '#ffffff' }}
+            >
               <img
                 src="https://images.unsplash.com/photo-1541339907198-e08756ebafe3?mx=auto&q=80&w=1000"
                 className="w-full h-full object-cover grayscale-[0.2] opacity-70 group-hover:scale-105 transition-transform duration-1000"
@@ -247,8 +386,11 @@ export default function LayoutEight({ config }) {
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-[#C9956A]/20 via-transparent to-transparent pointer-events-none" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-2xl animate-pulse">
-                  <MapPin size={32} className="text-[#C9956A]" />
+                <div 
+                  className="w-16 h-16 rounded-full flex items-center justify-center shadow-2xl animate-pulse"
+                  style={{ backgroundColor: theme.colorSurface || '#ffffff' }}
+                >
+                  <MapPin size={32} style={{ color: theme.colorPrimary || '#C9956A' }} />
                 </div>
               </div>
             </div>
@@ -257,17 +399,39 @@ export default function LayoutEight({ config }) {
       </section>
 
       {/* ── ADVANCED RSVP SECTION ── */}
-      <section className="px-6 py-24 md:py-40 bg-[#fdfaf5] relative">
-        <div className="max-w-2xl mx-auto bg-white p-10 md:p-20 rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.04)] border border-slate-100 text-center relative">
+      <section 
+        className="px-6 py-24 md:py-40 relative"
+        style={{ backgroundColor: theme.colorBg || '#fdfaf5' }}
+      >
+        <div 
+          className="max-w-2xl mx-auto p-10 md:p-20 rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.04)] border text-center relative"
+          style={{ backgroundColor: theme.colorSurface || '#ffffff', borderColor: theme.colorSecondary || '#f9f6f1' }}
+        >
           {/* Decor */}
-          <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-[#fdfaf5] border border-slate-100 rounded-full flex items-center justify-center shadow-lg">
-            <Mail size={32} strokeWidth={1} className="text-[#C9956A]" />
+          <div 
+            className="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 border rounded-full flex items-center justify-center shadow-lg"
+            style={{ backgroundColor: theme.colorBg || '#fdfaf5', borderColor: theme.colorSecondary || '#f9f6f1' }}
+          >
+            <Mail size={32} strokeWidth={1} style={{ color: theme.colorPrimary || '#C9956A' }} />
           </div>
 
           <div className="space-y-6 mb-12">
-            <h2 className="font-serif text-4xl md:text-5xl text-slate-800 leading-tight italic">Please Confirm</h2>
-            <p className="font-sans text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Kindly Reply by {config?.rsvp?.deadline || ''}</p>
-            <div className="w-12 h-px bg-[#C9956A]/30 mx-auto" />
+            <h2 
+              className="font-serif text-4xl md:text-5xl leading-tight italic"
+              style={{ color: theme.colorTextDark || '#1e293b' }}
+            >
+              Please Confirm
+            </h2>
+            <p 
+              className="font-sans text-[10px] font-black uppercase tracking-[0.4em]"
+              style={{ color: theme.colorTextLight || '#4A5568' }}
+            >
+              Kindly Reply by {config?.rsvp?.deadline || ''}
+            </p>
+            <div 
+              className="w-12 h-px mx-auto opacity-30"
+              style={{ backgroundColor: theme.colorPrimary || '#C9956A' }}
+            />
           </div>
 
           {rsvpStatus === 'success' ? (
@@ -284,7 +448,7 @@ export default function LayoutEight({ config }) {
             </motion.div>
           ) : (
             <form onSubmit={handleRsvpSubmit} className="space-y-8">
-              {/* Attendance Select */}
+               {/* Attendance Select */}
               <div className="grid grid-cols-2 gap-4">
                 {[
                   { id: 'Accept', label: 'Joyfully Accept', icon: '🎉' },
@@ -294,13 +458,19 @@ export default function LayoutEight({ config }) {
                     key={opt.id}
                     type="button"
                     onClick={() => setFormData({ ...formData, attendance: opt.id })}
-                    className={`p-6 rounded-2xl border transition-all duration-500 flex flex-col items-center gap-2 group ${formData.attendance === opt.id
-                        ? 'bg-slate-900 border-slate-900 shadow-xl scale-[1.02]'
-                        : 'bg-slate-50 border-slate-100 hover:border-[#C9956A]/30 text-slate-500'
-                      }`}
+                    className="p-6 rounded-2xl border transition-all duration-500 flex flex-col items-center gap-2 group"
+                    style={{
+                      backgroundColor: formData.attendance === opt.id ? (theme.colorTextDark || '#1e293b') : (theme.colorBg || '#FAF7F2'),
+                      borderColor: formData.attendance === opt.id ? (theme.colorTextDark || '#1e293b') : (theme.colorSecondary || '#E8D5B7'),
+                      boxShadow: formData.attendance === opt.id ? '0 10px 20px rgba(0,0,0,0.1)' : 'none',
+                      transform: formData.attendance === opt.id ? 'scale(1.02)' : 'scale(1)'
+                    }}
                   >
                     <span className="text-2xl">{opt.icon}</span>
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${formData.attendance === opt.id ? 'text-white' : 'text-slate-500'}`}>
+                    <span 
+                      className="text-[10px] font-black uppercase tracking-widest"
+                      style={{ color: formData.attendance === opt.id ? (theme.colorSurface || '#ffffff') : (theme.colorTextLight || '#8A7F6A') }}
+                    >
                       {opt.label}
                     </span>
                   </button>
@@ -316,16 +486,27 @@ export default function LayoutEight({ config }) {
                     className="overflow-hidden space-y-8 pt-4"
                   >
                     {/* Guest Count */}
-                    <div className="flex flex-col items-center gap-3 bg-[#fdfaf5] p-6 rounded-2xl border border-slate-100">
-                      <label className="font-sans text-[10px] font-black uppercase tracking-widest text-slate-400">Total Guests Attending?</label>
+                    <div 
+                      className="flex flex-col items-center gap-3 p-6 rounded-2xl border"
+                      style={{ backgroundColor: theme.colorBg || '#FAF7F2', borderColor: theme.colorSecondary || '#E8D5B7' }}
+                    >
+                      <label 
+                        className="font-sans text-[10px] font-black uppercase tracking-widest"
+                        style={{ color: theme.colorTextLight || '#8A7F6A' }}
+                      >
+                        Total Guests Attending?
+                      </label>
                       <div className="flex gap-4">
                         {[1, 2, 3, 4, 5].map(num => (
                           <button
                             key={num}
                             type="button"
                             onClick={() => setFormData({ ...formData, guests: String(num) })}
-                            className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all shadow-sm ${formData.guests === String(num) ? 'bg-[#C9956A] text-white scale-110' : 'bg-white text-slate-400 hover:bg-slate-100'
-                              }`}
+                            className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all shadow-sm"
+                            style={{
+                              backgroundColor: formData.guests === String(num) ? (theme.colorPrimary || '#C9956A') : (theme.colorSurface || '#ffffff'),
+                              color: formData.guests === String(num) ? (theme.colorSurface || '#ffffff') : (theme.colorTextLight || '#8A7F6A')
+                            }}
                           >
                             {num}
                           </button>
@@ -334,9 +515,15 @@ export default function LayoutEight({ config }) {
                     </div>
 
                     {/* Dietary Requirements - Advanced Box */}
-                    <div className="bg-[#fdfaf5] p-8 rounded-[30px] border border-slate-100 text-left space-y-4">
-                      <h4 className="font-serif text-lg italic text-slate-600 flex items-center gap-2">
-                        <Info size={16} className="text-[#C9956A]" /> Dietary Requirements
+                    <div 
+                      className="p-8 rounded-[30px] border text-left space-y-4"
+                      style={{ backgroundColor: theme.colorBg || '#FAF7F2', borderColor: theme.colorSecondary || '#E8D5B7' }}
+                    >
+                      <h4 
+                        className="font-serif text-lg italic flex items-center gap-2"
+                        style={{ color: theme.colorTextDark || '#3A2828' }}
+                      >
+                        <Info size={16} style={{ color: theme.colorPrimary || '#C9956A' }} /> Dietary Requirements
                       </h4>
                       <div className="grid grid-cols-2 gap-4">
                         {[
@@ -354,11 +541,21 @@ export default function LayoutEight({ config }) {
                             })}
                             className="flex items-center gap-3 group"
                           >
-                            <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${formData.dietary[opt.id] ? 'bg-[#C9956A] border-[#C9956A]' : 'bg-white border-slate-200'
-                              }`}>
-                              {formData.dietary[opt.id] && <Check size={12} className="text-white" />}
+                            <div 
+                              className="w-5 h-5 rounded-md border flex items-center justify-center transition-all"
+                              style={{ 
+                                backgroundColor: formData.dietary[opt.id] ? (theme.colorPrimary || '#C9956A') : (theme.colorSurface || '#ffffff'),
+                                borderColor: formData.dietary[opt.id] ? (theme.colorPrimary || '#C9956A') : (theme.colorSecondary || '#E8D5B7')
+                              }}
+                            >
+                              {formData.dietary[opt.id] && <Check size={12} style={{ color: theme.colorSurface || '#ffffff' }} />}
                             </div>
-                            <span className="text-xs font-serif italic text-slate-500 group-hover:text-slate-800 transition-colors uppercase tracking-widest">{opt.label}</span>
+                            <span 
+                              className="text-xs font-serif italic transition-colors uppercase tracking-widest"
+                              style={{ color: theme.colorTextLight || '#8A7F6A' }}
+                            >
+                              {opt.label}
+                            </span>
                           </button>
                         ))}
                       </div>
@@ -376,17 +573,30 @@ export default function LayoutEight({ config }) {
                     placeholder="Your Full Name"
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-transparent border-b-2 border-slate-100 py-4 font-serif text-2xl italic outline-none focus:border-[#C9956A] transition-all placeholder:text-slate-200"
+                    className="w-full bg-transparent border-b-2 py-4 font-serif text-2xl italic outline-none transition-all placeholder:text-slate-200"
+                    style={{ borderBottomColor: theme.colorSecondary || '#E8D5B7' }}
+                    onFocus={(e) => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'}
+                    onBlur={(e) => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={!formData.name || !formData.attendance || rsvpStatus === 'loading'}
-                  className="w-full py-5 bg-slate-900 text-white font-sans text-xs font-black uppercase tracking-[0.5em] shadow-2xl hover:bg-[#C9956A] transition-all duration-500 disabled:opacity-30 rounded-2xl group flex items-center justify-center gap-3"
+                  className="w-full py-5 text-white font-sans text-xs font-black uppercase tracking-[0.5em] shadow-2xl transition-all duration-500 disabled:opacity-30 rounded-2xl group flex items-center justify-center gap-3"
+                  style={{ backgroundColor: theme.colorTextDark || '#1e293b' }}
+                  onMouseEnter={(e) => {
+                    if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = theme.colorPrimary || '#C9956A';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = theme.colorTextDark || '#1e293b';
+                  }}
                 >
                   {rsvpStatus === 'loading' ? (
-                    <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    <span 
+                      className="w-5 h-5 border-2 rounded-full animate-spin" 
+                      style={{ borderColor: 'rgba(255,255,255,0.2)', borderTopColor: '#ffffff' }}
+                    />
                   ) : (
                     <>Send Reply <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" /></>
                   )}
@@ -398,13 +608,27 @@ export default function LayoutEight({ config }) {
       </section>
 
       {/* ── FOOTER: Simple Elegant ── */}
-      <section className="py-32 bg-[#fdfaf5] text-center border-t border-slate-100">
+      <section 
+        className="py-32 text-center border-t"
+        style={{ backgroundColor: theme.colorBg || '#FAF7F2', borderTopColor: theme.colorSecondary || '#E8D5B7' }}
+      >
         <div className="space-y-8 px-6">
-          <div className="text-4xl text-[#C9956A]/20">❦</div>
-          <h2 className="font-serif text-5xl md:text-7xl italic leading-none text-slate-300">
+          <div 
+            className="text-4xl opacity-20"
+            style={{ color: theme.colorPrimary || '#C9956A' }}
+          >
+            ❦
+          </div>
+          <h2 
+            className="font-serif text-5xl md:text-7xl italic leading-none opacity-20"
+            style={{ color: theme.colorTextDark || '#2C2018' }}
+          >
             See you there
           </h2>
-          <p className="font-sans text-[10px] font-black uppercase tracking-[0.6em] text-slate-400">
+          <p 
+            className="font-sans text-[10px] font-black uppercase tracking-[0.6em]"
+            style={{ color: theme.colorTextLight || '#8A7F6A' }}
+          >
             {config?.couple?.bride?.firstName || ''} & {config?.couple?.groom?.firstName || ''} • {config?.wedding?.date || ''}
           </p>
         </div>
