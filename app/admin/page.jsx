@@ -644,8 +644,8 @@ function AdminDashboard({ slug, onBack, showToast }) {
       }
     }
 
-    // 2. Determine if cropping is needed (But skip for GIFs, Videos, and Audio)
-    if ((type === 'hero' || type === 'gallery' || type === 'banner') && !isGif && !isVideo && !isAudio) {
+    // 2. Determine if cropping is needed (But skip for GIFs, Videos, and Audio, and strictly for Layout 9 Full Cover)
+    if ((type === 'hero' || type === 'gallery' || type === 'banner') && !isGif && !isVideo && !isAudio && path !== 'sectionBackgrounds.hero') {
       let aspect = 1.0;
       if (type === 'hero') {
         aspect = 3 / 4;

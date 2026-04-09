@@ -162,7 +162,7 @@ function Layout2({ config }) {
 }
 
 // ── LAYOUT 3 — Royal Arch / Solid block ──
-function EventCard3({ event, delay }) {
+function EventCard3({ event, delay, config }) {
   const ref = useReveal(delay);
   return (
     <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 relative bg-[var(--colorPrimary)]/5 border border-[var(--colorPrimary)]/50 p-8 md:p-10 w-full max-w-md mx-auto text-center shadow-lg group hover:bg-[var(--colorPrimary)]/10 transition-colors">
@@ -183,9 +183,7 @@ function EventCard3({ event, delay }) {
         <p className="font-serif italic text-sm text-[var(--colorTextDark)] opacity-90 mb-8">Dress Code: {event.dressCode}</p>
       )}
 
-      <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-block px-8 py-3 bg-[var(--colorTextDark)] text-[var(--colorBg)] font-sans text-xs tracking-widest uppercase hover:bg-[var(--colorPrimary)] transition-colors shadow-md">
-        View Map
-      </a>
+      <ActionButtons event={event} config={config} />
     </div>
   );
 }
@@ -204,7 +202,7 @@ function Layout3({ config }) {
       <div className={`grid md:grid-cols-2 gap-10 md:gap-14 justify-center ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
         {Object.entries(events).map(([key, event], idx) => (
           <div key={key} className={Object.keys(events).length === 1 ? 'md:col-span-2' : ''}>
-            <EventCard3 event={event} delay={idx * 150} />
+            <EventCard3 event={event} delay={idx * 150} config={config} />
           </div>
         ))}
       </div>
@@ -213,22 +211,20 @@ function Layout3({ config }) {
 }
 
 // ── LAYOUT 5 — Modern Minimalist Events ──
-function EventCard5({ event, delay }) {
+function EventCard5({ event, delay, config }) {
   const ref = useReveal(delay);
   return (
-    <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 flex flex-col md:flex-row items-center border-t border-[var(--colorTextDark)]/10 py-12 w-full group">
-      <div className="md:w-1/4 mb-4 md:mb-0">
-        <p className="font-serif text-3xl text-[var(--colorTextDark)]">{event.time}</p>
+    <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 flex flex-col items-center border-t border-[var(--colorTextDark)]/10 py-12 w-full group">
+      <div className="w-full flex flex-col md:flex-row items-center mb-6">
+        <div className="md:w-1/4 mb-4 md:mb-0">
+          <p className="font-serif text-3xl text-[var(--colorTextDark)]">{event.time}</p>
+        </div>
+        <div className="md:w-3/4 text-center md:text-left">
+          <h3 className="font-sans text-[clamp(24px,4vw,36px)] font-bold uppercase tracking-tighter text-[var(--colorTextDark)] mb-2 group-hover:text-[var(--colorPrimary)] transition-colors">{event.title}</h3>
+          <p className="font-serif italic text-lg text-[var(--colorTextDark)]/60">{event.venueName}</p>
+        </div>
       </div>
-      <div className="md:w-2/4 text-center md:text-left mb-6 md:mb-0">
-        <h3 className="font-sans text-[clamp(24px,4vw,36px)] font-bold uppercase tracking-tighter text-[var(--colorTextDark)] mb-2 group-hover:text-[var(--colorPrimary)] transition-colors">{event.title}</h3>
-        <p className="font-serif italic text-lg text-[var(--colorTextDark)]/60">{event.venueName}</p>
-      </div>
-      <div className="md:w-1/4 flex justify-center md:justify-end">
-        <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-full border border-[var(--colorTextDark)]/20 hover:border-[var(--colorPrimary)] hover:bg-[var(--colorPrimary)] hover:text-white transition-all">
-          <PlaneIcon />
-        </a>
-      </div>
+      <ActionButtons event={event} config={config} />
     </div>
   );
 }
@@ -243,7 +239,7 @@ function Layout5({ config }) {
       </div>
       <div className="flex flex-col">
         {Object.entries(events).map(([key, event], idx) => (
-          <EventCard5 key={key} event={event} delay={idx * 100} />
+          <EventCard5 key={key} event={event} delay={idx * 100} config={config} />
         ))}
       </div>
     </div>
@@ -251,7 +247,7 @@ function Layout5({ config }) {
 }
 
 // ── LAYOUT 6 — Watercolor Floral Events ──
-function EventCard6({ event, delay }) {
+function EventCard6({ event, delay, config }) {
   const ref = useReveal(delay);
   return (
     <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 bg-white/40 p-8 rounded-[60px_20px_60px_20px] border border-[var(--colorPrimary)]/10 text-center shadow-lg relative overflow-hidden group">
@@ -263,10 +259,7 @@ function EventCard6({ event, delay }) {
         <p className="font-serif text-lg text-[var(--colorTextDark)]">{event.venueName}</p>
         <p className="font-sans text-[10px] uppercase text-[var(--colorTextDark)]/40 tracking-widest">{event.address}</p>
       </div>
-      <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-8 py-2.5 rounded-full bg-[var(--colorPrimary)]/10 text-[var(--colorPrimary)] font-bold text-[10px] uppercase tracking-widest hover:bg-[var(--colorPrimary)] hover:text-white transition-all shadow-sm">
-        <MapPin size={12} />
-        Directions
-      </a>
+      <ActionButtons event={event} config={config} />
     </div>
   );
 }
@@ -283,7 +276,7 @@ function Layout6({ config }) {
       <div className="flex flex-wrap justify-center gap-8 px-4">
         {Object.entries(events).map(([key, event], idx) => (
           <div key={key} className="w-full max-w-sm">
-            <EventCard6 event={event} delay={idx * 150} />
+            <EventCard6 event={event} delay={idx * 150} config={config} />
           </div>
         ))}
       </div>
@@ -292,7 +285,7 @@ function Layout6({ config }) {
 }
 
 // ── LAYOUT 7 — Polaroid Scrapbook Events ──
-function EventCard7({ event, delay }) {
+function EventCard7({ event, delay, config }) {
   const ref = useReveal(delay);
   return (
     <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 bg-white p-4 pb-12 shadow-xl border border-slate-100 rotate-1 group hover:rotate-0 transition-all duration-500 max-w-xs mx-auto">
@@ -310,9 +303,7 @@ function EventCard7({ event, delay }) {
         <h3 className="font-script text-3xl text-slate-800 mb-1">{event.title}</h3>
         <p className="font-sans text-[10px] text-slate-400 uppercase tracking-widest mb-4">{event.time}</p>
         <p className="font-serif text-sm text-slate-600 mb-6 leading-tight">{event.venueName}</p>
-        <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold uppercase tracking-widest text-[var(--colorPrimary)] hover:underline">
-          View on Maps →
-        </a>
+        <ActionButtons event={event} config={config} />
       </div>
     </div>
   );
@@ -327,7 +318,7 @@ function Layout7({ config }) {
       </div>
       <div className="grid md:grid-cols-3 gap-12">
         {Object.entries(events).map(([key, event], idx) => (
-          <EventCard7 key={key} event={event} delay={idx * 100} />
+          <EventCard7 key={key} event={event} delay={idx * 100} config={config} />
         ))}
       </div>
     </div>

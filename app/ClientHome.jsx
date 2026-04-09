@@ -14,7 +14,7 @@ import EventDetails from './components/EventDetails';
 import RSVPSection from './components/RSVPSection';
 import Timeline from './components/Timeline';
 import Footer from './components/Footer';
-import EnvelopeReveal from './components/EnvelopeReveal';
+import PremiumEnvelope from './components/PremiumEnvelope';
 import LayoutEight from './components/LayoutEight';
 import RoyalEnvelope from './components/RoyalEnvelope';
 
@@ -106,7 +106,7 @@ export default function ClientHome({ config }) {
           ) : revealStyle === 'fade' ? (
             <FadeReveal key="fade-reveal" config={config} onOpen={handleOpen} />
           ) : revealStyle === 'premium-envelope' ? (
-            <EnvelopeReveal key="premium-envelope" config={config} onOpenInvitation={handleOpen} />
+            <PremiumEnvelope key="premium-envelope" config={config} onOpenInvitation={handleOpen} />
           ) : (revealStyle === 'royal-envelope' || revealStyle === 'royal_envelope') ? (
             <RoyalEnvelope key="royal-envelope" config={config} onOpen={handleOpen} />
           ) : (

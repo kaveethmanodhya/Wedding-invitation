@@ -66,7 +66,8 @@ function Layout1({ config }) {
 
         {/* Hero BG Image Area - Top Half */}
         <div style={{ position: 'absolute', top: '24px', left: '24px', right: '24px', height: '45%' }}>
-          <img src={heroImage || '/images/hero.png'} alt="Hero Background" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', opacity: 0.8 }} />
+          {heroImage && <img src={heroImage} alt="Hero Background" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', opacity: 0.8 }} />}
+          {!heroImage && <div className="w-full h-full bg-slate-100 flex items-center justify-center opacity-20">No Image</div>}
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, var(--colorBg) 95%)' }} />
         </div>
 
@@ -133,7 +134,7 @@ function Layout2({ config }) {
         {/* Floating Oval Window */}
         <div style={{ position: 'absolute', top: '16px', left: '16px', right: '16px', bottom: '16px', border: '1px solid var(--colorPrimary)', opacity: 0.4, borderRadius: '50% 50% / 10% 10%', pointerEvents: 'none' }} />
 
-        {heroImage && heroImage.trim() !== "" && (
+        {heroImage && (
           <div style={{
             margin: '0 auto 24px', width: 'clamp(200px, 60vw, 300px)', height: 'clamp(280px, 80vw, 400px)',
             borderRadius: '50%',
@@ -326,7 +327,7 @@ export default function Hero({ config }) {
 ───────────────────────────────────────────────────────── */
 function Layout9({ config }) {
   const { heroImage, sectionBackgrounds } = config;
-  const heroBg = sectionBackgrounds?.hero || heroImage || '/images/nature-arch-bg.png';
+  const heroBg = sectionBackgrounds?.hero || heroImage || '';
 
   return (
     <div className="w-full relative bg-black">
@@ -336,11 +337,17 @@ function Layout9({ config }) {
         transition={{ duration: 1.5, ease: 'easeOut' }}
         className="w-full relative"
       >
-        <img 
-          src={heroBg} 
-          className="w-full h-auto block" 
-          alt="Wedding Hero" 
-        />
+        {heroBg ? (
+          <img 
+            src={heroBg} 
+            className="w-full h-auto block" 
+            alt="Wedding Hero" 
+          />
+        ) : (
+          <div className="w-full aspect-video bg-neutral-900 flex items-center justify-center text-white/20">
+            No Hero Image Selected
+          </div>
+        )}
         {/* Very Subtle Gradient Overlay for bottom transition */}
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
       </motion.div>
@@ -373,7 +380,7 @@ function Layout4({ config }) {
   const year = isNaN(dateObj.getTime()) ? '' : dateObj.getFullYear();
 
   // Primary image from admin "Hero Background Image" field
-  const heroBg = heroImage || '/images/nature-arch-bg.png';
+  const heroBg = heroImage || '';
 
   return (
     <div className="flex flex-col items-center w-full max-w-[600px] mx-auto min-h-[85vh] bg-white relative overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.15)] border-[12px] border-white">
@@ -415,7 +422,11 @@ function Layout4({ config }) {
 
           {/* Primary View (Arched Photo) */}
           <div className="absolute inset-0 z-10 transition-transform duration-700 group-hover:scale-105">
-            <img src={heroBg} className="w-full h-full object-cover object-top" />
+            {heroBg ? (
+              <img src={heroBg} className="w-full h-full object-cover object-top" />
+            ) : (
+              <div className="w-full h-full bg-slate-100 flex items-center justify-center opacity-20">No Image</div>
+            )}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30" />
           </div>
         </div>
@@ -456,14 +467,14 @@ function Layout5({ config }) {
   const year = wedding?.dateTimeISO ? new Date(wedding.dateTimeISO).getFullYear() : '';
 
   return (
-    <div className="flex flex-col items-center w-full px-6 py-20 text-center">
+    <div className="flex flex-col items-center w-full px-6 py-10 text-center">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.2, ease: "circOut" }}
         className="relative mb-12"
       >
-        <div className="w-1 h-32 bg-[var(--colorPrimary)] mx-auto mb-8 opacity-40" />
+        <div className="w-1 h-16 bg-[var(--colorPrimary)] mx-auto mb-8 opacity-40" />
         <h1 className="font-serif text-[clamp(64px,15vw,120px)] leading-[0.8] tracking-tighter text-[var(--colorTextDark)] mb-4">
           {couple?.groom?.firstName?.[0]}<span className="text-[var(--colorPrimary)]">&</span>{couple?.bride?.firstName?.[0]}
         </h1>
@@ -684,7 +695,11 @@ function Layout7({ config }) {
         className="bg-white p-6 pb-20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 max-w-sm w-full relative z-10"
       >
         <div className="aspect-[3/4] bg-slate-100 overflow-hidden mb-6">
-          <img src={heroImage || '/images/hero.png'} className="w-full h-full object-cover sepia-[0.3]" />
+          {heroImage ? (
+            <img src={heroImage} className="w-full h-full object-cover sepia-[0.3]" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center opacity-10 font-bold">MISSING</div>
+          )}
         </div>
         <div className="text-center">
           <h1 className="font-script text-4xl text-slate-800 mb-2">Our Wedding Day</h1>

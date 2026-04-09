@@ -2,7 +2,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef } from 'react';
 
-export default function EnvelopeReveal({ config, onOpenInvitation }) {
+export default function PremiumEnvelope({ config, onOpenInvitation }) {
   const [isAnimating, setIsAnimating] = useState(false);
   const videoRef = useRef(null);
 
@@ -36,20 +36,16 @@ export default function EnvelopeReveal({ config, onOpenInvitation }) {
         zIndex: 9999 
       }}
     >
+      {/* 3:2 Aspect Ratio Wrapper (Responsive) */}
       <div 
-        className="relative flex items-center justify-center overflow-hidden"
-        style={{
-          width: '90vw',
-          maxWidth: '650px',
-          aspectRatio: '1/1'
-        }}
+        className="relative w-full max-w-[650px] mx-auto pt-[66.66%]"
       >
         
-        {/* Video Animation Layer */}
+        {/* Video Animation Layer (Absolute Fill) */}
         <video
           ref={videoRef}
           src={envelopeVideo}
-          className="w-full h-full object-cover"
+          className="absolute top-0 left-0 w-full h-full object-contain"
           playsInline
           muted
           onEnded={() => onOpenInvitation()}
@@ -63,20 +59,18 @@ export default function EnvelopeReveal({ config, onOpenInvitation }) {
             <motion.div
               key="wax-seal"
               onClick={handleOpen}
-              initial={{ scale: 0.8, opacity: 0, x: "-50%", y: "-50%" }}
-              animate={{ scale: 1, opacity: 1, x: "-50%", y: "-50%" }}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
               exit={{ opacity: 0, scale: 1.2, filter: 'blur(10px)' }}
-              whileHover={{ scale: 1.08, x: "-50%", y: "-50%" }}
-              whileTap={{ scale: 0.92, x: "-50%", y: "-50%" }}
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
+              className="absolute top-[55%] left-[50%] -translate-x-1/2 -translate-y-1/2"
               style={{ 
-                position: 'absolute', 
                 zIndex: 50, // On top of paused video
                 width: 'clamp(80px, 15vw, 120px)', 
                 height: 'clamp(80px, 15vw, 120px)', 
                 cursor: 'pointer', 
-                top: '55%', // Adjusted for standard envelope video vertical centers
-                left: '50%', 
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -109,7 +103,7 @@ export default function EnvelopeReveal({ config, onOpenInvitation }) {
 
         {/* Global Loading Text (if video takes time) */}
         {!isAnimating && !videoRef.current?.readyState && (
-           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/20 text-[10px] uppercase tracking-[0.4em] pointer-events-none animation-pulse">
+           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/20 text-[10px] uppercase tracking-[0.4em] pointer-events-none animate-pulse">
              Tap to Open
            </div>
         )}
