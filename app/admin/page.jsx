@@ -1095,13 +1095,25 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   onDelete={handleDeleteImage}
                 />
               </FieldGroup>
-              <FieldGroup label="SHARE PREVIEW IMAGE (OG Image)" hint="The image shown when sharing the invitation link on WhatsApp, Facebook, etc. (Recommended: 1200x630px)">
+              <FieldGroup label="SHARE PREVIEW IMAGE (OG Image)" hint="Thumbnail shown when link is shared (Recommended: 1200x630px)">
                 <ImageField
                   label="Share Preview Photo"
                   hint="Landscape (1.91:1) aspect recommended"
                   value={config?.sharePreviewImageUrl || ''}
                   path="sharePreviewImageUrl"
                   type="og"
+                  onUpload={handleUpload}
+                  onDelete={handleDeleteImage}
+                  onCrop={handleCropExisting}
+                />
+              </FieldGroup>
+              <FieldGroup label="WAX SEAL IMAGE (Transparent PNG)" hint="Upload a custom seal image. Use a transparent PNG for the best result.">
+                <ImageField
+                  label="Wax Seal Photo"
+                  hint="Square aspect recommended (Transparent PNG)"
+                  value={config?.envelope?.waxSealImage || ''}
+                  path="envelope.waxSealImage"
+                  type="general"
                   onUpload={handleUpload}
                   onDelete={handleDeleteImage}
                   onCrop={handleCropExisting}

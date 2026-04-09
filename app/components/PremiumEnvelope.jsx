@@ -65,7 +65,7 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.92 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="absolute top-[55%] left-[50%] -translate-x-1/2 -translate-y-1/2"
+              className="absolute top-[55%] left-[50%] -translate-x-1/2 -translate-y-1/2 bg-transparent"
               style={{ 
                 zIndex: 50, // On top of paused video
                 width: 'clamp(80px, 15vw, 120px)', 
