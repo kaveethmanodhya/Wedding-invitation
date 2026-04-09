@@ -389,6 +389,31 @@ function InvitationList({ onEdit, showToast }) {
     }
   };
 
+  const getDateStatus = (dateTimeISO) => {
+    if (!dateTimeISO) return null;
+    try {
+      const target = new Date(dateTimeISO);
+      const now = new Date();
+      
+      // Reset times to compare dates only
+      const targetDate = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+      const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      
+      const diffTime = targetDate - nowDate;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 0) {
+        return { label: 'Today!', cls: 'bg-amber-100 text-amber-800' };
+      } else if (diffDays > 0) {
+        return { label: `${diffDays} Days Left`, cls: 'bg-emerald-100 text-emerald-800' };
+      } else {
+        return { label: 'Completed', cls: 'bg-gray-100 text-gray-600' };
+      }
+    } catch (e) {
+      return null;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 p-6 md:p-12">
       <div className="max-w-6xl mx-auto">
@@ -440,16 +465,25 @@ function InvitationList({ onEdit, showToast }) {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {invitations.map((inv) => (
-              <div key={inv.slug} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="w-12 h-12 bg-[#C9956A]/10 rounded-2xl flex items-center justify-center text-2xl"><Heart size={20} className="text-[#C9956A]" /></div>
-                  <span className="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-1 rounded-md">
-                    {inv.slug === 'global_config' ? 'Legacy' : 'Active'}
-                  </span>
-                </div>
-                <h3 className="text-lg font-serif text-slate-800 mb-1 line-clamp-1">{inv.displayNames || 'Untitled Wedding'}</h3>
-                <p className="text-slate-400 text-xs mb-6">Slug: <span className="text-slate-600 font-mono tracking-tighter">/{inv.slug}</span></p>
+            {invitations.map((inv) => {
+              const status = getDateStatus(inv.wedding?.dateTimeISO);
+              return (
+                <div key={inv.slug} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="w-12 h-12 bg-[#C9956A]/10 rounded-2xl flex items-center justify-center text-2xl"><Heart size={20} className="text-[#C9956A]" /></div>
+                    <div className="flex flex-col items-end gap-1.5">
+                      <span className="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-1 rounded-md">
+                        {inv.slug === 'global_config' ? 'Legacy' : 'Active'}
+                      </span>
+                      {status && (
+                        <span className={`text-[0.6rem] font-bold px-2 py-1 rounded-md transition-all ${status.cls}`}>
+                          {status.label}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-serif text-slate-800 mb-1 line-clamp-1">{inv.displayNames || 'Untitled Wedding'}</h3>
+                  <p className="text-slate-400 text-xs mb-6">Slug: <span className="text-slate-600 font-mono tracking-tighter">/{inv.slug}</span></p>
 
                 <div className="flex gap-2 relative z-10">
                   <button
@@ -478,8 +512,9 @@ function InvitationList({ onEdit, showToast }) {
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
+        </div>
         )}
 
         <AnimatePresence>
@@ -1058,6 +1093,18 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   accept="video/*,image/*"
                   onUpload={handleUpload}
                   onDelete={handleDeleteImage}
+                />
+              </FieldGroup>
+              <FieldGroup label="SHARE PREVIEW IMAGE (OG Image)" hint="The image shown when sharing the invitation link on WhatsApp, Facebook, etc. (Recommended: 1200x630px)">
+                <ImageField
+                  label="Share Preview Photo"
+                  hint="Landscape (1.91:1) aspect recommended"
+                  value={config?.sharePreviewImageUrl || ''}
+                  path="sharePreviewImageUrl"
+                  type="og"
+                  onUpload={handleUpload}
+                  onDelete={handleDeleteImage}
+                  onCrop={handleCropExisting}
                 />
               </FieldGroup>
               <FieldGroup label="Wedding Date & Time (ISO 8601)" hint="Format: YYYY-MM-DDTHH:MM:SS">

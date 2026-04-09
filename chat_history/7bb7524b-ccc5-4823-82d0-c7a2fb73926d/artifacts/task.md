@@ -1,0 +1,6 @@
+- [x] Create implementation plan (Approved)
+- [ ] Add `sharePreviewImageUrl` to `getDefaultConfig` in `models/Config.js`
+- [ ] Add "SHARE PREVIEW IMAGE" upload block to the Wedding tab in `app/admin/page.jsx`
+- [ ] Implement dynamic metadata generation in `app/[slug]/page.jsx`
+- [ ] Verify upload functionality in Admin
+- [ ] Verify OG/Twitter tags on the public invitation page
