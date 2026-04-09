@@ -60,13 +60,17 @@ async function loadConfig() {
 export async function generateMetadata() {
   try {
     const config = await loadConfig();
+    const title = config.meta?.title || 'Wedding Invitation';
+    const description = config.meta?.description || 'You are invited!';
+    const ogImage = config.sharePreviewImageUrl || '';
+
     return {
-      title: config.meta?.title || 'Wedding Invitation',
-      description: config.meta?.description || 'You are invited!',
+      title,
+      description,
       openGraph: {
-        title: config.meta?.title,
-        description: config.meta?.description,
-        images: [config.meta?.ogImage],
+        title,
+        description,
+        images: ogImage ? [ogImage] : [],
       },
     };
   } catch {
