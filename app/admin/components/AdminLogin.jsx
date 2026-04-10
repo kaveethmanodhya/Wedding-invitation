@@ -15,7 +15,7 @@ export default function AdminLogin({ onLogin }) {
     if (cleanUser === 'kaveeth' && cleanPass === 'kaveeth123') {
       onLogin();
     } else {
-      setError('Invalid username or password. Hints: username "kaveeth", pass "kaveeth123"');
+      setError('Invalid username or password.');
     }
   };
 
