@@ -472,8 +472,14 @@ function InvitationList({ onEdit, showToast }) {
                   <div className="flex justify-between items-start mb-4">
                     <div className="w-12 h-12 bg-[#C9956A]/10 rounded-2xl flex items-center justify-center text-2xl"><Heart size={20} className="text-[#C9956A]" /></div>
                     <div className="flex flex-col items-end gap-1.5">
-                      <span className="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-1 rounded-md">
-                        {inv.slug === 'global_config' ? 'Legacy' : 'Active'}
+                      <span className={`text-[0.6rem] font-bold uppercase tracking-widest px-2 py-1 rounded-md ${
+                        inv.slug === 'global_config'
+                          ? 'bg-slate-50 text-slate-400'
+                          : (inv.isActive === false)
+                            ? 'bg-red-50 text-red-500'
+                            : 'bg-emerald-50 text-emerald-600'
+                      }`}>
+                        {inv.slug === 'global_config' ? 'Legacy' : (inv.isActive === false ? 'Inactive' : 'Active')}
                       </span>
                       {status && (
                         <span className={`text-[0.6rem] font-bold px-2 py-1 rounded-md transition-all ${status.cls}`}>
