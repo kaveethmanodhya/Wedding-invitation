@@ -98,5 +98,6 @@ export const getDefaultConfig = (slug) => ({
     rsvp: '',
     footer: ''
   },
-  sharePreviewImageUrl: ''
+  sharePreviewImageUrl: '',
+  isActive: true
 });

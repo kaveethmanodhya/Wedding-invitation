@@ -956,6 +956,20 @@ function AdminDashboard({ slug, onBack, showToast }) {
               </svg>
               View Live
             </a>
+            {/* Active / Inactive toggle */}
+            <button
+              type="button"
+              onClick={() => setPath('isActive', !(config?.isActive ?? true))}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold tracking-wide uppercase border transition-all duration-200 ${
+                (config?.isActive ?? true)
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                  : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200'
+              }`}
+              title={(config?.isActive ?? true) ? 'Invitation is ACTIVE — click to deactivate' : 'Invitation is INACTIVE — click to activate'}
+            >
+              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${(config?.isActive ?? true) ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+              {(config?.isActive ?? true) ? 'Active' : 'Inactive'}
+            </button>
             <button
               form="config-form"
               type="submit"
