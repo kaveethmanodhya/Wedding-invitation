@@ -223,7 +223,7 @@ export default function RoyalEnvelope({ config, onOpen }) {
                 variants={sealVariants}
                 initial="closed"
                 exit="opening"
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[70] cursor-pointer"
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[70] cursor-pointer bg-transparent"
                 onClick={handleOpen}
               >
                 {/* 1. PRESSING EFFECT (Indentation on paper) */}

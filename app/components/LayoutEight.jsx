@@ -79,7 +79,7 @@ export default function LayoutEight({ config }) {
               className="w-full h-full"
             >
               <img
-                src={config?.heroImage || config?.hero?.imageUrl || ''}
+                src={config?.heroImage || ''}
                 className="w-full h-full object-cover"
                 alt="Wedding Hero"
               />
@@ -497,7 +497,7 @@ export default function LayoutEight({ config }) {
                         Total Guests Attending?
                       </label>
                       <div className="flex gap-4">
-                        {[1, 2, 3, 4, 5].map(num => (
+                        {Array.from({ length: config?.rsvp?.maxGuests || 5 }, (_, i) => i + 1).map(num => (
                           <button
                             key={num}
                             type="button"

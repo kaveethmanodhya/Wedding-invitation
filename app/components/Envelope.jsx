@@ -214,7 +214,7 @@ export default function Envelope({ config, onOpen }) {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="absolute flex items-center justify-center group outline-none"
+              className="absolute flex items-center justify-center group outline-none bg-transparent"
               style={{
                 zIndex: 200,
                 left: '50%',

@@ -25,6 +25,38 @@ async function loadConfig(slug) {
   return null;
 }
 
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const config = await loadConfig(slug);
+  if (!config) return { title: 'Wedding Invitation' };
+
+  const previewImage = config.sharePreviewImageUrl || config.meta?.ogImage || config.heroImage || '';
+
+  return {
+    title: config.meta?.title || config.couple?.displayNames || 'Wedding Invitation',
+    description: config.meta?.description || 'You are invited to our wedding!',
+    openGraph: {
+      title: config.meta?.title || config.couple?.displayNames || 'Wedding Invitation',
+      description: config.meta?.description || 'You are invited to our wedding!',
+      images: [
+        {
+          url: previewImage,
+          width: 1200,
+          height: 630,
+          alt: `${config.couple?.displayNames || 'Wedding'} Invitation`,
+        },
+      ],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: config.meta?.title || config.couple?.displayNames || 'Wedding Invitation',
+      description: config.meta?.description || 'You are invited to our wedding!',
+      images: [previewImage],
+    },
+  };
+}
+
 export default async function WeddingPage({ params }) {
   const { slug } = await params;
   const config = await loadConfig(slug);

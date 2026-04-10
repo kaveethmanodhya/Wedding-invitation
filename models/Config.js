@@ -97,5 +97,6 @@ export const getDefaultConfig = (slug) => ({
     gallery: '',
     rsvp: '',
     footer: ''
-  }
+  },
+  sharePreviewImageUrl: ''
 });

@@ -60,14 +60,29 @@ async function loadConfig() {
 export async function generateMetadata() {
   try {
     const config = await loadConfig();
+    const title = config.meta?.title || 'Wedding Invitation';
+    const description = config.meta?.description || 'You are invited!';
+    const ogImage = config.sharePreviewImageUrl || '';
+
     return {
-      title: config.meta?.title || 'Wedding Invitation',
-      description: config.meta?.description || 'You are invited!',
+      title,
+      description,
       openGraph: {
-        title: config.meta?.title,
-        description: config.meta?.description,
-        images: [config.meta?.ogImage],
+        title,
+        description,
+        images: ogImage ? [ogImage] : [],
       },
+      icons: {
+        icon: [
+          { url: '/favicon.ico' },
+          { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+          { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+        ],
+        apple: [
+          { url: '/apple-touch-icon.png' },
+        ],
+      },
+      manifest: '/site.webmanifest',
     };
   } catch {
     return { title: 'Wedding Invitation' };

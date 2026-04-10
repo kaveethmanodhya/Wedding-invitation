@@ -72,7 +72,7 @@ export async function GET(request) {
       return NextResponse.json(config);
     } else {
       // List all invitations (basic info for the dashboard)
-      const list = await db.collection('settings').find({}, { projection: { slug: 1, 'couple.displayNames': 1, 'wedding.displayDate': 1 } }).toArray();
+      const list = await db.collection('settings').find({}, { projection: { slug: 1, 'couple.displayNames': 1, 'wedding.displayDate': 1, 'wedding.dateTimeISO': 1 } }).toArray();
       return NextResponse.json(list);
     }
   } catch (error) {
