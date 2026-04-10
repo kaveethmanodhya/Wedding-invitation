@@ -25,11 +25,11 @@ export default function RoyalEnvelope({ config, onOpen }) {
     setTimeout(() => {
       setStage('sliding');
       
-      // 3. Final callback to show main content after a longer pause
+      // 3. Final callback to show main content after a shorter pause
       setTimeout(() => {
         onOpen();
-      }, 4000);
-    }, 800);
+      }, 1800);
+    }, 500);
   };
 
   if (!mounted) return null;
@@ -56,7 +56,7 @@ export default function RoyalEnvelope({ config, onOpen }) {
     opening: { 
       rotateX: -170, 
       zIndex: 5, 
-      transition: { duration: 1.2, ease: [0.4, 0, 0.2, 1] } 
+      transition: { duration: 0.7, ease: [0.4, 0, 0.2, 1] } 
     }
   };
 
@@ -70,13 +70,12 @@ export default function RoyalEnvelope({ config, onOpen }) {
   };
 
   const cardVariants = {
-    closed: { y: 0, scale: 0.95, zIndex: 10, opacity: 0 },
+    closed: { y: 0, scale: 0.95, opacity: 0 },
     sliding: { 
       y: '-90%', // Relative to downward moving container, results in -45% absolute
       scale: 1, 
-      zIndex: 100,
       opacity: 1,
-      transition: { duration: 1.5, ease: [0.19, 1, 0.22, 1], delay: 0.1 } 
+      transition: { duration: 1.0, ease: [0.19, 1, 0.22, 1], delay: 0.1 } 
     }
   };
 
@@ -131,7 +130,7 @@ export default function RoyalEnvelope({ config, onOpen }) {
             variants={cardVariants}
             initial="closed"
             animate={stage === 'sliding' ? 'sliding' : (stage === 'opening' ? { opacity: 1 } : 'closed')}
-            className="absolute inset-x-4 top-4 bottom-4 bg-[#FFFDF2] shadow-2xl flex flex-col items-center justify-center text-center p-8 border border-[#D4AF37]/20"
+            className="absolute inset-x-4 top-4 bottom-4 z-[15] bg-[#FFFDF2] shadow-2xl flex flex-col items-center justify-center text-center p-8 border border-[#D4AF37]/20"
             style={{ 
               borderRadius: '12px 12px 4px 4px',
             }}
@@ -183,7 +182,7 @@ export default function RoyalEnvelope({ config, onOpen }) {
 
           {/* 4. HIGH-FIDELITY 3D GOLD BAND */}
           <div 
-            className="absolute top-1/2 -translate-y-1/2 w-full h-14 md:h-20 z-40 shadow-[0_10px_40px_rgba(0,0,0,0.6)] transition-all duration-700 overflow-hidden flex flex-col justify-between py-1"
+            className="absolute top-1/2 -translate-y-1/2 w-full h-14 md:h-20 z-[60] shadow-[0_10px_40px_rgba(0,0,0,0.6)] transition-all duration-700 overflow-hidden flex flex-col justify-between py-1"
             style={{ 
               background: 'linear-gradient(to right, #5d401a 0%, #b8860b 20%, #f7e48b 45%, #ffffff 50%, #f7e48b 55%, #b8860b 80%, #5d401a 100%)',
               borderTop: '0.5px solid rgba(255,255,255,0.4)',
@@ -224,7 +223,7 @@ export default function RoyalEnvelope({ config, onOpen }) {
                 variants={sealVariants}
                 initial="closed"
                 exit="opening"
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 cursor-pointer"
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[70] cursor-pointer"
                 onClick={handleOpen}
               >
                 {/* 1. PRESSING EFFECT (Indentation on paper) */}
