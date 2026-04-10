@@ -44,10 +44,10 @@ export default function LayoutEight({ config }) {
   };
 
   return (
-    <div 
+    <div
       className="relative min-h-screen overflow-x-hidden"
-      style={{ 
-        backgroundColor: theme.colorBg || '#fdfaf5', 
+      style={{
+        backgroundColor: theme.colorBg || '#fdfaf5',
         color: theme.colorTextDark || '#1e293b'
       }}
     >
@@ -86,10 +86,10 @@ export default function LayoutEight({ config }) {
             </motion.div>
           )}
           <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
-          <div 
+          <div
             className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10"
-            style={{ 
-              backgroundImage: `linear-gradient(to bottom, transparent, rgba(0,0,0,0.1), ${theme.colorBg || '#fdfaf5'})` 
+            style={{
+              backgroundImage: `linear-gradient(to bottom, transparent, rgba(0,0,0,0.1), ${theme.colorBg || '#fdfaf5'})`
             }}
           />
         </div>
@@ -121,19 +121,19 @@ export default function LayoutEight({ config }) {
       </section>
 
       {/* ── STORY SECTION: Elegant Typography ── */}
-      <section 
+      <section
         className="px-6 py-24 md:py-40 relative"
         style={{ backgroundColor: `${theme.colorSurface || '#ffffff'}80` }} // 80 is roughly 50% opacity
       >
         <div className="max-w-3xl mx-auto text-center space-y-12">
           <div className="space-y-4">
-            <span 
+            <span
               className="font-sans text-[10px] font-black uppercase tracking-[0.4em]"
               style={{ color: theme.colorPrimary || '#C9956A' }}
             >
               Our Journey
             </span>
-            <h2 
+            <h2
               className="font-serif text-4xl md:text-6xl tracking-tight leading-none italic"
               style={{ color: theme.colorTextDark || '#1e293b' }}
             >
@@ -141,19 +141,19 @@ export default function LayoutEight({ config }) {
             </h2>
           </div>
           <div className="relative px-8 md:px-16">
-            <div 
+            <div
               className="absolute -top-6 -left-0 text-7xl font-serif opacity-10"
               style={{ color: theme.colorPrimary || '#C9956A' }}
             >
               “
             </div>
-            <p 
+            <p
               className="font-serif text-xl md:text-2xl leading-relaxed italic"
               style={{ color: theme.colorTextLight || '#4A5568' }}
             >
               {config?.story?.invitationText || "We invite you to share our joy as we exchange vows. Your presence will make our celebration truly special."}
             </p>
-            <div 
+            <div
               className="absolute -bottom-12 -right-0 text-7xl font-serif opacity-10"
               style={{ color: theme.colorPrimary || '#C9956A' }}
             >
@@ -164,19 +164,19 @@ export default function LayoutEight({ config }) {
       </section>
 
       {/* ── TIMELINE: Vertical Programme du jour ── */}
-      <section 
+      <section
         className="px-6 py-24 md:py-32"
         style={{ backgroundColor: theme.colorSecondary || '#f9f6f1' }}
       >
         <div className="max-w-4xl mx-auto flex flex-col items-center">
           <div className="text-center mb-20 space-y-4">
-            <span 
+            <span
               className="font-sans text-[10px] font-bold uppercase tracking-[0.4em]"
               style={{ color: theme.colorTextLight || '#4A5568' }}
             >
               Programme du jour
             </span>
-            <h2 
+            <h2
               className="font-serif text-4xl md:text-5xl italic"
               style={{ color: theme.colorTextDark || '#1e293b' }}
             >
@@ -186,7 +186,7 @@ export default function LayoutEight({ config }) {
 
           <div className="relative w-full max-w-lg">
             {/* The Line */}
-            <div 
+            <div
               className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px -translate-x-1/2 opacity-20"
               style={{ backgroundColor: theme.colorTextDark || '#1e293b' }}
             />
@@ -202,9 +202,9 @@ export default function LayoutEight({ config }) {
                   className={`relative flex items-center justify-between w-full ${idx % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
                 >
                   {/* Icon Dot */}
-                  <div 
+                  <div
                     className="absolute left-4 md:left-1/2 -translate-x-1/2 w-10 h-10 rounded-full shadow-lg flex items-center justify-center z-10"
-                    style={{ 
+                    style={{
                       backgroundColor: theme.colorSurface || '#ffffff',
                       border: `1px solid ${theme.colorSecondary || '#f9f6f1'}`,
                       color: theme.colorPrimary || '#C9956A'
@@ -215,19 +215,19 @@ export default function LayoutEight({ config }) {
 
                   {/* Content Card */}
                   <div className="ml-16 md:ml-0 md:w-[42%] text-left md:text-right space-y-1">
-                    <span 
+                    <span
                       className="font-sans text-[10px] font-black tracking-widest uppercase"
                       style={{ color: theme.colorPrimary || '#C9956A' }}
                     >
                       {item.time}
                     </span>
-                    <h3 
+                    <h3
                       className="font-serif text-xl font-bold"
                       style={{ color: theme.colorTextDark || '#1e293b' }}
                     >
                       {item.title}
                     </h3>
-                    <p 
+                    <p
                       className="font-serif text-sm italic"
                       style={{ color: theme.colorTextLight || '#4A5568' }}
                     >
@@ -246,19 +246,19 @@ export default function LayoutEight({ config }) {
 
       {/* ── GALLERY: Premium Collection ── */}
       {config?.gallery && config.gallery.length > 0 && (
-        <section 
+        <section
           className="px-6 py-24 md:py-32 relative overflow-hidden"
           style={{ backgroundColor: theme.colorBg || '#fdfaf5' }}
         >
           <div className="max-w-6xl mx-auto flex flex-col items-center">
             <div className="text-center mb-16 space-y-4">
-              <span 
+              <span
                 className="font-sans text-[10px] font-bold uppercase tracking-[0.4em]"
                 style={{ color: theme.colorTextLight || '#4A5568' }}
               >
                 Captured Moments
               </span>
-              <h2 
+              <h2
                 className="font-serif text-4xl md:text-5xl italic"
                 style={{ color: theme.colorTextDark || '#1e293b' }}
               >
@@ -294,7 +294,7 @@ export default function LayoutEight({ config }) {
       )}
 
       {/* ── MAP & LOCATION: Interactive Display ── */}
-      <section 
+      <section
         className="px-6 py-24 md:py-32"
         style={{ backgroundColor: theme.colorSurface || '#ffffff' }}
       >
@@ -302,13 +302,13 @@ export default function LayoutEight({ config }) {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-3">
-                <span 
+                <span
                   className="font-sans text-[10px] font-black uppercase tracking-[0.4em]"
                   style={{ color: theme.colorPrimary || '#C9956A' }}
                 >
                   Join Us At
                 </span>
-                <h2 
+                <h2
                   className="font-serif text-4xl md:text-5xl leading-tight italic"
                   style={{ color: theme.colorTextDark || '#1e293b' }}
                 >
@@ -317,9 +317,9 @@ export default function LayoutEight({ config }) {
               </div>
               <div className="space-y-6">
                 <div className="flex gap-4">
-                  <div 
+                  <div
                     className="shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center"
-                    style={{ 
+                    style={{
                       backgroundColor: theme.colorBg || '#fdfaf5',
                       color: theme.colorPrimary || '#C9956A'
                     }}
@@ -327,13 +327,13 @@ export default function LayoutEight({ config }) {
                     <MapPin size={24} strokeWidth={1.5} />
                   </div>
                   <div>
-                    <h4 
+                    <h4
                       className="font-serif text-xl font-bold"
                       style={{ color: theme.colorTextDark || '#1e293b' }}
                     >
                       {config?.events?.ceremony?.venueName || ''}
                     </h4>
-                    <p 
+                    <p
                       className="font-sans text-xs uppercase tracking-widest mt-1"
                       style={{ color: theme.colorTextLight || '#4A5568' }}
                     >
@@ -356,7 +356,7 @@ export default function LayoutEight({ config }) {
                 <button
                   onClick={() => console.log('Calendar clicked')}
                   className="flex-1 flex items-center justify-center gap-3 py-4 border font-sans text-[10px] font-bold uppercase tracking-widest transition-all duration-500 rounded-xl"
-                  style={{ 
+                  style={{
                     borderColor: theme.colorSecondary || '#f9f6f1',
                     color: theme.colorTextLight || '#4A5568'
                   }}
@@ -375,7 +375,7 @@ export default function LayoutEight({ config }) {
             </div>
 
             {/* Google Maps Preview Illusion */}
-            <div 
+            <div
               className="relative aspect-video md:aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl group border-[12px]"
               style={{ backgroundColor: theme.colorSecondary || '#f9f6f1', borderColor: theme.colorSurface || '#ffffff' }}
             >
@@ -386,7 +386,7 @@ export default function LayoutEight({ config }) {
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-[#C9956A]/20 via-transparent to-transparent pointer-events-none" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div 
+                <div
                   className="w-16 h-16 rounded-full flex items-center justify-center shadow-2xl animate-pulse"
                   style={{ backgroundColor: theme.colorSurface || '#ffffff' }}
                 >
@@ -399,16 +399,16 @@ export default function LayoutEight({ config }) {
       </section>
 
       {/* ── ADVANCED RSVP SECTION ── */}
-      <section 
+      <section
         className="px-6 py-24 md:py-40 relative"
         style={{ backgroundColor: theme.colorBg || '#fdfaf5' }}
       >
-        <div 
+        <div
           className="max-w-2xl mx-auto p-10 md:p-20 rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.04)] border text-center relative"
           style={{ backgroundColor: theme.colorSurface || '#ffffff', borderColor: theme.colorSecondary || '#f9f6f1' }}
         >
           {/* Decor */}
-          <div 
+          <div
             className="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 border rounded-full flex items-center justify-center shadow-lg"
             style={{ backgroundColor: theme.colorBg || '#fdfaf5', borderColor: theme.colorSecondary || '#f9f6f1' }}
           >
@@ -416,19 +416,19 @@ export default function LayoutEight({ config }) {
           </div>
 
           <div className="space-y-6 mb-12">
-            <h2 
+            <h2
               className="font-serif text-4xl md:text-5xl leading-tight italic"
               style={{ color: theme.colorTextDark || '#1e293b' }}
             >
-              Please Confirm
+              Please Confirm.
             </h2>
-            <p 
+            <p
               className="font-sans text-[10px] font-black uppercase tracking-[0.4em]"
               style={{ color: theme.colorTextLight || '#4A5568' }}
             >
               Kindly Reply by {config?.rsvp?.deadline || ''}
             </p>
-            <div 
+            <div
               className="w-12 h-px mx-auto opacity-30"
               style={{ backgroundColor: theme.colorPrimary || '#C9956A' }}
             />
@@ -448,7 +448,7 @@ export default function LayoutEight({ config }) {
             </motion.div>
           ) : (
             <form onSubmit={handleRsvpSubmit} className="space-y-8">
-               {/* Attendance Select */}
+              {/* Attendance Select */}
               <div className="grid grid-cols-2 gap-4">
                 {[
                   { id: 'Accept', label: 'Joyfully Accept', icon: '🎉' },
@@ -467,7 +467,7 @@ export default function LayoutEight({ config }) {
                     }}
                   >
                     <span className="text-2xl">{opt.icon}</span>
-                    <span 
+                    <span
                       className="text-[10px] font-black uppercase tracking-widest"
                       style={{ color: formData.attendance === opt.id ? (theme.colorSurface || '#ffffff') : (theme.colorTextLight || '#8A7F6A') }}
                     >
@@ -486,11 +486,11 @@ export default function LayoutEight({ config }) {
                     className="overflow-hidden space-y-8 pt-4"
                   >
                     {/* Guest Count */}
-                    <div 
+                    <div
                       className="flex flex-col items-center gap-3 p-6 rounded-2xl border"
                       style={{ backgroundColor: theme.colorBg || '#FAF7F2', borderColor: theme.colorSecondary || '#E8D5B7' }}
                     >
-                      <label 
+                      <label
                         className="font-sans text-[10px] font-black uppercase tracking-widest"
                         style={{ color: theme.colorTextLight || '#8A7F6A' }}
                       >
@@ -515,11 +515,11 @@ export default function LayoutEight({ config }) {
                     </div>
 
                     {/* Dietary Requirements - Advanced Box */}
-                    <div 
+                    <div
                       className="p-8 rounded-[30px] border text-left space-y-4"
                       style={{ backgroundColor: theme.colorBg || '#FAF7F2', borderColor: theme.colorSecondary || '#E8D5B7' }}
                     >
-                      <h4 
+                      <h4
                         className="font-serif text-lg italic flex items-center gap-2"
                         style={{ color: theme.colorTextDark || '#3A2828' }}
                       >
@@ -541,16 +541,16 @@ export default function LayoutEight({ config }) {
                             })}
                             className="flex items-center gap-3 group"
                           >
-                            <div 
+                            <div
                               className="w-5 h-5 rounded-md border flex items-center justify-center transition-all"
-                              style={{ 
+                              style={{
                                 backgroundColor: formData.dietary[opt.id] ? (theme.colorPrimary || '#C9956A') : (theme.colorSurface || '#ffffff'),
                                 borderColor: formData.dietary[opt.id] ? (theme.colorPrimary || '#C9956A') : (theme.colorSecondary || '#E8D5B7')
                               }}
                             >
                               {formData.dietary[opt.id] && <Check size={12} style={{ color: theme.colorSurface || '#ffffff' }} />}
                             </div>
-                            <span 
+                            <span
                               className="text-xs font-serif italic transition-colors uppercase tracking-widest"
                               style={{ color: theme.colorTextLight || '#8A7F6A' }}
                             >
@@ -593,8 +593,8 @@ export default function LayoutEight({ config }) {
                   }}
                 >
                   {rsvpStatus === 'loading' ? (
-                    <span 
-                      className="w-5 h-5 border-2 rounded-full animate-spin" 
+                    <span
+                      className="w-5 h-5 border-2 rounded-full animate-spin"
                       style={{ borderColor: 'rgba(255,255,255,0.2)', borderTopColor: '#ffffff' }}
                     />
                   ) : (
@@ -608,24 +608,24 @@ export default function LayoutEight({ config }) {
       </section>
 
       {/* ── FOOTER: Simple Elegant ── */}
-      <section 
+      <section
         className="py-32 text-center border-t"
         style={{ backgroundColor: theme.colorBg || '#FAF7F2', borderTopColor: theme.colorSecondary || '#E8D5B7' }}
       >
         <div className="space-y-8 px-6">
-          <div 
+          <div
             className="text-4xl opacity-20"
             style={{ color: theme.colorPrimary || '#C9956A' }}
           >
             ❦
           </div>
-          <h2 
+          <h2
             className="font-serif text-5xl md:text-7xl italic leading-none opacity-20"
             style={{ color: theme.colorTextDark || '#2C2018' }}
           >
             See you there
           </h2>
-          <p 
+          <p
             className="font-sans text-[10px] font-black uppercase tracking-[0.6em]"
             style={{ color: theme.colorTextLight || '#8A7F6A' }}
           >
