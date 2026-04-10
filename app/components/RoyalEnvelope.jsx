@@ -1,6 +1,6 @@
 'use client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 
 /**
  * Royal Envelope Opening Animation
@@ -13,11 +13,7 @@ import { useState, useEffect } from 'react';
  */
 export default function RoyalEnvelope({ config, onOpen }) {
   const [stage, setStage] = useState('closed'); // closed | opening | sliding
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
 
   const handleOpen = () => {
     if (stage !== 'closed') return;
@@ -52,6 +48,7 @@ export default function RoyalEnvelope({ config, onOpen }) {
   const bgColor1 = royalSettings.bgColor1 || theme.colorBg || '#3D0010';
   const bgColor2 = royalSettings.bgColor2 || theme.colorPrimary || '#91091E';
   const sealColor = royalSettings.sealColor || primaryColor;
+  const sealImage = royalSettings.sealImage || null;
 
   // Animation Variants
   const flapVariants = {
@@ -243,9 +240,9 @@ export default function RoyalEnvelope({ config, onOpen }) {
                 <div 
                   className="w-24 h-24 md:w-28 md:h-28 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 duration-300 relative"
                   style={{ 
-                    backgroundColor: sealColor,
+                    backgroundColor: sealImage ? 'transparent' : sealColor,
                     borderRadius: '48% 52% 43% 57% / 54% 42% 58% 46%',
-                    boxShadow: `
+                    boxShadow: sealImage ? 'none' : `
                       0 2px 4px rgba(0,0,0,0.5),
                       0 8px 16px rgba(0,0,0,0.3),
                       inset 0 -12px 12px rgba(0,0,0,0.3),
@@ -255,33 +252,45 @@ export default function RoyalEnvelope({ config, onOpen }) {
                   }}
                 >
                   {/* Outer Rim Highlight (Specular) */}
-                  <div className="absolute top-[8%] left-[12%] w-[40%] h-[25%] bg-white/30 rounded-full blur-[3px] -rotate-[35deg] pointer-events-none" />
+                  {!sealImage && <div className="absolute top-[8%] left-[12%] w-[40%] h-[25%] bg-white/30 rounded-full blur-[3px] -rotate-[35deg] pointer-events-none" />}
 
                   {/* Deep Recessed Center Area */}
                   <div 
-                    className="w-[72%] h-[72%] flex flex-col items-center justify-center relative z-10"
+                    className={`${sealImage ? 'w-full h-full' : 'w-[72%] h-[72%]'} flex flex-col items-center justify-center relative z-10 overflow-hidden`}
                     style={{ 
                       borderRadius: '50%',
-                      backgroundColor: 'rgba(0,0,0,0.15)',
-                      boxShadow: 'inset 0 10px 10px rgba(0,0,0,0.6), inset 0 -4px 6px rgba(255,255,255,0.1), 0 2px 2px rgba(255,255,255,0.2)',
-                      border: '1px solid rgba(0,0,0,0.1)'
+                      backgroundColor: sealImage ? 'transparent' : 'rgba(0,0,0,0.15)',
+                      boxShadow: sealImage ? 'none' : 'inset 0 10px 10px rgba(0,0,0,0.6), inset 0 -4px 6px rgba(255,255,255,0.1), 0 2px 2px rgba(255,255,255,0.2)',
+                      border: sealImage ? 'none' : '1px solid rgba(0,0,0,0.1)'
                     }}
                   >
-                    <span className="font-serif font-black italic text-[#D4AF37] text-lg md:text-xl whitespace-nowrap select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
-                      {(config.couple?.bride?.firstName?.[0] || 'D').toUpperCase()} 
-                      <span className="font-script text-[10px] mx-1 not-italic font-normal">&</span> 
-                      {(config.couple?.groom?.firstName?.[0] || 'C').toUpperCase()}
-                    </span>
+                    {sealImage ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={sealImage}
+                        alt="Wax seal"
+                        className="w-full h-full object-contain select-none pointer-events-none"
+                        style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                      />
+                    ) : (
+                      <span className="font-serif font-black italic text-[#D4AF37] text-lg md:text-xl whitespace-nowrap select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+                        {(config.couple?.bride?.firstName?.[0] || 'D').toUpperCase()} 
+                        <span className="font-script text-[10px] mx-1 not-italic font-normal">&</span> 
+                        {(config.couple?.groom?.firstName?.[0] || 'C').toUpperCase()}
+                      </span>
+                    )}
                   </div>
 
                   {/* Surface Wax Texture (Subtle Glow) */}
-                  <div 
-                    className="absolute inset-0 pointer-events-none opacity-30"
-                    style={{
-                      borderRadius: 'inherit',
-                      background: 'radial-gradient(circle at 30% 30%, white 0%, transparent 40%)',
-                    }}
-                  />
+                  {!sealImage && (
+                    <div 
+                      className="absolute inset-0 pointer-events-none opacity-30"
+                      style={{
+                        borderRadius: 'inherit',
+                        background: 'radial-gradient(circle at 30% 30%, white 0%, transparent 40%)',
+                      }}
+                    />
+                  )}
                 </div>
                 
                 {/* 3. CLICK INSTRUCTION - Absolutely positioned below to avoid breaking symmetry */}

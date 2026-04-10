@@ -1493,6 +1493,16 @@ function AdminDashboard({ slug, onBack, showToast }) {
                           value={config.envelope?.royal?.sealColor || config.theme?.colorPrimary || '#91091E'}
                           onChange={val => setPath('envelope.royal.sealColor', val)}
                         />
+                        <ImageField
+                          label="Wax Seal Image (optional)"
+                          hint="Upload a PNG or WebP with a transparent background to replace the wax seal with your own image — a monogram, floral motif, or custom crest. The image will be shown at full size inside the seal; transparent areas let the envelope show through. For best results use a square PNG (500×500 px or larger) with a transparent background. JPEG files are not supported for transparency."
+                          value={config.envelope?.royal?.sealImage || ''}
+                          path="envelope.royal.sealImage"
+                          type="general"
+                          accept="image/png,image/webp"
+                          onUpload={handleUpload}
+                          onDelete={handleDeleteImage}
+                        />
                         <p className="text-[0.6rem] text-slate-400 italic mt-2">
                           * Defaults to theme colors if not explicitly set. The background creates a repeating diamond mosaic pattern.
                         </p>
@@ -1522,22 +1532,34 @@ function AdminDashboard({ slug, onBack, showToast }) {
                             <div
                               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full border border-[#D4AF37] shadow-md flex items-center justify-center text-[5px] font-serif text-[#D4AF37] font-bold overflow-hidden"
                               style={{
-                                backgroundColor: config.envelope?.royal?.sealColor || config.theme?.colorPrimary || '#91091E',
+                                backgroundColor: config.envelope?.royal?.sealImage ? 'transparent' : (config.envelope?.royal?.sealColor || config.theme?.colorPrimary || '#91091E'),
                                 borderRadius: '41% 59% 41% 59% / 53% 45% 55% 47%',
-                                boxShadow: '0 4px 8px rgba(0,0,0,0.3), inset 0 -2px 4px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.2)'
+                                boxShadow: config.envelope?.royal?.sealImage ? 'none' : '0 4px 8px rgba(0,0,0,0.3), inset 0 -2px 4px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.2)',
+                                border: config.envelope?.royal?.sealImage ? 'none' : '1px solid #D4AF37',
                               }}
                             >
-                              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-black/10 rounded-inherit" />
-                              <div
-                                className="w-[70%] h-[70%] rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] flex items-center justify-center font-serif font-black italic text-[#D4AF37]"
-                                style={{ backgroundColor: 'rgba(0,0,0,0.05)' }}
-                              >
-                                <div className="relative z-10 flex items-center gap-0.5 scale-75">
-                                  <span>{(config.couple?.bride?.firstName?.[0] || 'D').toUpperCase()}</span>
-                                  <span className="scale-75 text-[4px] not-italic font-normal font-script">&</span>
-                                  <span>{(config.couple?.groom?.firstName?.[0] || 'C').toUpperCase()}</span>
-                                </div>
-                              </div>
+                              {config.envelope?.royal?.sealImage ? (
+                                <img
+                                  src={config.envelope.royal.sealImage}
+                                  alt="Wax seal preview"
+                                  className="w-full h-full object-contain"
+                                  style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))' }}
+                                />
+                              ) : (
+                                <>
+                                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-black/10 rounded-inherit" />
+                                  <div
+                                    className="w-[70%] h-[70%] rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] flex items-center justify-center font-serif font-black italic text-[#D4AF37]"
+                                    style={{ backgroundColor: 'rgba(0,0,0,0.05)' }}
+                                  >
+                                    <div className="relative z-10 flex items-center gap-0.5 scale-75">
+                                      <span>{(config.couple?.bride?.firstName?.[0] || 'D').toUpperCase()}</span>
+                                      <span className="scale-75 text-[4px] not-italic font-normal font-script">&</span>
+                                      <span>{(config.couple?.groom?.firstName?.[0] || 'C').toUpperCase()}</span>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
                             </div>
                             <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ clipPath: 'polygon(0% 0%, 100% 0%, 50% 50%)', border: '1px solid black' }} />
                           </div>
