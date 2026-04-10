@@ -420,7 +420,7 @@ export default function LayoutEight({ config }) {
               className="font-serif text-4xl md:text-5xl leading-tight italic"
               style={{ color: theme.colorTextDark || '#1e293b' }}
             >
-              Please Confirm.
+              Please Confirm
             </h2>
             <p
               className="font-sans text-[10px] font-black uppercase tracking-[0.4em]"
