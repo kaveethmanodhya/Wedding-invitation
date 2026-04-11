@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 
 export default function PremiumEnvelope({ config, onOpenInvitation }) {
   const [isAnimating, setIsAnimating] = useState(false);
+  const [mediaReady, setMediaReady] = useState(false);
   const videoRef = useRef(null);
 
   const sealImage = config?.envelope?.waxSealImage || '/images/wax-seal.png';
@@ -36,74 +37,52 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
         zIndex: 9999 
       }}
     >
-      {/* 3:2 Aspect Ratio Wrapper (Responsive) */}
-      <div 
-        className="relative w-full max-w-[650px] mx-auto pt-[66.66%]"
-      >
+      {/* Outer Wrapper: Maintains document flow and aspect ratio */}
+      <div className="relative w-full max-w-[650px] mx-auto aspect-[3/2] flex items-center justify-center overflow-visible bg-transparent">
         
-        {/* Video Animation Layer (Absolute Fill) */}
-        <video
-          ref={videoRef}
-          src={envelopeVideo}
-          className="absolute top-0 left-0 w-full h-full object-contain"
-          playsInline
-          muted
-          onEnded={() => onOpenInvitation()}
-          // Ensure it's ready
-          preload="auto"
-        />
+        {/* Inner Zoom Wrapper: Handles the 25% mobile scale-up independently */}
+        <div className="absolute inset-0 w-full h-full scale-[1.35] sm:scale-110 origin-center flex items-center justify-center -translate-y-[10%]">
+          
+          {/* Layer 1 - Static Envelope Image has been removed. We now rely on the video's first frame. */}
 
-        {/* Wax Seal Overlay (Interactive) */}
-        <AnimatePresence>
-          {!isAnimating && (
-            <motion.div
-              key="wax-seal"
-              onClick={handleOpen}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ opacity: 0, scale: 1.2, filter: 'blur(10px)' }}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.92 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="absolute top-[55%] left-[50%] -translate-x-1/2 -translate-y-1/2 bg-transparent"
-              style={{ 
-                zIndex: 50, // On top of paused video
-                width: 'clamp(80px, 15vw, 120px)', 
-                height: 'clamp(80px, 15vw, 120px)', 
-                cursor: 'pointer', 
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                userSelect: 'none'
-              }}
-            >
-              <img 
-                src={sealImage} 
-                alt="Wax Seal" 
-                style={{ 
-                  width: '100%', 
-                  height: '100%', 
-                  objectFit: 'contain', 
-                  filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.4))'
-                }} 
-              />
-              {/* Subtle dynamic tint */}
-              <div style={{
-                position: 'absolute',
-                inset: '15%',
-                borderRadius: '50%',
-                backgroundColor: sealColor,
-                opacity: 0.2,
-                mixBlendMode: 'overlay',
-                pointerEvents: 'none'
-              }}></div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          {/* Layer 2 - The Video (Acts as both static cover and animation) */}
+          <video 
+            ref={videoRef}
+            src={`${envelopeVideo}#t=0.1`}
+            className="absolute inset-0 w-full h-full object-contain"
+            playsInline
+            muted
+            onLoadedData={() => setMediaReady(true)}
+            onEnded={() => onOpenInvitation()}
+            preload="metadata"
+          />
 
-        {/* Global Loading Text (if video takes time) */}
+          {/* Layer 3 - The Wax Seal Button */}
+          <AnimatePresence>
+            {!isAnimating && (
+              <motion.button
+                key="wax-seal"
+                onClick={handleOpen}
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ opacity: 0, scale: 1.2, filter: 'blur(10px)' }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className={`absolute z-50 left-1/2 top-[58%] sm:top-[58%] -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-opacity duration-500 border-none bg-transparent outline-none hover:scale-105 ${mediaReady ? 'opacity-100' : 'opacity-0'}`}
+              >
+                <img 
+                  src={sealImage} 
+                  alt="Wax Seal" 
+                  className="w-12 h-12 sm:w-16 sm:h-16 object-contain bg-transparent"
+                  style={{ filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.4))' }}
+                />
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Global Loading Indicator (Subtle) */}
         {!isAnimating && !videoRef.current?.readyState && (
-           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/20 text-[10px] uppercase tracking-[0.4em] pointer-events-none animate-pulse">
+           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/20 text-[10px] uppercase tracking-[0.4em] pointer-events-none animate-pulse">
              Tap to Open
            </div>
         )}

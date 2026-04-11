@@ -1472,10 +1472,11 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 pt-6 border-t border-slate-50">
                   <ImageField
                     label="Groom Cartoon (Running)"
-                    hint="Transparent PNG recommended"
+                    hint="Transparent PNG or WebM recommended"
                     value={config.coupleImages?.groom}
                     path="coupleImages.groom"
                     type="general"
+                    accept="image/*, video/webm, video/mp4"
                     onUpload={handleUpload}
                     onDelete={handleDeleteImage}
                     onCrop={handleCropExisting}
@@ -1483,10 +1484,11 @@ function AdminDashboard({ slug, onBack, showToast }) {
 
                   <ImageField
                     label="Bride Cartoon (Running)"
-                    hint="Transparent PNG recommended"
+                    hint="Transparent PNG or WebM recommended"
                     value={config.coupleImages?.bride}
                     path="coupleImages.bride"
                     type="general"
+                    accept="image/*, video/webm, video/mp4"
                     onUpload={handleUpload}
                     onDelete={handleDeleteImage}
                     onCrop={handleCropExisting}
