@@ -44,7 +44,7 @@ export async function POST(req) {
     const buffer = Buffer.from(bytes);
 
     const isGif = file.type === 'image/gif' || file.name.toLowerCase().endsWith('.gif');
-    const isVideo = file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.mp4') || file.name.toLowerCase().endsWith('.webm');
+    const isVideo = file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.mp4');
     const isAudio = type === 'audio' || file.type.startsWith('audio/') || file.name.toLowerCase().endsWith('.mp3');
     let finalBuffer;
     

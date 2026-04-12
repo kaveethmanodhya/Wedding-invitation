@@ -8,8 +8,6 @@ export default function CoupleReveal({ config, onOpen, children }) {
   const groomImg = config.coupleImages?.groom;
   const brideImg = config.coupleImages?.bride;
 
-  const isVideo = (url) => url?.match(/\.(webm|mp4)$/i);
-
   useEffect(() => {
     const metTimer = setTimeout(() => {
       setStage('revealing');
@@ -70,13 +68,7 @@ export default function CoupleReveal({ config, onOpen, children }) {
               className="absolute"
             >
               {groomImg ? (
-                isVideo(groomImg) ? (
-                  <video autoPlay loop muted playsInline className="h-40 w-auto object-contain">
-                    <source src={groomImg} type={groomImg.toLowerCase().endsWith('.mp4') ? 'video/mp4' : 'video/webm'} />
-                  </video>
-                ) : (
-                  <img src={groomImg} alt="Groom" className="h-40 w-auto object-contain" />
-                )
+                <img src={groomImg} alt="Groom" className="h-40 w-auto object-contain" />
               ) : (
                 <span className="text-7xl block transform -scale-x-100">🏃‍♂️</span>
               )}
@@ -90,13 +82,7 @@ export default function CoupleReveal({ config, onOpen, children }) {
               className="absolute"
             >
               {brideImg ? (
-                isVideo(brideImg) ? (
-                  <video autoPlay loop muted playsInline className="h-40 w-auto object-contain">
-                    <source src={brideImg} type={brideImg.toLowerCase().endsWith('.mp4') ? 'video/mp4' : 'video/webm'} />
-                  </video>
-                ) : (
-                  <img src={brideImg} alt="Bride" className="h-40 w-auto object-contain" />
-                )
+                <img src={brideImg} alt="Bride" className="h-40 w-auto object-contain" />
               ) : (
                 <span className="text-7xl">🏃‍♀️</span>
               )}
