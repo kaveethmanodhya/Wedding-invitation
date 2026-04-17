@@ -183,7 +183,7 @@ function Layout2({ config }) {
 /* ─────────────────────────────────────────────────────────
    LAYOUT 3 — Royal Arch & Peacocks (Indian Style)
 ───────────────────────────────────────────────────────── */
-function Layout3({ config }) {
+function Layout3({ config, isOpened }) {
   const { couple = {}, wedding = {}, events = {}, heroImage } = config;
   const ceremony = events?.ceremony || {};
   const dayLabel = dayName(wedding?.dateTimeISO);
@@ -205,6 +205,17 @@ function Layout3({ config }) {
           borderRadius: '16px',
         }}
       >
+        {/* ── ROYAL ORNATE BORDERS ── */}
+        <div className="absolute inset-4 border-2 border-double border-[var(--colorPrimary)]/30 rounded-2xl pointer-events-none z-[15]" />
+        <div className="absolute inset-6 border border-[var(--colorPrimary)]/10 rounded-xl pointer-events-none z-[15]" />
+        
+        {/* Top Mandala Motif */}
+        <div className="absolute top-[-40px] left-1/2 -translate-x-1/2 w-48 h-48 opacity-[0.07] pointer-events-none z-10 animate-spin-slow">
+           <svg viewBox="0 0 100 100" fill="currentColor" className="text-[var(--colorPrimary)]">
+              <path d="M50 0C51.1 0 52 0.9 52 2V10.2C65.3 11.5 76.5 22.7 77.8 36H86C87.1 36 88 36.9 88 38C88 39.1 87.1 40 86 40H77.8C76.8 51.6 68.7 61.3 58 64.9V72.1C64 73.8 68.5 79.4 68.5 86C68.5 87.1 67.6 88 66.5 88C65.4 88 64.5 87.1 64.5 86C64.5 81.3 60.7 77.5 56 77.5H44C39.3 77.5 35.5 81.3 35.5 86C35.5 87.1 34.6 88 33.5 88C32.4 88 31.5 87.1 31.5 86C31.5 79.4 36 73.8 42 72.1V64.9C31.3 61.3 23.2 51.6 22.2 40H14C12.9 40 12 39.1 12 38C12 36.9 12.9 36 14 36H22.2C23.5 22.7 34.7 11.5 48 10.2V2C48 0.9 48.9 0 50 0ZM50 14.2C38 14.2 28.2 24 28.2 36C28.2 48 38 57.8 50 57.8C62 57.8 71.8 48 71.8 36C71.8 24 62 14.2 50 14.2Z" />
+           </svg>
+        </div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-[var(--colorPrimary)]/5 rounded-b-full blur-3xl z-10" />
         {/* Full Image Background wrapped by Arch */}
         {heroImage && (
           <div className="absolute inset-x-0 top-0 h-[60%] pointer-events-none z-0">
@@ -215,40 +226,60 @@ function Layout3({ config }) {
 
 
         {/* Content Box */}
-        <div className="relative z-20 flex flex-col items-center justify-center pt-[20vh] px-8 pb-32 text-center h-full">
+        <div className="relative z-20 flex flex-col items-center justify-center pt-[32vh] px-8 pb-32 text-center h-full">
           
-          <h1 className="font-serif text-5xl md:text-6xl my-4 tracking-widest drop-shadow-2xl bg-black/5 backdrop-blur-[2px] px-8 py-3 rounded-2xl border border-white/10" style={{ color: 'var(--colorPrimary)' }}>
-            {(couple?.groom?.firstName || 'Groom').toUpperCase()}
-          </h1>
-          <span className="font-sans text-[0.6rem] uppercase tracking-[0.3em] my-1 font-bold" style={{ color: 'var(--colorTextDark)', opacity: 0.8 }}>With</span>
-          <h1 className="font-serif text-5xl md:text-6xl my-4 tracking-widest drop-shadow-2xl bg-black/5 backdrop-blur-[2px] px-8 py-3 rounded-2xl border border-white/10" style={{ color: 'var(--colorPrimary)' }}>
-            {(couple?.bride?.firstName || 'Bride').toUpperCase()}
-          </h1>
+            <div className="flex flex-col items-center w-full">
+              <motion.h1 
+                initial={{ opacity: 0, x: -100 }}
+                animate={isOpened ? { opacity: 1, x: 0 } : { opacity: 0, x: -100 }}
+                transition={{ duration: 1.2, ease: "easeOut", delay: 0.5 }}
+                className="font-script text-[clamp(4.5rem,15vw,9rem)] leading-[0.8] text-[var(--colorTextDark)] drop-shadow-sm filter brightness-90"
+              >
+                {couple?.groom?.firstName || 'Groom'}
+              </motion.h1>
+              
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={isOpened ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+                transition={{ duration: 1, delay: 0.8 }}
+                className="flex items-center gap-10 my-4"
+              >
+                <div className="h-px w-6 md:w-16 bg-[var(--colorTextDark)]/20" />
+                <span className="font-serif text-[10px] md:text-xs tracking-[0.5em] uppercase text-[var(--colorTextDark)] opacity-40 font-bold">and</span>
+                <div className="h-px w-6 md:w-16 bg-[var(--colorTextDark)]/20" />
+              </motion.div>
 
-          <div style={{ width: '80px', height: '1.5px', background: 'var(--colorPrimary)', margin: '32px 0', opacity: 0.8 }} />
+              <motion.h1 
+                initial={{ opacity: 0, x: 100 }}
+                animate={isOpened ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
+                transition={{ duration: 1.2, ease: "easeOut", delay: 0.6 }}
+                className="font-script text-[clamp(4.5rem,15vw,9rem)] text-[var(--colorTextDark)] leading-[0.8] drop-shadow-sm mb-12 filter brightness-90"
+              >
+                {couple?.bride?.firstName || 'Bride'}
+              </motion.h1>
+            </div>
 
-          <p className="font-sans text-xs tracking-wider uppercase opacity-80" style={{ color: 'var(--colorTextDark)' }}>
+          <div style={{ width: '80px', height: '1.5px', background: 'var(--colorPrimary)', margin: '16px 0 24px', opacity: 0.5 }} />
+
+          <p className="font-sans text-[13px] md:text-[15px] tracking-[0.4em] uppercase opacity-80 font-black mb-1" style={{ color: 'var(--colorTextDark)' }}>
             {dayLabel ? dayLabel + ', ' : ''} {wedding?.displayDate}
           </p>
           {ceremony?.time && (
-            <p className="font-sans text-xs tracking-wider mt-1 uppercase opacity-80" style={{ color: 'var(--colorTextDark)' }}>
+            <p className="font-sans text-[13px] md:text-[15px] tracking-[0.4em] mt-3 uppercase opacity-80 font-black" style={{ color: 'var(--colorTextDark)' }}>
               Time {ceremony.time}
             </p>
           )}
 
-          <div style={{ width: '40px', height: '1px', background: 'var(--colorPrimary)', margin: '16px 0', opacity: 0.5 }} />
 
-          <p className="font-script text-2xl mb-1" style={{ color: 'var(--colorSecondary)' }}>Venue</p>
-          <p className="font-sans text-[0.65rem] tracking-widest uppercase leading-snug max-w-[200px]" style={{ color: 'var(--colorTextDark)', opacity: 0.8 }}>
-            {ceremony?.venueName}<br />
-            {ceremony?.address}
-          </p>
         </div>
 
-        {/* Decorative Peacocks */}
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-8 pointer-events-none opacity-60 z-10">
-          <span className="text-4xl filter saturate-50 drop-shadow-lg" style={{ color: 'var(--colorPrimary)' }}>🦚</span>
-          <span className="text-4xl filter saturate-50 drop-shadow-lg" style={{ transform: 'scaleX(-1)', color: 'var(--colorPrimary)' }}>🦚</span>
+        {/* Decorative Peacocks Footer */}
+        <div className="absolute bottom-6 left-0 right-0 flex flex-col items-center gap-4 pointer-events-none z-20">
+          <div className="w-24 h-px bg-gradient-to-r from-transparent via-[var(--colorPrimary)]/40 to-transparent" />
+          <div className="flex justify-center gap-12 opacity-80">
+            <span className="text-4xl filter saturate-[0.2] brightness-125 drop-shadow-2xl" style={{ color: 'var(--colorPrimary)' }}>🦚</span>
+            <span className="text-4xl filter saturate-[0.2] brightness-125 drop-shadow-2xl" style={{ transform: 'scaleX(-1)', color: 'var(--colorPrimary)' }}>🦚</span>
+          </div>
         </div>
       </motion.div>
       <ScrollCue />
@@ -259,7 +290,7 @@ function Layout3({ config }) {
 /* ─────────────────────────────────────────────────────────
    Main export — reads heroLayout from config
 ───────────────────────────────────────────────────────── */
-export default function Hero({ config }) {
+export default function Hero({ config, isOpened }) {
   const layout = config?.heroLayout ?? 1;
 
   return (
@@ -315,7 +346,7 @@ export default function Hero({ config }) {
          layout === 6 ? <Layout6 config={config} /> : 
          layout === 5 ? <Layout5 config={config} /> : 
          layout === 4 ? <Layout4 config={config} /> : 
-         layout === 3 ? <Layout3 config={config} /> : 
+         layout === 3 ? <Layout3 config={config} isOpened={isOpened} /> : 
          layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
       </div>
     </section>

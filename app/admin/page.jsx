@@ -4,12 +4,12 @@ import AdminLogin from './components/AdminLogin';
 import { motion, AnimatePresence } from 'framer-motion';
 import ImageCropper from './components/ImageCropper';
 import imageCompression from 'browser-image-compression';
-import { Trash2, ImageIcon, Upload, X, Heart, Calendar, Book, MapPin, Image, Mail, Palette, Search, Layers, Sparkles, CheckCircle, AlertCircle, Save, ExternalLink, Music, Crop } from 'lucide-react';
+import { Trash2, ImageIcon, Upload, X, Heart, Calendar, Book, MapPin, Image, Mail, Palette, Search, Layers, Sparkles, CheckCircle, AlertCircle, Save, ExternalLink, Music, Crop, RefreshCcw, Eye } from 'lucide-react';
 import { PRESET_THEMES } from '../../lib/themes';
 
 const ImageField = ({ label, hint, value, path, type, onUpload, onDelete, onCrop, accept = "image/*, video/mp4, video/webm" }) => {
   const isVideo = value?.toLowerCase()?.endsWith('.mp4') || value?.includes('video/upload');
-  
+
   return (
     <FieldGroup label={label} hint={hint}>
       <div className="flex flex-col gap-3">
@@ -98,8 +98,12 @@ const inputCls = `w-full px-3 py-2.5 rounded-lg border border-slate-200
 
 const textareaCls = `${inputCls} resize-y min-h-[80px]`;
 
-function SectionCard({ title, icon, children }) {
-  const [open, setOpen] = useState(true);
+function SectionCard({ title, icon, children, defaultOpen = true }) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  useEffect(() => {
+    setOpen(defaultOpen);
+  }, [defaultOpen]);
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
       <button
@@ -319,7 +323,7 @@ function InvitationList({ onEdit, showToast }) {
     try {
       const res = await fetch('/api/config');
       const data = await res.json();
-      
+
       if (!Array.isArray(data)) {
         throw new Error(data.error || 'Server returned invalid data format');
       }
@@ -394,11 +398,11 @@ function InvitationList({ onEdit, showToast }) {
     try {
       const target = new Date(dateTimeISO);
       const now = new Date();
-      
+
       // Reset times to compare dates only
       const targetDate = new Date(target.getFullYear(), target.getMonth(), target.getDate());
       const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      
+
       const diffTime = targetDate - nowDate;
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -472,13 +476,12 @@ function InvitationList({ onEdit, showToast }) {
                   <div className="flex justify-between items-start mb-4">
                     <div className="w-12 h-12 bg-[#C9956A]/10 rounded-2xl flex items-center justify-center text-2xl"><Heart size={20} className="text-[#C9956A]" /></div>
                     <div className="flex flex-col items-end gap-1.5">
-                      <span className={`text-[0.6rem] font-bold uppercase tracking-widest px-2 py-1 rounded-md ${
-                        inv.slug === 'global_config'
+                      <span className={`text-[0.6rem] font-bold uppercase tracking-widest px-2 py-1 rounded-md ${inv.slug === 'global_config'
                           ? 'bg-slate-50 text-slate-400'
                           : (inv.isActive === false)
                             ? 'bg-red-50 text-red-500'
                             : 'bg-emerald-50 text-emerald-600'
-                      }`}>
+                        }`}>
                         {inv.slug === 'global_config' ? 'Legacy' : (inv.isActive === false ? 'Inactive' : 'Active')}
                       </span>
                       {status && (
@@ -491,36 +494,36 @@ function InvitationList({ onEdit, showToast }) {
                   <h3 className="text-lg font-serif text-slate-800 mb-1 line-clamp-1">{inv.displayNames || 'Untitled Wedding'}</h3>
                   <p className="text-slate-400 text-xs mb-6">Slug: <span className="text-slate-600 font-mono tracking-tighter">/{inv.slug}</span></p>
 
-                <div className="flex gap-2 relative z-10">
-                  <button
-                    onClick={() => onEdit(inv.slug)}
-                    className="flex-[2] py-2.5 bg-slate-50 text-slate-700 text-[0.65rem] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-100 transition-colors"
-                  >
-                    Edit Config
-                  </button>
-                  <a
-                    href={`/${inv.slug}`}
-                    target="_blank"
-                    className="flex-[2] py-2.5 bg-[#C9956A]/5 text-[#C9956A] text-[0.65rem] font-bold uppercase tracking-widest rounded-lg hover:bg-[#C9956A]/15 transition-colors text-center"
-                  >
-                    Live View
-                  </a>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      setConfirmDeleteSlug(inv.slug);
-                    }}
-                    className="flex-1 flex items-center justify-center py-2.5 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-100 transition-colors"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                  <div className="flex gap-2 relative z-10">
+                    <button
+                      onClick={() => onEdit(inv.slug)}
+                      className="flex-[2] py-2.5 bg-slate-50 text-slate-700 text-[0.65rem] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-100 transition-colors"
+                    >
+                      Edit Config
+                    </button>
+                    <a
+                      href={`/${inv.slug}`}
+                      target="_blank"
+                      className="flex-[2] py-2.5 bg-[#C9956A]/5 text-[#C9956A] text-[0.65rem] font-bold uppercase tracking-widest rounded-lg hover:bg-[#C9956A]/15 transition-colors text-center"
+                    >
+                      Live View
+                    </a>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setConfirmDeleteSlug(inv.slug);
+                      }}
+                      className="flex-1 flex items-center justify-center py-2.5 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-100 transition-colors"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
         )}
 
         <AnimatePresence>
@@ -534,7 +537,7 @@ function InvitationList({ onEdit, showToast }) {
                 onClick={() => setConfirmDeleteSlug(null)}
                 className="absolute inset-0 bg-black/50 backdrop-blur-md"
               />
-              
+
               {/* Premium Modal Box */}
               <motion.div
                 initial={{ scale: 0.85, opacity: 0, y: 15 }}
@@ -856,7 +859,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
       } else {
         setPath(path, '');
       }
-      
+
       // CRITICAL: We must auto-save the config after a successful cloud deletion 
       // to ensure the null/empty value is persisted to the database.
       setTimeout(() => {
@@ -892,7 +895,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
         </div>
         <h2 className="text-2xl font-serif text-slate-800 mb-2">Editor Error</h2>
         <p className="text-slate-500 text-sm mb-8 leading-relaxed max-w-sm">
-          We couldn't load the configuration for <span className="font-bold text-slate-700">/{slug}</span>. 
+          We couldn't load the configuration for <span className="font-bold text-slate-700">/{slug}</span>.
           {fetchError || 'Configuration data is missing or incomplete.'}
         </p>
         <div className="flex flex-col gap-3 w-full max-w-xs">
@@ -966,11 +969,10 @@ function AdminDashboard({ slug, onBack, showToast }) {
             <button
               type="button"
               onClick={() => setPath('isActive', !(config?.isActive ?? true))}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold tracking-wide uppercase border transition-all duration-200 ${
-                (config?.isActive ?? true)
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold tracking-wide uppercase border transition-all duration-200 ${(config?.isActive ?? true)
                   ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
                   : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200'
-              }`}
+                }`}
               title={(config?.isActive ?? true) ? 'Invitation is ACTIVE — click to deactivate' : 'Invitation is INACTIVE — click to activate'}
             >
               <span className={`w-2 h-2 rounded-full flex-shrink-0 ${(config?.isActive ?? true) ? 'bg-emerald-500' : 'bg-slate-400'}`} />
@@ -1127,18 +1129,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   onCrop={handleCropExisting}
                 />
               </FieldGroup>
-              <FieldGroup label="WAX SEAL IMAGE (Transparent PNG)" hint="Upload a custom seal image. Use a transparent PNG for the best result.">
-                <ImageField
-                  label="Wax Seal Photo"
-                  hint="Square aspect recommended (Transparent PNG)"
-                  value={config?.envelope?.waxSealImage || ''}
-                  path="envelope.waxSealImage"
-                  type="general"
-                  onUpload={handleUpload}
-                  onDelete={handleDeleteImage}
-                  onCrop={handleCropExisting}
-                />
-              </FieldGroup>
+
               <FieldGroup label="Wedding Date & Time (ISO 8601)" hint="Format: YYYY-MM-DDTHH:MM:SS">
                 <input
                   type="datetime-local"
@@ -1178,6 +1169,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     { id: 7, label: 'Layout 7: Polaroid', desc: 'Retro scrapbook style with taped photo' },
                     { id: 8, label: 'Layout 8: Premium 3D Reveal', desc: 'Immersive envelope opening with high-end typography' },
                     { id: 9, label: 'Layout 9: Modern Full Cover', desc: 'Natural height background with no text; modern dark/gradient UI' },
+                    { id: 10, label: 'Layout 10: Mint Arch Premium', desc: 'Clean, elegant arch-based design with mandala details' },
                   ].map(layout => {
                     const active = (config?.heroLayout ?? 1) === layout.id;
                     return (
@@ -1433,10 +1425,10 @@ function AdminDashboard({ slug, onBack, showToast }) {
                       <input
                         type="radio"
                         className="hidden"
-                        name="revealStyle" 
-                        value="premium-envelope" 
-                        checked={config.revealStyle === 'premium-envelope' || config.revealStyle === 'premium_envelope'} 
-                        onChange={() => setPath('revealStyle', 'premium-envelope')} 
+                        name="revealStyle"
+                        value="premium-envelope"
+                        checked={config.revealStyle === 'premium-envelope' || config.revealStyle === 'premium_envelope'}
+                        onChange={() => setPath('revealStyle', 'premium-envelope')}
 
                       />
                       <span className={`text-sm font-medium ${config.revealStyle === 'premium-envelope' ? 'text-slate-900' : 'text-slate-500'}`}>Premium Wax Seal Envelope</span>
@@ -1456,45 +1448,84 @@ function AdminDashboard({ slug, onBack, showToast }) {
                       />
                       <span className={`text-sm font-medium ${config.revealStyle === 'royal_envelope' ? 'text-slate-900' : 'text-slate-500'}`}>Royal Envelope</span>
                     </label>
+
+                    <label className="flex items-center gap-2.5 cursor-pointer group">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${config.revealStyle === 'mint-envelope' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
+                        {config.revealStyle === 'mint-envelope' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
+                      </div>
+                      <input
+                        type="radio"
+                        className="hidden"
+                        name="revealStyle"
+                        value="mint-envelope"
+                        checked={config.revealStyle === 'mint-envelope'}
+                        onChange={() => setPath('revealStyle', 'mint-envelope')}
+                      />
+                      <span className={`text-sm font-medium ${config.revealStyle === 'mint-envelope' ? 'text-slate-900' : 'text-slate-500'}`}>DOOR opening Animation</span>
+                    </label>
                   </div>
                 </FieldGroup>
 
-                <ImageField
-                  label="Cover Image"
-                  hint="Upload a high-quality photo for the cover page"
-                  value={config?.revealCoverImage || ''}
-                  path="revealCoverImage"
-                  type="general"
-                  onUpload={handleUpload}
-                  onDelete={handleDeleteImage}
-                />
-
-                <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 pt-6 border-t border-slate-50">
-                  <ImageField
-                    label="Groom Cartoon (Running)"
-                    hint="Transparent PNG recommended"
-                    value={config.coupleImages?.groom}
-                    path="coupleImages.groom"
-                    type="general"
-                    onUpload={handleUpload}
-                    onDelete={handleDeleteImage}
-                    onCrop={handleCropExisting}
-                  />
-
-                  <ImageField
-                    label="Bride Cartoon (Running)"
-                    hint="Transparent PNG recommended"
-                    value={config.coupleImages?.bride}
-                    path="coupleImages.bride"
-                    type="general"
-                    onUpload={handleUpload}
-                    onDelete={handleDeleteImage}
-                    onCrop={handleCropExisting}
-                  />
+                <div className="col-span-2 mt-6 pt-6 border-t border-slate-50">
+                  <FieldGroup label="Visual Effects" hint="Special animations and decorations">
+                    <label className="flex items-center gap-3 cursor-pointer group mt-2">
+                      <div
+                        className={`w-12 h-6 rounded-full transition-colors relative border ${config.fallingPetals ? 'bg-emerald-500 border-emerald-600' : 'bg-slate-200 border-slate-300'}`}
+                        onClick={() => setPath('fallingPetals', !config.fallingPetals)}
+                      >
+                        <div className={`absolute top-0.5 w-4.5 h-4.5 bg-white rounded-full shadow-sm transition-transform ${config.fallingPetals ? 'translate-x-6' : 'translate-x-1'}`} />
+                      </div>
+                      <span className={`text-sm font-medium ${config.fallingPetals ? 'text-slate-900' : 'text-slate-500'}`}>Enable Falling Petals Animation</span>
+                    </label>
+                  </FieldGroup>
                 </div>
+
+                {(config.revealStyle === 'fade' || config.revealStyle === 'cover') && (
+                  <div className="col-span-2 mt-6 pt-6 border-t border-slate-50">
+                    <ImageField
+                      label="Cover Image"
+                      hint="Upload a high-quality photo for the cover page"
+                      value={config?.revealCoverImage || ''}
+                      path="revealCoverImage"
+                      type="general"
+                      onUpload={handleUpload}
+                      onDelete={handleDeleteImage}
+                    />
+                  </div>
+                )}
+
+                {config.revealStyle === 'couple' && (
+                  <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 pt-6 border-t border-slate-50">
+                    <ImageField
+                      label="Groom Cartoon (Running)"
+                      hint="Transparent PNG recommended"
+                      value={config.coupleImages?.groom}
+                      path="coupleImages.groom"
+                      type="general"
+                      onUpload={handleUpload}
+                      onDelete={handleDeleteImage}
+                      onCrop={handleCropExisting}
+                    />
+
+                    <ImageField
+                      label="Bride Cartoon (Running)"
+                      hint="Transparent PNG recommended"
+                      value={config.coupleImages?.bride}
+                      path="coupleImages.bride"
+                      type="general"
+                      onUpload={handleUpload}
+                      onDelete={handleDeleteImage}
+                      onCrop={handleCropExisting}
+                    />
+                  </div>
+                )}
               </SectionCard>
 
-              <SectionCard title="Envelope Cover" icon={<Layers size={18} className="text-slate-400" />}>
+              <SectionCard 
+                title="Envelope / Door Cover" 
+                icon={<Layers size={18} className="text-slate-400" />}
+                defaultOpen={['envelope', 'mint-envelope'].includes(config.revealStyle)}
+              >
                 <ImageField
                   label="Inner Card Background Image"
                   hint="Upload directly or enter a URL"
@@ -1532,30 +1563,42 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     onChange={e => setPath('envelope.buttonText', e.target.value)}
                   />
                 </FieldGroup>
+              </SectionCard>
 
-                {config.revealStyle === 'royal_envelope' && (
-                  <div className="col-span-2 mt-6 pt-6 border-t border-slate-100">
-                    <div className="flex flex-col md:flex-row gap-8 items-start">
-                      <div className="flex-1 grid grid-cols-1 gap-4 w-full">
-                        <div className="flex items-center justify-between mb-1">
-                          <p className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">Royal Envelope Tuning</p>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setPath('envelope.royal.envelopeColor', config?.theme?.colorPrimary || '#91091E');
-                              setPath('envelope.royal.bgColor1', config?.theme?.colorBg || '#3D0010');
-                              setPath('envelope.royal.bgColor2', config?.theme?.colorPrimary || '#91091E');
-                              setPath('envelope.royal.sealColor', config?.theme?.colorPrimary || '#91091E');
-                            }}
-                            className="text-[0.6rem] text-[#C9956A] font-bold hover:underline"
-                          >
-                            Reset to Theme Colors
-                          </button>
+              {config.revealStyle === 'royal_envelope' && (
+                <SectionCard title="Royal Envelope Customization" icon={<Palette size={18} className="text-rose-500" />}>
+                  <div className="col-span-full flex flex-col lg:flex-row gap-10 items-start p-2">
+                    {/* Left Side: Controls */}
+                    <div className="flex-1 w-full flex flex-col gap-6">
+                      <div className="flex items-center justify-between pb-3 border-b border-slate-50">
+                        <div className="flex flex-col">
+                          <h4 className="text-[0.7rem] font-bold text-slate-800 uppercase tracking-widest">Envelope Aesthetics</h4>
+                          <p className="text-[0.6rem] text-slate-400 mt-0.5">Customize the physical look of your royal invitation</p>
                         </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPath('envelope.royal.envelopeColor', config?.theme?.colorPrimary || '#91091E');
+                            setPath('envelope.royal.bgColor1', config?.theme?.colorBg || '#3D0010');
+                            setPath('envelope.royal.bgColor2', config?.theme?.colorPrimary || '#91091E');
+                            setPath('envelope.royal.sealColor', config?.theme?.colorPrimary || '#91091E');
+                          }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#C9956A]/10 text-[#C9956A] text-[0.6rem] font-bold hover:bg-[#C9956A]/20 transition-all uppercase tracking-wider"
+                        >
+                          <RefreshCcw size={10} /> Reset
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
                         <ColourField
                           label="Envelope Paper"
                           value={config.envelope?.royal?.envelopeColor || config.theme?.colorPrimary || '#91091E'}
                           onChange={val => setPath('envelope.royal.envelopeColor', val)}
+                        />
+                        <ColourField
+                          label="Wax Seal Color"
+                          value={config.envelope?.royal?.sealColor || config.theme?.colorPrimary || '#91091E'}
+                          onChange={val => setPath('envelope.royal.sealColor', val)}
                         />
                         <ColourField
                           label="Background Base (1)"
@@ -1567,34 +1610,22 @@ function AdminDashboard({ slug, onBack, showToast }) {
                           value={config.envelope?.royal?.bgColor2 || config.theme?.colorPrimary || '#91091E'}
                           onChange={val => setPath('envelope.royal.bgColor2', val)}
                         />
-                        <ColourField
-                          label="Wax Seal Color"
-                          value={config.envelope?.royal?.sealColor || config.theme?.colorPrimary || '#91091E'}
-                          onChange={val => setPath('envelope.royal.sealColor', val)}
-                        />
-                        <ImageField
-                          label="Wax Seal Image (optional)"
-                          hint="Upload a PNG or WebP with a transparent background to replace the wax seal with your own image — a monogram, floral motif, or custom crest. The image will be shown at full size inside the seal; transparent areas let the envelope show through. For best results use a square PNG (500×500 px or larger) with a transparent background. JPEG files are not supported for transparency."
-                          value={config.envelope?.royal?.sealImage || ''}
-                          path="envelope.royal.sealImage"
-                          type="general"
-                          accept="image/png,image/webp"
-                          onUpload={handleUpload}
-                          onDelete={handleDeleteImage}
-                        />
-                        <p className="text-[0.6rem] text-slate-400 italic mt-2">
-                          * Defaults to theme colors if not explicitly set. The background creates a repeating diamond mosaic pattern.
-                        </p>
                       </div>
+                    </div>
 
-                      <div className="shrink-0 w-full md:w-64">
-                        <p className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest mb-3">Live Preview</p>
+                    {/* Right Side: Preview */}
+                    <div className="shrink-0 w-full lg:w-72 flex flex-col gap-4">
+                      <div className="flex items-center gap-2">
+                        <Eye size={14} className="text-slate-400" />
+                        <span className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">Live Preview</span>
+                      </div>
+                      <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 p-8 flex items-center justify-center bg-slate-50">
                         <div
-                          className="w-full aspect-[4/3] rounded-xl shadow-inner flex items-center justify-center overflow-hidden border border-slate-200 relative"
+                          className="absolute inset-4 rounded-2xl shadow-inner overflow-hidden"
                           style={{
                             background: `radial-gradient(circle at center, ${config.envelope?.royal?.bgColor2 || config.theme?.colorPrimary || '#91091E'} 0%, ${config.envelope?.royal?.bgColor1 || config.theme?.colorBg || '#3D0010'} 100%)`,
                           }}
-                        >
+                        />
                           <div
                             className="relative w-4/5 h-4/5 rounded shadow-xl overflow-hidden border border-black/5 z-10"
                             style={{ backgroundColor: config.envelope?.royal?.envelopeColor || config.theme?.colorPrimary || '#91091E' }}
@@ -1611,94 +1642,117 @@ function AdminDashboard({ slug, onBack, showToast }) {
                             <div
                               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full border border-[#D4AF37] shadow-md flex items-center justify-center text-[5px] font-serif text-[#D4AF37] font-bold overflow-hidden"
                               style={{
-                                backgroundColor: config.envelope?.royal?.sealImage ? 'transparent' : (config.envelope?.royal?.sealColor || config.theme?.colorPrimary || '#91091E'),
+                                backgroundColor: config.envelope?.royal?.sealColor || config.theme?.colorPrimary || '#91091E',
                                 borderRadius: '41% 59% 41% 59% / 53% 45% 55% 47%',
-                                boxShadow: config.envelope?.royal?.sealImage ? 'none' : '0 4px 8px rgba(0,0,0,0.3), inset 0 -2px 4px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.2)',
-                                border: config.envelope?.royal?.sealImage ? 'none' : '1px solid #D4AF37',
+                                boxShadow: '0 4px 8px rgba(0,0,0,0.3), inset 0 -2px 4px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.2)',
+                                border: '1px solid #D4AF37',
                               }}
                             >
-                              {config.envelope?.royal?.sealImage ? (
-                                <img
-                                  src={config.envelope.royal.sealImage}
-                                  alt="Wax seal preview"
-                                  className="w-full h-full object-contain"
-                                  style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))' }}
-                                />
-                              ) : (
-                                <>
-                                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-black/10 rounded-inherit" />
-                                  <div
-                                    className="w-[70%] h-[70%] rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] flex items-center justify-center font-serif font-black italic text-[#D4AF37]"
-                                    style={{ backgroundColor: 'rgba(0,0,0,0.05)' }}
-                                  >
-                                    <div className="relative z-10 flex items-center gap-0.5 scale-75">
-                                      <span>{(config.couple?.bride?.firstName?.[0] || 'D').toUpperCase()}</span>
-                                      <span className="scale-75 text-[4px] not-italic font-normal font-script">&</span>
-                                      <span>{(config.couple?.groom?.firstName?.[0] || 'C').toUpperCase()}</span>
-                                    </div>
-                                  </div>
-                                </>
-                              )}
+                              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-black/10 rounded-inherit" />
+                              <div
+                                className="w-[70%] h-[70%] rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] flex items-center justify-center font-serif font-black italic text-[#D4AF37]"
+                                style={{ backgroundColor: 'rgba(0,0,0,0.05)' }}
+                              >
+                                <div className="relative z-10 flex items-center gap-0.5 scale-75">
+                                  <span>{(config.couple?.bride?.firstName?.[0] || 'D').toUpperCase()}</span>
+                                  <span className="scale-75 text-[4px] not-italic font-normal font-script">&</span>
+                                  <span>{(config.couple?.groom?.firstName?.[0] || 'C').toUpperCase()}</span>
+                                </div>
+                              </div>
                             </div>
                             <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ clipPath: 'polygon(0% 0%, 100% 0%, 50% 50%)', border: '1px solid black' }} />
                           </div>
                         </div>
                       </div>
                     </div>
+                </SectionCard>
+              )}
+
+              {(config?.revealStyle === 'premium-envelope' || config?.revealStyle === 'premium_envelope') && (
+                <SectionCard title="Premium Envelope Customization" icon={<Palette size={18} className="text-[#C9956A]" />}>
+                  <div className="col-span-full flex flex-col gap-10 p-2">
+                    {/* Upper Section: Typography & Main Colors */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-slate-50 flex items-center justify-between">
+                          <div className="flex flex-col">
+                            <h4 className="text-[0.7rem] font-bold text-slate-800 uppercase tracking-widest">Card Typography</h4>
+                            <p className="text-[0.6rem] text-slate-400 mt-0.5">Text appearing on the inner invitation card</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                          <FieldGroup label="Card Title" hint="E.g. 'A Wedding Invitation'">
+                            <input type="text" className={inputCls} value={config.envelope?.title || ''} onChange={e => setPath('envelope.title', e.target.value)} />
+                          </FieldGroup>
+                          <FieldGroup label="Card Names" hint="E.g. 'Kasun & Nimesha'">
+                            <input type="text" className={inputCls} value={config.envelope?.subtitle || ''} onChange={e => setPath('envelope.subtitle', e.target.value)} />
+                          </FieldGroup>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-slate-50 flex items-center justify-between">
+                          <div className="flex flex-col">
+                            <h4 className="text-[0.7rem] font-bold text-slate-800 uppercase tracking-widest">Base Aesthetics</h4>
+                            <p className="text-[0.6rem] text-slate-400 mt-0.5">Primary colors for the card and wax seal</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPath('envelopeColors.seal', config?.theme?.colorPrimary || '#dc2626');
+                              setPath('envelopeColors.back', config?.theme?.colorPrimary || '#064e3b');
+                              setPath('envelopeColors.pocket', config?.theme?.colorSecondary || '#047857');
+                              setPath('envelopeColors.flap', config?.theme?.colorPrimary || '#064e3b');
+                              setPath('envelopeColors.card', config?.theme?.colorBg || '#fef3c7');
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#C9956A]/10 text-[#C9956A] text-[0.6rem] font-bold hover:bg-[#C9956A]/20 transition-all uppercase tracking-wider"
+                          >
+                            <RefreshCcw size={10} /> Reset
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                          <ColourField label="Wax Seal Color" value={config.envelopeColors?.seal || '#dc2626'} onChange={val => setPath('envelopeColors.seal', val)} />
+                          <ColourField label="Card Background" value={config.envelopeColors?.card || '#fef3c7'} onChange={val => setPath('envelopeColors.card', val)} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Lower Section: Detailed Envelope Parts & Media */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 pt-4">
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-slate-50">
+                          <h4 className="text-[0.7rem] font-bold text-slate-800 uppercase tracking-widest">Envelope Construction</h4>
+                          <p className="text-[0.6rem] text-slate-400 mt-0.5">Customize colors for each part of the envelope</p>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
+                          <ColourField label="Envelope Back" value={config.envelopeColors?.back || '#064e3b'} onChange={val => setPath('envelopeColors.back', val)} />
+                          <ColourField label="Top Flap" value={config.envelopeColors?.flap || '#064e3b'} onChange={val => setPath('envelopeColors.flap', val)} />
+                          <div className="sm:col-span-2">
+                             <ColourField label="Front Pocket" value={config.envelopeColors?.pocket || '#047857'} onChange={val => setPath('envelopeColors.pocket', val)} />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-slate-50">
+                          <h4 className="text-[0.7rem] font-bold text-slate-800 uppercase tracking-widest">Opening Animation</h4>
+                          <p className="text-[0.6rem] text-slate-400 mt-0.5">High-quality video loop for the envelope reveal</p>
+                        </div>
+                        <ImageField
+                          label="Envelope Opening Video"
+                          hint="Transparent background MP4 recommended"
+                          value={config.envelopeVideo}
+                          path="envelopeVideo"
+                          type="video"
+                          accept="video/*"
+                          onUpload={handleUpload}
+                          onDelete={handleDeleteImage}
+                        />
+                      </div>
+                    </div>
                   </div>
-                )}
-                
-                {(config?.revealStyle === 'premium-envelope' || config?.revealStyle === 'premium_envelope') && (
-                  <div className="col-span-2 mt-6 pt-6 border-t border-slate-100">
-                    <div className="mb-4 flex items-center justify-between">
-                       <div className="flex items-center gap-2">
-                         <Palette size={16} className="text-[#C9956A]" />
-                         <h4 className="text-sm font-semibold text-slate-700">Premium Envelope Details</h4>
-                       </div>
-                       <button
-                         type="button"
-                         onClick={() => {
-                           setPath('envelopeColors.seal', config?.theme?.colorPrimary || '#dc2626');
-                           setPath('envelopeColors.back', config?.theme?.colorPrimary || '#064e3b');
-                           setPath('envelopeColors.pocket', config?.theme?.colorSecondary || '#047857');
-                           setPath('envelopeColors.flap', config?.theme?.colorPrimary || '#064e3b');
-                           setPath('envelopeColors.card', config?.theme?.colorBg || '#fef3c7');
-                         }}
-                         className="text-[0.6rem] text-[#C9956A] font-bold hover:underline"
-                       >
-                         Reset to Theme Colors
-                       </button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-6">
-                      <FieldGroup label="Card Title" hint="E.g. 'A Wedding Invitation'">
-                        <input type="text" className={inputCls} value={config.envelope?.title || ''} onChange={e => setPath('envelope.title', e.target.value)} />
-                      </FieldGroup>
-                      <FieldGroup label="Card Names" hint="E.g. 'Kasun & Nimesha'">
-                        <input type="text" className={inputCls} value={config.envelope?.subtitle || ''} onChange={e => setPath('envelope.subtitle', e.target.value)} />
-                      </FieldGroup>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4 mb-6">
-                      <ColourField label="Wax Seal Color" value={config.envelopeColors?.seal || '#dc2626'} onChange={val => setPath('envelopeColors.seal', val)} />
-                      <ColourField label="Envelope Back" value={config.envelopeColors?.back || '#064e3b'} onChange={val => setPath('envelopeColors.back', val)} />
-                      <ColourField label="Front Pocket" value={config.envelopeColors?.pocket || '#047857'} onChange={val => setPath('envelopeColors.pocket', val)} />
-                      <ColourField label="Top Flap" value={config.envelopeColors?.flap || '#064e3b'} onChange={val => setPath('envelopeColors.flap', val)} />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                      <ColourField label="Card Background" value={config.envelopeColors?.card || '#fef3c7'} onChange={val => setPath('envelopeColors.card', val)} />
-                      <ImageField 
-                        label="Envelope Opening Video"
-                        hint="The opening animation (transparent background MP4 recommended)"
-                        value={config.envelopeVideo}
-                        path="envelopeVideo"
-                        type="video"
-                        accept="video/*"
-                        onUpload={handleUpload}
-                        onDelete={handleDeleteImage}
-                      />
-                    </div>
-                  </div>
-                )}
-              </SectionCard>
+                </SectionCard>
+              )}
             </>
           )}
 
@@ -1722,7 +1776,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                         setPath('envelope.royal.bgColor1', theme.colors.colorBg);
                         setPath('envelope.royal.bgColor2', theme.colors.colorPrimary);
                         setPath('envelope.royal.sealColor', theme.colors.colorPrimary);
-                        
+
                         // Sync Premium Envelope colors automatically when theme is selected
                         setPath('envelopeColors.seal', theme.colors.colorPrimary);
                         setPath('envelopeColors.back', theme.colors.colorPrimary);
@@ -2009,7 +2063,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
               onClick={() => setConfirmDelete(null)}
               className="absolute inset-0 bg-black/50 backdrop-blur-md"
             />
-            
+
             <motion.div
               initial={{ scale: 0.85, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}

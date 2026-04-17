@@ -5,16 +5,17 @@ import { useState, useRef } from 'react';
 export default function PremiumEnvelope({ config, onOpenInvitation }) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [mediaReady, setMediaReady] = useState(false);
+  const [hasEnded, setHasEnded] = useState(false);
   const videoRef = useRef(null);
 
-  const sealImage = config?.envelope?.waxSealImage || '/images/wax-seal.png';
   const envelopeVideo = config?.envelopeVideo || '/videos/envelope-open.mp4';
-  const sealColor = config?.envelopeColors?.seal || '#dc2626';
 
   const handleOpen = () => {
     if (isAnimating) return;
     setIsAnimating(true);
     if (videoRef.current) {
+      // Fast-start optimization: Ensure we are at the start and play immediately
+      videoRef.current.currentTime = 0.1;
       videoRef.current.play().catch(err => {
         console.error("Video play failed:", err);
         // Fallback: If video fails, try to proceed anyway
@@ -23,70 +24,61 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
     }
   };
 
+  const handleVideoEnd = () => {
+    setHasEnded(true);
+    // Allow fade out animation to play before swapping components in parent
+    setTimeout(() => {
+      onOpenInvitation();
+    }, 500);
+  };
+
   return (
     <motion.div 
       exit={{ opacity: 0 }}
       transition={{ duration: 0.8 }}
-      style={{ 
-        position: 'fixed', 
-        inset: 0, 
-        backgroundColor: '#ffffff', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        zIndex: 9999 
-      }}
+      className={`z-[9999] flex items-center justify-center bg-gray-900/60 transition-all duration-500 ${!isAnimating ? 'cursor-pointer' : ''} ${isAnimating ? 'pointer-events-none' : ''} fixed inset-0 w-screen h-screen overflow-hidden`}
+      onClick={handleOpen}
     >
-      {/* Outer Wrapper: Maintains document flow and aspect ratio */}
-      <div className="relative w-full max-w-[650px] mx-auto aspect-[3/2] flex items-center justify-center overflow-visible bg-transparent">
-        
-        {/* Inner Zoom Wrapper: Handles the 25% mobile scale-up independently */}
-        <div className="absolute inset-0 w-full h-full scale-[1.35] sm:scale-110 origin-center flex items-center justify-center -translate-y-[10%]">
+      <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+      
+      <motion.div
+        animate={{ opacity: hasEnded ? 0 : 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full h-full flex items-center justify-center"
+      >
+        {/* Outer Wrapper: Acts as the mobile canvas (full screen) or desktop container */}
+        <div className="relative w-full h-full sm:h-auto md:h-[85vh] sm:max-w-4xl lg:max-w-5xl md:max-w-none md:w-auto aspect-auto sm:aspect-[3/2] md:aspect-auto flex items-center justify-center sm:-translate-y-[10%] bg-transparent sm:overflow-visible">
           
-          {/* Layer 1 - Static Envelope Image has been removed. We now rely on the video's first frame. */}
-
-          {/* Layer 2 - The Video (Acts as both static cover and animation) */}
-          <video 
-            ref={videoRef}
-            src={`${envelopeVideo}#t=0.1`}
-            className="absolute inset-0 w-full h-full object-contain"
-            playsInline
-            muted
-            onLoadedData={() => setMediaReady(true)}
-            onEnded={() => onOpenInvitation()}
-            preload="metadata"
-          />
-
-          {/* Layer 3 - The Wax Seal Button */}
-          <AnimatePresence>
-            {!isAnimating && (
-              <motion.button
-                key="wax-seal"
-                onClick={handleOpen}
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ opacity: 0, scale: 1.2, filter: 'blur(10px)' }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className={`absolute z-50 left-1/2 top-[58%] sm:top-[58%] -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-opacity duration-500 border-none bg-transparent outline-none hover:scale-105 ${mediaReady ? 'opacity-100' : 'opacity-0'}`}
-              >
-                <img 
-                  src={sealImage} 
-                  alt="Wax Seal" 
-                  className="w-12 h-12 sm:w-16 sm:h-16 object-contain bg-transparent"
-                  style={{ filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.4))' }}
-                />
-              </motion.button>
-            )}
-          </AnimatePresence>
+          {/* Inner Video Wrapper: Centered horizontally on mobile, constrained & styled on desktop */}
+          <div className="absolute inset-0 w-full h-full md:relative md:inset-auto md:h-full md:w-auto flex items-center justify-center md:rounded-2xl md:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)] md:border md:border-white/10 overflow-hidden">
+            
+            {/* Layer 2 - The Video (Acts as both static cover and animation) */}
+            <video 
+              ref={videoRef}
+              src={`${envelopeVideo}#t=0.1`}
+              className="h-full w-auto max-w-none absolute left-1/2 -translate-x-1/2 object-contain sm:relative sm:left-0 sm:translate-x-0 sm:w-full sm:h-full md:w-auto md:h-full md:object-contain"
+              playsInline
+              muted
+              onLoadedData={() => setMediaReady(true)}
+              onEnded={handleVideoEnd}
+              preload="auto"
+            />
+          </div>
         </div>
+      </motion.div>
 
-        {/* Global Loading Indicator (Subtle) */}
-        {!isAnimating && !videoRef.current?.readyState && (
-           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/20 text-[10px] uppercase tracking-[0.4em] pointer-events-none animate-pulse">
-             Tap to Open
-           </div>
-        )}
-      </div>
+      {/* Global Loading Indicator / Prompt */}
+      {!isAnimating && (
+         <div className={`absolute bottom-10 md:bottom-20 left-1/2 -translate-x-1/2 text-white font-sans text-xs md:text-sm uppercase tracking-[0.4em] pointer-events-none animate-pulse transition-opacity duration-1000 z-[100] ${mediaReady ? 'opacity-100' : 'opacity-0'}`}>
+           Tap Anywhere to Open
+         </div>
+      )}
+
+      {!mediaReady && !isAnimating && (
+         <div className="absolute inset-0 flex items-center justify-center z-[101]">
+           <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+         </div>
+      )}
     </motion.div>
   );
 }

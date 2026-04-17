@@ -4,7 +4,6 @@ import Image from 'next/image';
 
 export default function Gallery({ config }) {
   const gallery = config?.gallery || [];
-  const [lightbox, setLightbox] = useState(null);
   const headerRef = useRef(null);
   const layout = config?.heroLayout ?? 1;
 
@@ -19,17 +18,7 @@ export default function Gallery({ config }) {
     return () => obs.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (lightbox === null) return;
-    const onKey = (e) => {
-      if (e.key === 'Escape')     setLightbox(null);
-      if (e.key === 'ArrowLeft')  setLightbox(i => (i - 1 + gallery.length) % gallery.length);
-      if (e.key === 'ArrowRight') setLightbox(i => (i + 1) % gallery.length);
-    };
-    document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
-  }, [lightbox, gallery.length]);
+
 
   if (layout === 1 || layout === 3) {
     return null;
@@ -103,21 +92,21 @@ export default function Gallery({ config }) {
         // Layout 8: Traditional Solid Grid
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-6 max-w-7xl mx-auto">
           {gallery.map((photo, idx) => (
-            <button
-              key={idx} onClick={() => setLightbox(idx)}
-              className="group relative cursor-zoom-in focus:outline-none overflow-hidden aspect-square border-4 border-[var(--colorPrimary)]/30 rounded-2xl shadow-lg transition-transform duration-500 hover:rotate-1 hover:scale-[1.02]"
+            <div
+              key={idx}
+              className="group relative cursor-default focus:outline-none overflow-hidden aspect-square border-4 border-[var(--colorPrimary)]/30 rounded-2xl shadow-lg transition-transform duration-500 hover:rotate-1 hover:scale-[1.02]"
             >
               <Image src={photo.src} alt={photo.alt} width={800} height={800} className="w-full h-full object-cover transition-all duration-700 group-hover:brightness-110" />
-            </button>
+            </div>
           ))}
         </div>
       ) : layout === 7 ? (
         // Layout 7: Polaroid Scattered Grid
         <div className="flex flex-wrap justify-center gap-10 px-8 py-10">
           {gallery.map((photo, idx) => (
-            <button
-              key={idx} onClick={() => setLightbox(idx)}
-              className={`group relative cursor-zoom-in focus:outline-none bg-white p-3 pb-12 shadow-xl border border-slate-100 w-full max-w-[280px] transition-all duration-500 hover:rotate-0 hover:z-20
+            <div
+              key={idx}
+              className={`group relative cursor-default focus:outline-none bg-white p-3 pb-12 shadow-xl border border-slate-100 w-full max-w-[280px] transition-all duration-500 hover:rotate-0 hover:z-20
                 ${idx % 3 === 0 ? '-rotate-3 mt-4' : idx % 2 === 0 ? 'rotate-2 mb-4' : 'rotate-1'}`}
             >
               <div className="aspect-[3/4] bg-slate-50 overflow-hidden relative">
@@ -125,42 +114,41 @@ export default function Gallery({ config }) {
                 <div className="absolute inset-0 bg-white/10 group-hover:bg-transparent transition-colors" />
               </div>
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-white/40 backdrop-blur-sm border border-white/20 shadow-sm" />
-            </button>
+            </div>
           ))}
         </div>
       ) : layout === 6 ? (
         // Layout 6: Circular Floral Grid
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 px-6 max-w-6xl mx-auto">
           {gallery.map((photo, idx) => (
-            <button
-              key={idx} onClick={() => setLightbox(idx)}
-              className="group relative cursor-zoom-in focus:outline-none rounded-full overflow-hidden aspect-square shadow-2xl transition-all duration-700 hover:scale-105 border-4 border-white/30"
+            <div
+              key={idx}
+              className="group relative cursor-default focus:outline-none rounded-full overflow-hidden aspect-square shadow-2xl transition-all duration-700 hover:scale-105 border-4 border-white/30"
             >
               <Image src={photo.src} alt={photo.alt} width={800} height={800} className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
               <div className="absolute inset-0 ring-inset ring-1 ring-white/40 rounded-full" />
-            </button>
+            </div>
           ))}
         </div>
       ) : layout === 5 ? (
         // Layout 5: Minimalist Modern Grid
         <div className="grid grid-cols-2 lg:flex lg:flex-row lg:overflow-x-auto gap-4 px-4 max-w-full no-scrollbar pb-8">
           {gallery.map((photo, idx) => (
-            <button
-              key={idx} onClick={() => setLightbox(idx)}
-              className="group relative cursor-zoom-in focus:outline-none aspect-square lg:aspect-[3/4] lg:min-w-[300px] overflow-hidden rounded-2xl"
+            <div
+              key={idx}
+              className="group relative cursor-default focus:outline-none aspect-square lg:aspect-[3/4] lg:min-w-[300px] overflow-hidden rounded-2xl"
             >
               <Image src={photo.src} alt={photo.alt} width={1000} height={1000} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white/50 text-xs tracking-[0.5em] uppercase font-bold">VIEW</div>
-            </button>
+            </div>
           ))}
         </div>
       ) : layout === 4 ? (
         // Layout 4: Nature Arch Grid
         <div className="grid grid-cols-2 lg:flex lg:flex-row lg:overflow-x-auto gap-10 px-6 max-w-full no-scrollbar pb-10 justify-center min-w-full">
           {gallery.map((photo, idx) => (
-            <button
-              key={idx} onClick={() => setLightbox(idx)}
-              className="group relative cursor-zoom-in focus:outline-none w-full max-w-[280px] lg:min-w-[300px] bg-white p-3 shadow-md hover:shadow-xl transition-all duration-500 shrink-0"
+            <div
+              key={idx}
+              className="group relative cursor-default focus:outline-none w-full max-w-[280px] lg:min-w-[300px] bg-white p-3 shadow-md hover:shadow-xl transition-all duration-500 shrink-0"
               style={{
                 borderRadius: '120px 120px 0 0',
                 border: '1px solid var(--colorPrimary)/20',
@@ -172,62 +160,47 @@ export default function Gallery({ config }) {
                   <span className="text-white text-4xl opacity-0 group-hover:opacity-100 transition-all duration-500 drop-shadow-md scale-50 group-hover:scale-100">🌿</span>
                 </div>
               </div>
-            </button>
+            </div>
           ))}
         </div>
       ) : layout === 2 ? (
         // Layout 2: Scattered Floating Ornate Grid
         <div className="grid grid-cols-2 gap-4 md:gap-8 px-4 max-w-5xl mx-auto">
           {gallery.map((photo, idx) => (
-            <button
-              key={idx} onClick={() => setLightbox(idx)}
-              className={`group relative cursor-zoom-in focus:outline-none overflow-hidden rounded-full shadow-lg border-2 border-[var(--colorBg)] outline outline-1 outline-[var(--colorPrimary)] outline-offset-4
+            <div
+              key={idx}
+              className={`group relative cursor-default focus:outline-none overflow-hidden rounded-full shadow-lg border-2 border-[var(--colorBg)] outline outline-1 outline-[var(--colorPrimary)] outline-offset-4
                 ${idx % 2 === 0 ? 'aspect-square' : 'aspect-[3/4] mt-12'}`}
             >
               <div className="relative w-full h-full bg-[var(--colorBg)]">
-                <Image src={photo?.src || ''} alt={photo?.alt || ''} width={800} height={800} className="w-full h-full object-cover saturate-50 opacity-80 hover:saturate-100 hover:opacity-100 transition-all duration-700 hover:scale-110" />
+                <Image src={photo?.src || '/images/placeholder.png'} alt={photo?.alt || ''} width={800} height={800} className="w-full h-full object-cover saturate-50 opacity-80 hover:saturate-100 hover:opacity-100 transition-all duration-700 hover:scale-110" />
               </div>
-            </button>
+            </div>
           ))}
         </div>
       ) : layout === 9 ? (
         // Layout 9: Modern Dark Glass Grid
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-6 max-w-7xl mx-auto">
           {gallery.map((photo, idx) => (
-            <button
-              key={idx} onClick={() => setLightbox(idx)}
-              className="group relative cursor-zoom-in focus:outline-none aspect-[3/4] overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl transition-all duration-700 hover:scale-[1.03] hover:border-[var(--colorPrimary)]/30"
+            <div
+              key={idx}
+              className="group relative cursor-default focus:outline-none aspect-[3/4] overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl transition-all duration-700 hover:scale-[1.03] hover:border-[var(--colorPrimary)]/30"
             >
               <Image src={photo.src} alt={photo.alt} width={800} height={1000} className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-6">
-                <span className="text-[10px] text-white font-bold tracking-[0.3em] uppercase opacity-90">View Moment</span>
-              </div>
-            </button>
+            </div>
           ))}
         </div>
       ) : (
         // Default Layout 1: Classic Masonry Style Grid
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 px-6 max-w-6xl mx-auto">
           {gallery.map((photo, idx) => (
-            <button
-              key={idx} onClick={() => setLightbox(idx)}
-              className="group relative cursor-zoom-in focus:outline-none w-full break-inside-avoid shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden rounded-sm"
+            <div
+              key={idx}
+              className="group relative cursor-default focus:outline-none w-full break-inside-avoid shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden rounded-sm"
             >
               <Image src={photo.src} alt={photo.alt} width={1000} height={1000} className="w-full h-auto transition-transform duration-700 group-hover:scale-110" />
-            </button>
+            </div>
           ))}
-        </div>
-      )}
-
-      {/* Lightbox (Shared) */}
-      {lightbox !== null && (
-        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={() => setLightbox(null)}>
-          <button onClick={() => setLightbox(null)} className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white text-xl hover:bg-[var(--colorPrimary)] transition-colors">×</button>
-          <button onClick={(e) => { e.stopPropagation(); setLightbox(i => (i - 1 + gallery.length) % gallery.length); }} className="absolute left-3 md:left-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-white text-2xl hover:bg-[var(--colorPrimary)] transition-colors">‹</button>
-          <button onClick={(e) => { e.stopPropagation(); setLightbox(i => (i + 1) % gallery.length); }} className="absolute right-3 md:right-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-white text-2xl hover:bg-[var(--colorPrimary)] transition-colors">›</button>
-          <div className="relative max-w-4xl w-full max-h-[90vh] flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
-            <Image src={gallery[lightbox]?.src || ''} alt={gallery[lightbox]?.alt || ''} width={1200} height={1600} className={`max-w-full max-h-[90vh] object-contain shadow-[0_0_50px_rgba(0,0,0,0.5)] ${layout === 3 ? 'border-[3px] border-[var(--colorPrimary)] rounded-t-full' : layout === 2 ? 'rounded-full border-2 border-[var(--colorPrimary)]' : 'border-4 border-white'}`} style={{ maxHeight: '90vh' }} />
-          </div>
         </div>
       )}
     </section>

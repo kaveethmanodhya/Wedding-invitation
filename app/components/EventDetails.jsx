@@ -316,7 +316,7 @@ function Layout7({ config }) {
       <div className="mb-20">
         <h2 className="font-script text-5xl text-slate-800 mb-2 underline decoration-[var(--colorPrimary)]/30 underline-offset-8">Our Plans</h2>
       </div>
-      <div className="grid md:grid-cols-3 gap-12">
+      <div className="flex flex-col md:flex-row flex-wrap items-center justify-center gap-12 w-full">
         {Object.entries(events).map(([key, event], idx) => (
           <EventCard7 key={key} event={event} delay={idx * 100} config={config} />
         ))}
@@ -472,41 +472,33 @@ function EventCard4({ event, delay, config }) {
   return (
     <article
       ref={ref}
-      className={`opacity-0 translate-y-8 transition-all duration-1000 bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_20px_60px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col md:flex-row w-full max-w-[900px] group transition-all duration-500 hover:shadow-2xl rounded-3xl`}
+      className={`opacity-0 translate-y-8 transition-all duration-1000 bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_20px_60px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col items-center w-full max-w-[600px] mx-auto group transition-all duration-500 hover:shadow-2xl rounded-3xl`}
     >
-      {/* ── LEFT: IMAGE ── */}
-      {hasImage && (
-        <div className="w-full md:w-5/12 h-[300px] md:h-auto relative overflow-hidden">
-          <img 
-            src={event.image} 
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-            alt={event.title} 
-          />
-          {/* Subtle liquid overlay on the image part */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-white/10 pointer-events-none" />
-          <div className="absolute inset-0 bg-black/5" />
-        </div>
-      )}
+
 
       {/* ── RIGHT: DETAILS ── */}
-      <div className={`flex flex-col items-center md:items-start text-center md:text-left p-10 md:p-14 flex-1 relative z-10 ${!hasImage ? 'w-full' : ''}`}>
+      <div className={`flex flex-col items-center text-center p-8 md:p-12 w-full relative z-10`}>
         {/* Shimmer overlay */}
         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none -z-10" />
 
-        <div className="flex flex-col items-center md:items-start gap-4 w-full">
+        <div className="flex flex-col items-center gap-4 w-full">
           <div className="flex items-center gap-3">
              <span className="text-3xl text-[var(--colorPrimary)] opacity-70">🌿</span>
-             <span className="font-sans font-bold text-[8px] tracking-[0.4em] uppercase text-[var(--colorPrimary)]">{event.time}</span>
           </div>
 
-          <div className="w-full h-32 bg-slate-100 rounded-2xl overflow-hidden relative group/map mb-2 border border-slate-200">
-             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/gray-floral.png')] opacity-20" />
+          <div className="w-full h-48 md:h-56 bg-slate-100 rounded-2xl overflow-hidden relative group/map mb-2 border border-slate-200 shadow-inner">
+             {hasImage ? (
+               <img src={event.image} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/map:scale-110" alt="Venue" />
+             ) : (
+               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/gray-floral.png')] opacity-20" />
+             )}
+             <div className="absolute inset-0 bg-black/10" />
              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg transform transition-transform group-hover/map:scale-110">
+                <div className="w-12 h-12 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg transform transition-transform group-hover/map:scale-110">
                    <MapPin size={24} className="text-[var(--colorPrimary)]" />
                 </div>
              </div>
-             <div className="absolute bottom-2 left-2 px-2 py-1 bg-white/80 backdrop-blur-sm rounded text-[8px] font-bold uppercase tracking-widest text-slate-500">
+             <div className="absolute bottom-3 left-3 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-lg text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 shadow-sm">
                 Venue Location
              </div>
           </div>
@@ -517,12 +509,15 @@ function EventCard4({ event, delay, config }) {
 
           <div className="w-20 h-px bg-[var(--colorPrimary)] opacity-30 my-2" />
 
-          <div className="flex flex-col gap-2 mt-2">
+          <div className="flex flex-col items-center gap-2 mt-2 text-center">
             <span className="font-serif text-xl text-[var(--colorTextDark)] font-medium leading-relaxed">
               {event.venueName}
             </span>
             <span className="font-sans text-[10px] md:text-xs uppercase tracking-[0.2em] text-[var(--colorTextDark)]/60 leading-relaxed max-w-sm">
               {event.address}
+            </span>
+            <span className="font-serif text-2xl md:text-3xl text-[var(--colorPrimary)] italic mt-4 tracking-wide font-medium">
+              {event.time}
             </span>
           </div>
 

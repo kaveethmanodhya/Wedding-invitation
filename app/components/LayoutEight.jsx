@@ -19,6 +19,39 @@ export default function LayoutEight({ config }) {
   });
   const [rsvpStatus, setRsvpStatus] = useState('idle');
 
+  // ── Countdown Logic ──
+  const [timeLeft, setTimeLeft] = useState(null);
+
+  useEffect(() => {
+    const targetDate = new Date(config?.wedding?.dateTimeISO || config?.wedding?.date || Date.now()).getTime();
+
+    const calculateTimeLeft = () => {
+      const difference = targetDate - new Date().getTime();
+      let timeLeftValues = {};
+
+      if (difference > 0) {
+        timeLeftValues = {
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        };
+      } else {
+        timeLeftValues = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+      }
+
+      return timeLeftValues;
+    };
+
+    setTimeLeft(calculateTimeLeft());
+
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [config?.wedding?.dateTimeISO, config?.wedding?.date]);
+
   // RSVP Submission logic
   const handleRsvpSubmit = async (e) => {
     e.preventDefault();
@@ -79,7 +112,7 @@ export default function LayoutEight({ config }) {
               className="w-full h-full"
             >
               <img
-                src={config?.heroImage || ''}
+                src={config?.heroImage || null}
                 className="w-full h-full object-cover"
                 alt="Wedding Hero"
               />
@@ -162,6 +195,61 @@ export default function LayoutEight({ config }) {
           </div>
         </div>
       </section>
+
+      {/* ── COUNTDOWN SECTION: Premium Minimalism ── */}
+      {timeLeft && (
+        <section
+          className="px-6 py-20 md:py-32"
+          style={{ backgroundColor: theme.colorSurface || '#ffffff' }}
+        >
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12 space-y-4">
+              <span
+                className="font-sans text-[10px] font-black uppercase tracking-[0.4em]"
+                style={{ color: theme.colorPrimary || '#C9956A' }}
+              >
+                The Celebration Begins In
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+              {[
+                { label: 'Days', value: timeLeft.days },
+                { label: 'Hours', value: timeLeft.hours },
+                { label: 'Minutes', value: timeLeft.minutes },
+                { label: 'Seconds', value: timeLeft.seconds }
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  className="relative p-6 md:p-10 rounded-[20px] md:rounded-[32px] border flex flex-col items-center justify-center space-y-2 md:space-y-4 transition-all duration-500 hover:shadow-xl group"
+                  style={{
+                    backgroundColor: theme.colorBg || '#fdfaf5',
+                    borderColor: `${theme.colorPrimary || '#C9956A'}20` // 20% opacity
+                  }}
+                >
+                  <span
+                    className="font-serif text-4xl md:text-6xl italic leading-none"
+                    style={{ color: theme.colorTextDark || '#1e293b' }}
+                  >
+                    {String(item.value).padStart(2, '0')}
+                  </span>
+                  <span
+                    className="font-sans text-[10px] font-black uppercase tracking-[0.2em] opacity-40"
+                    style={{ color: theme.colorTextLight || '#4A5568' }}
+                  >
+                    {item.label}
+                  </span>
+                  {/* Subtle hover accent */}
+                  <div 
+                    className="absolute inset-0 rounded-[20px] md:rounded-[32px] border-2 border-transparent group-hover:border-opacity-100 transition-all duration-700 pointer-events-none"
+                    style={{ borderColor: theme.colorPrimary || '#C9956A' }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── TIMELINE: Vertical Programme du jour ── */}
       <section
@@ -266,26 +354,21 @@ export default function LayoutEight({ config }) {
               </h2>
             </div>
 
-            <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4 w-full px-2">
               {config.gallery.map((photo, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
-                  transition={{ duration: 0.8, delay: (idx % 3) * 0.1 }}
-                  className="group relative overflow-hidden rounded-[20px] break-inside-avoid shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] transition-all duration-700 border-4 border-white"
+                  transition={{ duration: 0.8, delay: (idx % 5) * 0.1 }}
+                  className="group relative overflow-hidden rounded-xl md:rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] transition-all duration-700 border-2 md:border-4 border-white cursor-default aspect-square"
                 >
                   <img
                     src={photo.src}
                     alt={photo.alt || 'Gallery photo'}
-                    className="w-full h-auto block object-cover transition-transform duration-1000 group-hover:scale-[1.03]"
+                    className="w-full h-full block object-cover transition-transform duration-1000 group-hover:scale-[1.05]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none" />
-                  <div className="absolute inset-x-0 bottom-0 p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 z-10 flex flex-col items-center text-center">
-                    <Heart size={20} className="text-white mb-2" strokeWidth={1} />
-                    <p className="font-serif text-lg md:text-xl text-white italic drop-shadow-md">Beautiful Moment</p>
-                  </div>
                 </motion.div>
               ))}
             </div>
@@ -298,8 +381,8 @@ export default function LayoutEight({ config }) {
         className="px-6 py-24 md:py-32"
         style={{ backgroundColor: theme.colorSurface || '#ffffff' }}
       >
-        <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+        <div className="max-w-3xl mx-auto flex flex-col items-center text-center">
+          <div className="space-y-12">
             <div className="space-y-8">
               <div className="space-y-3">
                 <span
@@ -315,8 +398,8 @@ export default function LayoutEight({ config }) {
                   Our Venue
                 </h2>
               </div>
-              <div className="space-y-6">
-                <div className="flex gap-4">
+              <div className="space-y-6 flex flex-col items-center">
+                <div className="flex flex-col items-center gap-4">
                   <div
                     className="shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center"
                     style={{
@@ -343,10 +426,10 @@ export default function LayoutEight({ config }) {
                 </div>
               </div>
 
-              <div className="flex gap-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center">
                 <button
                   onClick={() => window.open(config.events.ceremony?.mapsUrl, '_blank')}
-                  className="flex-1 flex items-center justify-center gap-3 py-4 text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-all duration-500 shadow-xl rounded-xl"
+                  className="px-8 min-w-[200px] flex items-center justify-center gap-3 py-4 text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-all duration-500 shadow-xl rounded-xl"
                   style={{ backgroundColor: theme.colorTextDark || '#1e293b' }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme.colorPrimary || '#C9956A'}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = theme.colorTextDark || '#1e293b'}
@@ -355,7 +438,7 @@ export default function LayoutEight({ config }) {
                 </button>
                 <button
                   onClick={() => console.log('Calendar clicked')}
-                  className="flex-1 flex items-center justify-center gap-3 py-4 border font-sans text-[10px] font-bold uppercase tracking-widest transition-all duration-500 rounded-xl"
+                  className="px-8 min-w-[200px] flex items-center justify-center gap-3 py-4 border font-sans text-[10px] font-bold uppercase tracking-widest transition-all duration-500 rounded-xl"
                   style={{
                     borderColor: theme.colorSecondary || '#f9f6f1',
                     color: theme.colorTextLight || '#4A5568'
@@ -371,27 +454,6 @@ export default function LayoutEight({ config }) {
                 >
                   <Calendar size={14} /> Add to Calendar
                 </button>
-              </div>
-            </div>
-
-            {/* Google Maps Preview Illusion */}
-            <div
-              className="relative aspect-video md:aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl group border-[12px]"
-              style={{ backgroundColor: theme.colorSecondary || '#f9f6f1', borderColor: theme.colorSurface || '#ffffff' }}
-            >
-              <img
-                src="https://images.unsplash.com/photo-1541339907198-e08756ebafe3?mx=auto&q=80&w=1000"
-                className="w-full h-full object-cover grayscale-[0.2] opacity-70 group-hover:scale-105 transition-transform duration-1000"
-                alt="Venue Location"
-              />
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#C9956A]/20 via-transparent to-transparent pointer-events-none" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div
-                  className="w-16 h-16 rounded-full flex items-center justify-center shadow-2xl animate-pulse"
-                  style={{ backgroundColor: theme.colorSurface || '#ffffff' }}
-                >
-                  <MapPin size={32} style={{ color: theme.colorPrimary || '#C9956A' }} />
-                </div>
               </div>
             </div>
           </div>
@@ -525,7 +587,7 @@ export default function LayoutEight({ config }) {
                       >
                         <Info size={16} style={{ color: theme.colorPrimary || '#C9956A' }} /> Dietary Requirements
                       </h4>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {[
                           { id: 'vegetarian', label: 'Vegetarian' },
                           { id: 'vegan', label: 'Vegan' },
@@ -539,10 +601,16 @@ export default function LayoutEight({ config }) {
                               ...formData,
                               dietary: { ...formData.dietary, [opt.id]: !formData.dietary[opt.id] }
                             })}
-                            className="flex items-center gap-3 group"
+                            className="flex items-center justify-between w-full gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 transition-all group"
                           >
+                            <span
+                              className="text-[10px] sm:text-xs font-serif italic transition-colors uppercase tracking-widest text-left"
+                              style={{ color: theme.colorTextLight || '#8A7F6A' }}
+                            >
+                              {opt.label}
+                            </span>
                             <div
-                              className="w-5 h-5 rounded-md border flex items-center justify-center transition-all"
+                              className="shrink-0 w-5 h-5 rounded-md border flex items-center justify-center transition-all"
                               style={{
                                 backgroundColor: formData.dietary[opt.id] ? (theme.colorPrimary || '#C9956A') : (theme.colorSurface || '#ffffff'),
                                 borderColor: formData.dietary[opt.id] ? (theme.colorPrimary || '#C9956A') : (theme.colorSecondary || '#E8D5B7')
@@ -550,12 +618,6 @@ export default function LayoutEight({ config }) {
                             >
                               {formData.dietary[opt.id] && <Check size={12} style={{ color: theme.colorSurface || '#ffffff' }} />}
                             </div>
-                            <span
-                              className="text-xs font-serif italic transition-colors uppercase tracking-widest"
-                              style={{ color: theme.colorTextLight || '#8A7F6A' }}
-                            >
-                              {opt.label}
-                            </span>
                           </button>
                         ))}
                       </div>

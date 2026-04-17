@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Envelope from './components/Envelope';
 import CoupleReveal from './components/CoupleReveal';
@@ -16,19 +16,59 @@ import Timeline from './components/Timeline';
 import Footer from './components/Footer';
 import PremiumEnvelope from './components/PremiumEnvelope';
 import LayoutEight from './components/LayoutEight';
+import LayoutTen from './components/LayoutTen';
 import RoyalEnvelope from './components/RoyalEnvelope';
+import MintEnvelope from './components/MintEnvelope';
 
 import { PRESET_THEMES } from '../lib/themes';
+
+// ── Shared Falling Petals Animation ──
+const FallingPetals = ({ color }) => {
+  const petals = [...Array(15)].map((_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    animationDuration: 10 + Math.random() * 15,
+    animationDelay: Math.random() * 10,
+    rotation: Math.random() * 360,
+    scale: 0.5 + Math.random() * 0.7
+  }));
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-[60] overflow-hidden drop-shadow-sm" style={{ color }}>
+      {petals.map(p => (
+        <motion.div
+          key={p.id}
+          initial={{ y: '-10vh', x: `${p.left}vw`, rotate: p.rotation, scale: p.scale, opacity: 0 }}
+          animate={{
+            y: '110vh',
+            x: [`${p.left}vw`, `${p.left - 10 + Math.random() * 20}vw`],
+            rotate: p.rotation + 360,
+            opacity: [0, 0.8, 0.8, 0]
+          }}
+          transition={{
+            duration: p.animationDuration,
+            repeat: Infinity,
+            delay: p.animationDelay,
+            ease: "linear"
+          }}
+          className="absolute top-0 opacity-80 drop-shadow-sm filter"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+          </svg>
+        </motion.div>
+      ))}
+    </div>
+  );
+};
 
 export default function ClientHome({ config }) {
   const audioRef = useRef(null);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [hasOpened, setHasOpened] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // Use useSyncExternalStore for robust hydration handling
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
 
   // Play audio after user opens invitation
   const handleOpen = () => {
@@ -50,11 +90,21 @@ export default function ClientHome({ config }) {
     }
   };
 
-
-
   const revealStyle = config.revealStyle || 'envelope';
   const themeId = config.themeId || config.theme || 'gold';
-  const theme = PRESET_THEMES.find(t => t.id === themeId)?.colors || config.theme || PRESET_THEMES[0].colors;
+  
+  // Safe theme color resolution
+  const resolvedColors = PRESET_THEMES.find(t => t.id === themeId)?.colors || config.theme || PRESET_THEMES[0].colors;
+  const theme = {
+    colorPrimary: resolvedColors?.colorPrimary || '#C9956A',
+    colorSecondary: resolvedColors?.colorSecondary || '#E8D5B7',
+    colorTextLight: resolvedColors?.colorTextLight || '#8A7F6A',
+    colorTextDark: resolvedColors?.colorTextDark || '#2C2018',
+    colorBg: resolvedColors?.colorBg || '#FAF7F2',
+    colorSurface: resolvedColors?.colorSurface || '#FFFFFF',
+    heroOverlayStart: resolvedColors?.heroOverlayStart || 'rgba(18, 12, 6, 0.55)',
+    heroOverlayEnd: resolvedColors?.heroOverlayEnd || 'rgba(18, 12, 6, 0.25)',
+  };
 
   if (!mounted) return null;
 
@@ -75,10 +125,12 @@ export default function ClientHome({ config }) {
     <main className={`min-h-screen theme-${themeId} ${!hasOpened ? 'h-screen overflow-hidden' : (config.heroLayout === 9 ? 'bg-slate-950 text-white' : 'bg-[var(--colorBg)] text-[var(--colorTextDark)]')}`}>
       {config.heroLayout === 8 ? (
         <LayoutEight config={config} />
+      ) : config.heroLayout === 10 ? (
+        <LayoutTen config={config} />
       ) : (
         <>
           <Navbar config={config} />
-          <Hero config={config} />
+          <Hero config={config} isOpened={hasOpened} />
           <Countdown config={config} />
           <StorySection config={config} />
           <Gallery config={config} />
@@ -109,6 +161,8 @@ export default function ClientHome({ config }) {
             <PremiumEnvelope key="premium-envelope" config={config} onOpenInvitation={handleOpen} />
           ) : (revealStyle === 'royal-envelope' || revealStyle === 'royal_envelope') ? (
             <RoyalEnvelope key="royal-envelope" config={config} onOpen={handleOpen} />
+          ) : (revealStyle === 'mint-envelope' || revealStyle === 'mint_envelope') ? (
+            <MintEnvelope key="mint-envelope" config={config} onOpenInvitation={handleOpen} />
           ) : (
             <Envelope key="envelope-layer" config={config} onOpen={handleOpen} />
           )
@@ -118,7 +172,7 @@ export default function ClientHome({ config }) {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: hasOpened ? 1 : 0 }}
-        transition={{ duration: 1, delay: 0.5 }}
+        transition={{ duration: 1 }}
       >
         {mainContent}
         {/* Floating audio toggle */}
@@ -139,6 +193,7 @@ export default function ClientHome({ config }) {
             )}
           </button>
         )}
+        {config.fallingPetals && <FallingPetals color={theme.colorPrimary} />}
       </motion.div>
     </>
   );
