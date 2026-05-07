@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { PRESET_THEMES } from '../../lib/themes';
 
 export default function MintEnvelope({ config, onOpenInvitation }) {
@@ -41,10 +42,11 @@ export default function MintEnvelope({ config, onOpenInvitation }) {
            
            {/* Inner Photo */}
            {innerBgImage && (
-             <img 
-                 src={innerBgImage} 
-                 className="absolute inset-0 w-full h-full object-cover"
-                 alt="Inner Photo"
+             <Image
+               src={innerBgImage}
+               alt="Inner Photo"
+               fill
+               style={{ objectFit: 'cover' }}
              />
            )}
         </div>

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 /** 
@@ -16,9 +17,9 @@ export default function Home() {
         or visit the admin dashboard to manage your event.
       </p>
       <div className="flex gap-4">
-        <a href="/admin" className="px-6 py-3 bg-[#C9956A] text-white rounded-lg font-bold uppercase text-sm shadow-lg">
+        <Link href="/admin" className="px-6 py-3 bg-[#C9956A] text-white rounded-lg font-bold uppercase text-sm shadow-lg">
           Admin Dashboard
-        </a>
+        </Link>
       </div>
     </div>
   );

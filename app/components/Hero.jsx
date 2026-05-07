@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 function numericDate(isoString) {
   if (!isoString) return '';
@@ -38,10 +39,11 @@ const ScrollCue = () => (
 /* ─────────────────────────────────────────────────────────
    LAYOUT 1 — Rectangular Ornate Frame
 ───────────────────────────────────────────────────────── */
-function Layout1({ config }) {
+function Layout1({ config, labels = {}, birthdayData = null, generalData = null }) {
   const { couple = {}, wedding = {}, events = {}, heroImage } = config;
   const ceremony = events?.ceremony || {};
   const dayLabel = dayName(wedding?.dateTimeISO);
+  const names = resolveNames(config, birthdayData, generalData);
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -66,22 +68,26 @@ function Layout1({ config }) {
 
         {/* Hero BG Image Area - Top Half */}
         <div style={{ position: 'absolute', top: '24px', left: '24px', right: '24px', height: '45%' }}>
-          {heroImage && <img src={heroImage} alt="Hero Background" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', opacity: 0.8 }} />}
+          {heroImage && <Image src={heroImage} alt="Hero Background" fill style={{ objectFit: 'cover', objectPosition: 'top', opacity: 0.8 }} />}
           {!heroImage && <div className="w-full h-full bg-slate-100 flex items-center justify-center opacity-20">No Image</div>}
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, var(--colorBg) 95%)' }} />
         </div>
 
         {/* Content Box */}
         <div className="relative z-20 flex flex-col items-center justify-end pt-[50%] h-full text-center px-8 pb-16">
-          <p style={{ ...eyebrow, marginBottom: '24px' }}>Wedding Celebration</p>
+          <p style={{ ...eyebrow, marginBottom: '24px' }}>{labels.heroEyebrow || 'Wedding Celebration'}</p>
 
           <h1 className="font-serif tracking-widest leading-tight" style={{ fontSize: 'clamp(32px, 8vw, 42px)', color: 'var(--colorTextDark)' }}>
-            {(couple?.groom?.firstName || 'Groom').toUpperCase()}
+            {names.name1.toUpperCase()}
           </h1>
-          <span className="font-script my-2" style={{ fontSize: '32px', color: 'var(--colorPrimary)' }}>&</span>
-          <h1 className="font-serif tracking-widest leading-tight" style={{ fontSize: 'clamp(32px, 8vw, 42px)', color: 'var(--colorTextDark)' }}>
-            {(couple?.bride?.firstName || 'Bride').toUpperCase()}
-          </h1>
+          {names.showBoth && (
+            <>
+              <span className="font-script my-2" style={{ fontSize: '32px', color: 'var(--colorPrimary)' }}>&</span>
+              <h1 className="font-serif tracking-widest leading-tight" style={{ fontSize: 'clamp(32px, 8vw, 42px)', color: 'var(--colorTextDark)' }}>
+                {names.name2.toUpperCase()}
+              </h1>
+            </>
+          )}
 
           <div style={{ width: '60px', height: '1.5px', background: 'var(--colorPrimary)', margin: '32px 0', opacity: 0.8 }} />
 
@@ -105,10 +111,11 @@ function Layout1({ config }) {
 /* ─────────────────────────────────────────────────────────
    LAYOUT 2 — Oval Ornate Frame inside Card
 ───────────────────────────────────────────────────────── */
-function Layout2({ config }) {
+function Layout2({ config, labels = {}, birthdayData = null, generalData = null }) {
   const { couple = {}, wedding = {}, events = {}, heroImage } = config;
   const ceremony = events?.ceremony || {};
   const dayLabel = dayName(wedding?.dateTimeISO);
+  const names = resolveNames(config, birthdayData, generalData);
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -144,22 +151,26 @@ function Layout2({ config }) {
             position: 'relative'
           }}>
             <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden' }}>
-              <img src={heroImage} alt="Hero" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
+              <Image src={heroImage} alt="Hero" fill style={{ objectFit: 'cover', objectPosition: 'top' }} />
             </div>
           </div>
         )}
 
         {/* Content */}
         <div className="relative z-20 flex flex-col items-center text-center px-4 w-full">
-          <p className="font-script text-[var(--colorPrimary)] mb-2" style={{ fontSize: 'clamp(28px, 6vw, 40px)' }}>We Are Getting Married</p>
+          <p className="font-script text-[var(--colorPrimary)] mb-2" style={{ fontSize: 'clamp(28px, 6vw, 40px)' }}>{labels.heroHeading || 'We Are Getting Married'}</p>
 
           <h1 className="font-serif" style={{ fontSize: 'clamp(24px, 5vw, 32px)', color: 'var(--colorTextDark)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
-            {couple?.groom?.firstName || 'Groom'}
+            {names.name1}
           </h1>
-          <div style={{ height: '40px', width: '1px', background: 'var(--colorSecondary)', margin: '12px 0' }} />
-          <h1 className="font-serif" style={{ fontSize: 'clamp(24px, 5vw, 32px)', color: 'var(--colorTextDark)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
-            {couple?.bride?.firstName || 'Bride'}
-          </h1>
+          {names.showBoth && (
+            <>
+              <div style={{ height: '40px', width: '1px', background: 'var(--colorSecondary)', margin: '12px 0' }} />
+              <h1 className="font-serif" style={{ fontSize: 'clamp(24px, 5vw, 32px)', color: 'var(--colorTextDark)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+                {names.name2}
+              </h1>
+            </>
+          )}
 
           <div className="flex gap-4 mt-8 items-center text-[var(--colorTextDark)] opacity-80 uppercase tracking-widest font-sans text-xs">
             <span>{dayLabel}</span>
@@ -183,10 +194,11 @@ function Layout2({ config }) {
 /* ─────────────────────────────────────────────────────────
    LAYOUT 3 — Royal Arch & Peacocks (Indian Style)
 ───────────────────────────────────────────────────────── */
-function Layout3({ config, isOpened }) {
-  const { couple = {}, wedding = {}, events = {}, heroImage } = config;
+function Layout3({ config, isOpened, birthdayData = null, generalData = null }) {
+  const { wedding = {}, events = {}, heroImage } = config;
   const ceremony = events?.ceremony || {};
   const dayLabel = dayName(wedding?.dateTimeISO);
+  const names = resolveNames(config, birthdayData, generalData);
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -196,8 +208,8 @@ function Layout3({ config, isOpened }) {
         transition={{ duration: 1, ease: 'easeOut' }}
         style={{
           width: '100%',
-          maxWidth: 'clamp(320px, 90vw, 540px)',
-          minHeight: 'clamp(600px, 80vh, 850px)',
+          maxWidth: 'clamp(320px, 88vw, 480px)',
+          height: 'clamp(540px, 78vh, 720px)',
           boxShadow: '0 30px 80px rgba(0,0,0,0.2)',
           background: 'var(--colorBg)',
           position: 'relative',
@@ -208,77 +220,85 @@ function Layout3({ config, isOpened }) {
         {/* ── ROYAL ORNATE BORDERS ── */}
         <div className="absolute inset-4 border-2 border-double border-[var(--colorPrimary)]/30 rounded-2xl pointer-events-none z-[15]" />
         <div className="absolute inset-6 border border-[var(--colorPrimary)]/10 rounded-xl pointer-events-none z-[15]" />
-        
+
         {/* Top Mandala Motif */}
         <div className="absolute top-[-40px] left-1/2 -translate-x-1/2 w-48 h-48 opacity-[0.07] pointer-events-none z-10 animate-spin-slow">
-           <svg viewBox="0 0 100 100" fill="currentColor" className="text-[var(--colorPrimary)]">
-              <path d="M50 0C51.1 0 52 0.9 52 2V10.2C65.3 11.5 76.5 22.7 77.8 36H86C87.1 36 88 36.9 88 38C88 39.1 87.1 40 86 40H77.8C76.8 51.6 68.7 61.3 58 64.9V72.1C64 73.8 68.5 79.4 68.5 86C68.5 87.1 67.6 88 66.5 88C65.4 88 64.5 87.1 64.5 86C64.5 81.3 60.7 77.5 56 77.5H44C39.3 77.5 35.5 81.3 35.5 86C35.5 87.1 34.6 88 33.5 88C32.4 88 31.5 87.1 31.5 86C31.5 79.4 36 73.8 42 72.1V64.9C31.3 61.3 23.2 51.6 22.2 40H14C12.9 40 12 39.1 12 38C12 36.9 12.9 36 14 36H22.2C23.5 22.7 34.7 11.5 48 10.2V2C48 0.9 48.9 0 50 0ZM50 14.2C38 14.2 28.2 24 28.2 36C28.2 48 38 57.8 50 57.8C62 57.8 71.8 48 71.8 36C71.8 24 62 14.2 50 14.2Z" />
-           </svg>
+          <svg viewBox="0 0 100 100" fill="currentColor" className="text-[var(--colorPrimary)]">
+            <path d="M50 0C51.1 0 52 0.9 52 2V10.2C65.3 11.5 76.5 22.7 77.8 36H86C87.1 36 88 36.9 88 38C88 39.1 87.1 40 86 40H77.8C76.8 51.6 68.7 61.3 58 64.9V72.1C64 73.8 68.5 79.4 68.5 86C68.5 87.1 67.6 88 66.5 88C65.4 88 64.5 87.1 64.5 86C64.5 81.3 60.7 77.5 56 77.5H44C39.3 77.5 35.5 81.3 35.5 86C35.5 87.1 34.6 88 33.5 88C32.4 88 31.5 87.1 31.5 86C31.5 79.4 36 73.8 42 72.1V64.9C31.3 61.3 23.2 51.6 22.2 40H14C12.9 40 12 39.1 12 38C12 36.9 12.9 36 14 36H22.2C23.5 22.7 34.7 11.5 48 10.2V2C48 0.9 48.9 0 50 0ZM50 14.2C38 14.2 28.2 24 28.2 36C28.2 48 38 57.8 50 57.8C62 57.8 71.8 48 71.8 36C71.8 24 62 14.2 50 14.2Z" />
+          </svg>
         </div>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-[var(--colorPrimary)]/5 rounded-b-full blur-3xl z-10" />
-        {/* Full Image Background wrapped by Arch */}
+
+        {/* Hero Image — top 58% of card (resolves correctly with fixed height) */}
         {heroImage && (
-          <div className="absolute inset-x-0 top-0 h-[60%] pointer-events-none z-0">
-            <img src={heroImage} className="w-full h-full object-cover object-top" style={{ opacity: 0.8 }} />
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent, var(--colorBg) 95%)' }} />
+          <div className="absolute inset-x-0 top-0 z-0" style={{ height: '58%' }}>
+            <Image src={heroImage} alt="" fill style={{ objectFit: 'cover', objectPosition: 'top center', opacity: 0.9 }} />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 30%, var(--colorBg) 100%)' }} />
           </div>
         )}
 
+        {/* Content — anchored to bottom, grows upward */}
+        <div
+          className="absolute inset-x-0 z-20 flex flex-col items-center text-center px-8"
+          style={{ bottom: '60px' }}
+        >
+          <motion.h1
+            initial={{ opacity: 0, x: -60 }}
+            animate={isOpened ? { opacity: 1, x: 0 } : { opacity: 0, x: -60 }}
+            transition={{ duration: 1.2, ease: 'easeOut', delay: 0.5 }}
+            className="font-script leading-[0.9] text-[var(--colorTextDark)] drop-shadow-sm filter brightness-90"
+            style={{ fontSize: 'clamp(2.6rem, 9vw, 4.5rem)' }}
+          >
+            {names.name1}
+          </motion.h1>
 
-        {/* Content Box */}
-        <div className="relative z-20 flex flex-col items-center justify-center pt-[32vh] px-8 pb-32 text-center h-full">
-          
-            <div className="flex flex-col items-center w-full">
-              <motion.h1 
-                initial={{ opacity: 0, x: -100 }}
-                animate={isOpened ? { opacity: 1, x: 0 } : { opacity: 0, x: -100 }}
-                transition={{ duration: 1.2, ease: "easeOut", delay: 0.5 }}
-                className="font-script text-[clamp(4.5rem,15vw,9rem)] leading-[0.8] text-[var(--colorTextDark)] drop-shadow-sm filter brightness-90"
-              >
-                {couple?.groom?.firstName || 'Groom'}
-              </motion.h1>
-              
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={isOpened ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-                transition={{ duration: 1, delay: 0.8 }}
-                className="flex items-center gap-10 my-4"
-              >
-                <div className="h-px w-6 md:w-16 bg-[var(--colorTextDark)]/20" />
-                <span className="font-serif text-[10px] md:text-xs tracking-[0.5em] uppercase text-[var(--colorTextDark)] opacity-40 font-bold">and</span>
-                <div className="h-px w-6 md:w-16 bg-[var(--colorTextDark)]/20" />
-              </motion.div>
+          {names.showBoth && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={isOpened ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+              transition={{ duration: 1, delay: 0.8 }}
+              className="flex items-center gap-5 my-2"
+            >
+              <div className="h-px w-8 bg-[var(--colorTextDark)]/20" />
+              <span className="font-serif text-[9px] tracking-[0.5em] uppercase text-[var(--colorTextDark)] opacity-40 font-bold">and</span>
+              <div className="h-px w-8 bg-[var(--colorTextDark)]/20" />
+            </motion.div>
+          )}
 
-              <motion.h1 
-                initial={{ opacity: 0, x: 100 }}
-                animate={isOpened ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
-                transition={{ duration: 1.2, ease: "easeOut", delay: 0.6 }}
-                className="font-script text-[clamp(4.5rem,15vw,9rem)] text-[var(--colorTextDark)] leading-[0.8] drop-shadow-sm mb-12 filter brightness-90"
-              >
-                {couple?.bride?.firstName || 'Bride'}
-              </motion.h1>
-            </div>
+          {names.showBoth && (
+            <motion.h1
+              initial={{ opacity: 0, x: 60 }}
+              animate={isOpened ? { opacity: 1, x: 0 } : { opacity: 0, x: 60 }}
+              transition={{ duration: 1.2, ease: 'easeOut', delay: 0.6 }}
+              className="font-script leading-[0.9] text-[var(--colorTextDark)] drop-shadow-sm filter brightness-90"
+              style={{ fontSize: 'clamp(2.6rem, 9vw, 4.5rem)' }}
+            >
+              {names.name2}
+            </motion.h1>
+          )}
 
-          <div style={{ width: '80px', height: '1.5px', background: 'var(--colorPrimary)', margin: '16px 0 24px', opacity: 0.5 }} />
+          <div style={{ width: '72px', height: '1.5px', background: 'var(--colorPrimary)', margin: '14px 0 16px', opacity: 0.5 }} />
 
-          <p className="font-sans text-[13px] md:text-[15px] tracking-[0.4em] uppercase opacity-80 font-black mb-1" style={{ color: 'var(--colorTextDark)' }}>
-            {dayLabel ? dayLabel + ', ' : ''} {wedding?.displayDate}
+          <p className="font-sans text-[11px] tracking-[0.35em] uppercase opacity-75 font-black mb-1" style={{ color: 'var(--colorTextDark)' }}>
+            {dayLabel ? dayLabel + ', ' : ''}{wedding?.displayDate}
           </p>
           {ceremony?.time && (
-            <p className="font-sans text-[13px] md:text-[15px] tracking-[0.4em] mt-3 uppercase opacity-80 font-black" style={{ color: 'var(--colorTextDark)' }}>
+            <p className="font-sans text-[11px] tracking-[0.35em] mt-2 uppercase opacity-75 font-black" style={{ color: 'var(--colorTextDark)' }}>
               Time {ceremony.time}
             </p>
           )}
-
-
+          {ceremony?.venueName && (
+            <p className="font-sans text-[10px] tracking-widest uppercase mt-3 opacity-55 max-w-[220px]" style={{ color: 'var(--colorTextDark)' }}>
+              {ceremony.venueName}
+            </p>
+          )}
         </div>
 
         {/* Decorative Peacocks Footer */}
-        <div className="absolute bottom-6 left-0 right-0 flex flex-col items-center gap-4 pointer-events-none z-20">
-          <div className="w-24 h-px bg-gradient-to-r from-transparent via-[var(--colorPrimary)]/40 to-transparent" />
-          <div className="flex justify-center gap-12 opacity-80">
-            <span className="text-4xl filter saturate-[0.2] brightness-125 drop-shadow-2xl" style={{ color: 'var(--colorPrimary)' }}>🦚</span>
-            <span className="text-4xl filter saturate-[0.2] brightness-125 drop-shadow-2xl" style={{ transform: 'scaleX(-1)', color: 'var(--colorPrimary)' }}>🦚</span>
+        <div className="absolute bottom-5 left-0 right-0 flex flex-col items-center gap-3 pointer-events-none z-20">
+          <div className="w-20 h-px bg-gradient-to-r from-transparent via-[var(--colorPrimary)]/40 to-transparent" />
+          <div className="flex justify-center gap-10 opacity-75">
+            <span className="text-3xl filter saturate-[0.2] brightness-125" style={{ color: 'var(--colorPrimary)' }}>🦚</span>
+            <span className="text-3xl filter saturate-[0.2] brightness-125" style={{ transform: 'scaleX(-1)', color: 'var(--colorPrimary)' }}>🦚</span>
           </div>
         </div>
       </motion.div>
@@ -290,13 +310,35 @@ function Layout3({ config, isOpened }) {
 /* ─────────────────────────────────────────────────────────
    Main export — reads heroLayout from config
 ───────────────────────────────────────────────────────── */
-export default function Hero({ config, isOpened }) {
+function ordinalSuffix(n) {
+  const v = n % 100;
+  const s = ['th', 'st', 'nd', 'rd'];
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+function resolveNames(config, birthdayData, generalData) {
+  if (birthdayData?.celebrantName) {
+    const age = birthdayData.age ? Number(birthdayData.age) : null;
+    const ageStr = age && age > 0 ? `${ordinalSuffix(age)} ` : '';
+    return { name1: `${birthdayData.celebrantName}'s ${ageStr}Birthday`, name2: null, showBoth: false };
+  }
+  if (generalData?.eventTitle || generalData?.hostName) {
+    return { name1: generalData.eventTitle || generalData.hostName, name2: null, showBoth: false };
+  }
+  return {
+    name1: config?.couple?.groom?.firstName || 'Groom',
+    name2: config?.couple?.bride?.firstName || 'Bride',
+    showBoth: true,
+  };
+}
+
+export default function Hero({ config, isOpened, labels = {}, birthdayData = null, generalData = null }) {
   const layout = config?.heroLayout ?? 1;
 
   return (
     <section
       id="hero"
-      className={`min-h-screen flex flex-col items-center ${layout === 9 ? 'justify-start' : 'justify-center'} relative overflow-hidden transition-all duration-500`}
+      className={`${layout === 9 ? '' : 'min-h-screen flex flex-col items-center justify-center'} relative overflow-hidden transition-all duration-500`}
       style={{ backgroundColor: 'var(--colorBg)' }}
     >
       {/* ── HERO VIDEO BACKGROUND ── */}
@@ -322,7 +364,7 @@ export default function Hero({ config, isOpened }) {
       )}
 
       {/* ── BLURRED BACKGROUND LAYER (Fallback or secondary) ── */}
-      {config.sectionBackgrounds?.hero && !config.heroVideo && (
+      {config.sectionBackgrounds?.hero && !config.heroVideo && layout !== 9 && (
         <div 
           className="absolute inset-0 pointer-events-none transition-transform duration-1000 z-0"
           style={{ 
@@ -341,13 +383,13 @@ export default function Hero({ config, isOpened }) {
       <div className="absolute inset-0 pointer-events-none z-[1]" style={{ background: 'radial-gradient(circle at 50% 50%, var(--colorPrimary) 0%, transparent 60%)', opacity: 0.03 }} />
       <div className={`relative z-10 w-full flex justify-center ${layout === 9 ? 'p-0' : 'py-20 px-4'}`}>
         {layout === 9 ? <Layout9 config={config} /> : 
-         layout === 8 ? <Layout8 config={config} /> : 
-         layout === 7 ? <Layout7 config={config} /> : 
-         layout === 6 ? <Layout6 config={config} /> : 
-         layout === 5 ? <Layout5 config={config} /> : 
-         layout === 4 ? <Layout4 config={config} /> : 
-         layout === 3 ? <Layout3 config={config} isOpened={isOpened} /> : 
-         layout === 2 ? <Layout2 config={config} /> : <Layout1 config={config} />}
+         layout === 8 ? <Layout8 config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} /> : 
+         layout === 7 ? <Layout7 config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} /> : 
+         layout === 6 ? <Layout6 config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} /> : 
+         layout === 5 ? <Layout5 config={config} birthdayData={birthdayData} generalData={generalData} /> : 
+         layout === 4 ? <Layout4 config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} /> : 
+         layout === 3 ? <Layout3 config={config} isOpened={isOpened} birthdayData={birthdayData} generalData={generalData} /> : 
+         layout === 2 ? <Layout2 config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} /> : <Layout1 config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} />}
       </div>
     </section>
   );
@@ -361,18 +403,19 @@ function Layout9({ config }) {
   const heroBg = sectionBackgrounds?.hero || heroImage || '';
 
   return (
-    <div className="w-full relative bg-black">
+    <div className="w-full relative">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.5, ease: 'easeOut' }}
-        className="w-full relative"
+        className="w-full"
       >
         {heroBg ? (
-          <img 
-            src={heroBg} 
-            className="w-full h-auto block" 
-            alt="Wedding Hero" 
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={heroBg}
+            alt="Wedding Hero"
+            className="w-full h-auto block"
           />
         ) : (
           <div className="w-full aspect-video bg-neutral-900 flex items-center justify-center text-white/20">
@@ -401,28 +444,28 @@ function Layout9({ config }) {
    LAYOUT 4 — Nature Arch (Premium Design)
    Inspired by a forest garden arch with central couple
 ───────────────────────────────────────────────────────── */
-function Layout4({ config }) {
+function Layout4({ config, labels = {}, birthdayData = null, generalData = null }) {
   const { couple = {}, wedding = {}, events = {}, heroImage, coupleImages } = config;
   const ceremony = events?.ceremony || {};
-  const dateObj = new Date(wedding?.dateTimeISO || Date.now());
-  const dayLabel = isNaN(dateObj.getTime()) ? '' : dateObj.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
-  const month = isNaN(dateObj.getTime()) ? '' : dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
-  const dayNum = isNaN(dateObj.getTime()) ? '' : dateObj.getDate();
-  const year = isNaN(dateObj.getTime()) ? '' : dateObj.getFullYear();
+  const dateObj = wedding?.dateTimeISO ? new Date(wedding.dateTimeISO) : null;
+  const dayLabel = dateObj && !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase() : '';
+  const month = dateObj && !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase() : '';
+  const dayNum = dateObj && !isNaN(dateObj.getTime()) ? dateObj.getDate() : '';
+  const year = dateObj && !isNaN(dateObj.getTime()) ? dateObj.getFullYear() : '';
 
-  // Primary image from admin "Hero Background Image" field
   const heroBg = heroImage || '';
+  const names = resolveNames(config, birthdayData, generalData);
 
   return (
     <div className="flex flex-col items-center w-full max-w-[600px] mx-auto min-h-[85vh] bg-white relative overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.15)] border-[12px] border-white">
       {/* Full Background (Liquid Layer) */}
       <div className="absolute inset-x-0 top-0 bottom-0 z-0">
-         <img src={heroBg} className="w-full h-full object-cover object-top transition-transform duration-[20s] animate-pulse-slow" style={{ opacity: 0.15, filter: 'blur(10px) saturate(1.5)' }} />
+         <Image src={heroBg} alt="Hero Background" fill style={{ objectFit: 'cover', objectPosition: 'top', opacity: 0.15, filter: 'blur(10px) saturate(1.5)' }} />
       </div>
 
       {/* ── TOP DATE HEADER (Matching image layout) ── */}
-      <div className="relative z-20 w-full px-6 pt-10 pb-6 flex items-center justify-between border-b border-black/5">
-        <div className="flex-1 text-center font-sans font-bold text-[14px] md:text-[16px] tracking-[0.25em] uppercase text-[#2C2018] opacity-90">
+      <div className="relative z-20 w-full px-6 pt-10 pb-6 flex flex-col md:flex-row items-center justify-center md:justify-between border-b border-black/5 gap-6 md:gap-0">
+        <div className="flex-1 text-center font-sans font-bold text-[14px] md:text-[16px] tracking-[0.25em] uppercase text-[#2C2018] opacity-90 w-full">
           {dayLabel || 'SUNDAY'}
         </div>
         
@@ -439,7 +482,7 @@ function Layout4({ config }) {
           <div className="absolute -right-0 top-6 bottom-6 w-px bg-black/10" />
         </div>
 
-        <div className="flex-1 text-center font-sans font-bold text-[14px] md:text-[16px] tracking-[0.25em] uppercase text-[#2C2018] opacity-90">
+        <div className="flex-1 text-center font-sans font-bold text-[14px] md:text-[16px] tracking-[0.25em] uppercase text-[#2C2018] opacity-90 w-full">
           {ceremony?.time ? `AT ${ceremony.time.toUpperCase()}` : 'AT 10:00 AM'}
         </div>
       </div>
@@ -454,7 +497,7 @@ function Layout4({ config }) {
           {/* Primary View (Arched Photo) */}
           <div className="absolute inset-0 z-10 transition-transform duration-700 group-hover:scale-105">
             {heroBg ? (
-              <img src={heroBg} className="w-full h-full object-cover object-top" />
+              <Image src={heroBg} alt="Hero" fill style={{ objectFit: 'cover', objectPosition: 'top' }} />
             ) : (
               <div className="w-full h-full bg-slate-100 flex items-center justify-center opacity-20">No Image</div>
             )}
@@ -470,7 +513,7 @@ function Layout4({ config }) {
       {/* ── FOOTER NAMES & BRANDING ── */}
       <div className="relative z-40 text-center flex flex-col items-center py-8 bg-white w-full">
         <h2 className="font-serif text-3xl md:text-5xl text-[#2C2018] tracking-[0.2em] uppercase mb-4 font-medium transition-all duration-500 group-hover:tracking-[0.25em]">
-          {couple?.groom?.firstName} & {couple?.bride?.firstName}
+          {names.name1}{names.showBoth && ` & ${names.name2}`}
         </h2>
 
         <div className="flex items-center justify-center gap-4 mb-4">
@@ -480,7 +523,7 @@ function Layout4({ config }) {
         </div>
 
         <p className="font-serif text-sm md:text-base text-[#2C2018]/80 italic opacity-70">
-          Together with their families invite you to their wedding
+          {labels.heroFamiliesLine || 'Together with their families invite you to their wedding'}
         </p>
       </div>
 
@@ -493,31 +536,45 @@ function Layout4({ config }) {
 /* ─────────────────────────────────────────────────────────
    LAYOUT 5 — Modern Minimalist High-Contrast
 ───────────────────────────────────────────────────────── */
-function Layout5({ config }) {
+function Layout5({ config, birthdayData = null, generalData = null }) {
   const { couple = {}, wedding = {}, heroImage } = config;
+  const eventType = config?.eventType || 'wedding';
   const year = wedding?.dateTimeISO ? new Date(wedding.dateTimeISO).getFullYear() : '';
+  const names = resolveNames(config, birthdayData, generalData);
+
+  const subLabel = names.showBoth
+    ? `The Wedding of ${names.name1} & ${names.name2}`
+    : names.name1;
 
   return (
-    <div className="flex flex-col items-center w-full px-6 py-10 text-center">
+    <div className="flex flex-col items-center w-full max-w-2xl mx-auto px-6 py-10 text-center">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.2, ease: "circOut" }}
-        className="relative mb-12"
+        className="relative mb-12 w-full"
       >
         <div className="w-1 h-16 bg-[var(--colorPrimary)] mx-auto mb-8 opacity-40" />
-        <h1 className="font-serif text-[clamp(64px,15vw,120px)] leading-[0.8] tracking-tighter text-[var(--colorTextDark)] mb-4">
-          {couple?.groom?.firstName?.[0]}<span className="text-[var(--colorPrimary)]">&</span>{couple?.bride?.firstName?.[0]}
-        </h1>
-        <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-[var(--colorTextDark)] opacity-60">
-          The Wedding of {couple?.groom?.firstName} & {couple?.bride?.firstName}
-        </p>
+        {names.showBoth ? (
+          <>
+            <h1 className="font-serif text-[clamp(64px,15vw,120px)] leading-[0.8] tracking-tighter text-[var(--colorTextDark)] mb-4">
+              {names.name1.charAt(0)}<span className="text-[var(--colorPrimary)]">&</span>{names.name2.charAt(0)}
+            </h1>
+            <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-[var(--colorTextDark)] opacity-60">
+              {subLabel}
+            </p>
+          </>
+        ) : (
+          <h1 className="font-serif text-[clamp(32px,6vw,64px)] leading-tight tracking-tight text-[var(--colorTextDark)] mb-4">
+            {names.name1}
+          </h1>
+        )}
       </motion.div>
 
       <div className="flex flex-col items-center gap-4">
         <p className="font-serif text-3xl italic text-[var(--colorTextDark)]">{wedding?.displayDate}</p>
         <div className="h-px w-12 bg-[var(--colorPrimary)]" />
-        <p className="font-sans text-xs tracking-[0.3em] uppercase opacity-70">{year} • SAVE THE DATE</p>
+        <p className="font-sans text-xs tracking-[0.3em] uppercase opacity-70">{year ? `${year} • ` : ''}SAVE THE DATE</p>
       </div>
 
       {heroImage && (
@@ -525,9 +582,9 @@ function Layout5({ config }) {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 1 }}
-          className="mt-16 w-full max-w-sm aspect-[4/5] rounded-full overflow-hidden border border-[var(--colorPrimary)]/20 p-4"
+          className="mt-16 w-full max-w-xs md:max-w-sm aspect-[4/5] rounded-full overflow-hidden border border-[var(--colorPrimary)]/20 p-4 relative"
         >
-          <img src={heroImage} className="w-full h-full object-cover rounded-full grayscale hover:grayscale-0 transition-all duration-1000" />
+          <Image src={heroImage} alt="Hero" fill style={{ objectFit: 'cover' }} className="rounded-full grayscale hover:grayscale-0 transition-all duration-1000" />
         </motion.div>
       )}
     </div>
@@ -535,14 +592,11 @@ function Layout5({ config }) {
 }
 
 /* ─────────────────────────────────────────────────────────
-   LAYOUT 6 — Watercolor Floral (Garden Theme)
+   LAYOUT 6 — Helper: Floral Corner decoration
+   Defined outside Layout6 so it is stable across renders
 ───────────────────────────────────────────────────────── */
-function Layout6({ config }) {
-  const { couple = {}, wedding = {}, events = {}, heroImage } = config;
-  const [showOptions, setShowOptions] = useState(false);
-
-  // Helper for theme-tinted floral corners
-  const SvgFloralCorner = ({ path, className, delay = 0 }) => (
+function SvgFloralCorner({ path, className, delay = 0 }) {
+  return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -564,6 +618,15 @@ function Layout6({ config }) {
       />
     </motion.div>
   );
+}
+
+/* ─────────────────────────────────────────────────────────
+   LAYOUT 6 — Watercolor Floral (Garden Theme)
+───────────────────────────────────────────────────────── */
+function Layout6({ config, labels = {}, birthdayData = null, generalData = null }) {
+  const { couple = {}, wedding = {}, events = {}, heroImage } = config;
+  const [showOptions, setShowOptions] = useState(false);
+  const names = resolveNames(config, birthdayData, generalData);
 
   const handleSaveToCalendar = () => {
     setShowOptions(!showOptions);
@@ -591,7 +654,7 @@ function Layout6({ config }) {
       `DTEND:${start}`,
       `SUMMARY:${title}`,
       `LOCATION:${location}`,
-      'DESCRIPTION:Together with their families\\, invite you to their wedding.',
+      `DESCRIPTION:${labels.heroFamiliesIcal || 'Together with their families\\, invite you to their wedding.'}`,
       'END:VEVENT',
       'END:VCALENDAR'
     ].join('\\n');
@@ -623,21 +686,26 @@ function Layout6({ config }) {
         <div className="flex flex-col items-center justify-center mb-4">
           <div className="flex items-center gap-3 mb-3 group">
             <div className="h-px w-5 md:w-10 bg-[var(--colorPrimary)]/20 transition-all group-hover:w-14" />
-            <p className="font-sans text-[8px] md:text-[9px] tracking-[0.4em] uppercase text-[var(--colorTextDark)]/60 font-bold">The Wedding of</p>
-            <div className="h-px w-5 md:w-10 bg-[var(--colorPrimary)]/20 transition-all group-hover:w-14" />
+            {names.showBoth
+              ? <p className="font-sans text-[8px] md:text-[9px] tracking-[0.4em] uppercase text-[var(--colorTextDark)]/60 font-bold">The Wedding of</p>
+              : <p className="font-sans text-[8px] md:text-[9px] tracking-[0.4em] uppercase text-[var(--colorTextDark)]/60 font-bold">You are invited</p>
+            }
           </div>
-
           <h1 className="font-script text-[clamp(50px,10vw,80px)] text-[var(--colorPrimary)] mb-1 leading-[0.7]">
-            {couple?.groom?.firstName}
+            {names.name1}
           </h1>
-          <div className="flex items-center gap-2 my-1">
-             <div className="w-1 h-1 rounded-full border border-[var(--colorSecondary)]/30" />
-             <span className="font-serif text-xl text-[var(--colorSecondary)]/40 italic font-light lowercase">and</span>
-             <div className="w-1 h-1 rounded-full border border-[var(--colorSecondary)]/30" />
-          </div>
-          <h1 className="font-script text-[clamp(50px,10vw,80px)] text-[var(--colorPrimary)] leading-[0.7]">
-            {couple?.bride?.firstName}
-          </h1>
+          {names.showBoth && (
+            <>
+              <div className="flex items-center gap-2 my-1">
+                 <div className="w-1 h-1 rounded-full border border-[var(--colorSecondary)]/30" />
+                 <span className="font-serif text-xl text-[var(--colorSecondary)]/40 italic font-light lowercase">and</span>
+                 <div className="w-1 h-1 rounded-full border border-[var(--colorSecondary)]/30" />
+              </div>
+              <h1 className="font-script text-[clamp(50px,10vw,80px)] text-[var(--colorPrimary)] leading-[0.7]">
+                {names.name2}
+              </h1>
+            </>
+          )}
         </div>
 
         {/* Elegant Garden Plaque with Calendar trigger */}
@@ -702,7 +770,7 @@ function Layout6({ config }) {
         >
           <div className="absolute inset-0 border border-[var(--colorPrimary)]/10 rounded-[3rem] scale-[1.02] -z-10" />
           <div className="w-full h-full rounded-[2.5rem] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.1)] border-[6px] border-white relative group">
-            <img src={heroImage} className="w-full h-full object-cover transition-transform duration-[3000ms] group-hover:scale-110" />
+            <Image src={heroImage} alt="Hero" fill style={{ objectFit: 'cover' }} className="transition-transform duration-[3000ms] group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--colorPrimary)]/20 to-transparent mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
           </div>
         </motion.div>
@@ -714,8 +782,9 @@ function Layout6({ config }) {
 /* ─────────────────────────────────────────────────────────
    LAYOUT 7 — Retro Polaroid / Scrapbook
 ───────────────────────────────────────────────────────── */
-function Layout7({ config }) {
+function Layout7({ config, labels = {}, birthdayData = null, generalData = null }) {
   const { couple = {}, wedding = {}, heroImage } = config;
+  const names = resolveNames(config, birthdayData, generalData);
 
   return (
     <div className="flex flex-col items-center w-full py-16 px-6">
@@ -727,13 +796,13 @@ function Layout7({ config }) {
       >
         <div className="aspect-[3/4] bg-slate-100 overflow-hidden mb-6">
           {heroImage ? (
-            <img src={heroImage} className="w-full h-full object-cover sepia-[0.3]" />
+            <Image src={heroImage} alt="Hero" fill style={{ objectFit: 'cover', objectPosition: 'center 20%' }} className="sepia-[0.3]" />
           ) : (
             <div className="w-full h-full flex items-center justify-center opacity-10 font-bold">MISSING</div>
           )}
         </div>
         <div className="text-center">
-          <h1 className="font-script text-4xl text-slate-800 mb-2">Our Wedding Day</h1>
+          <h1 className="font-script text-4xl text-slate-800 mb-2">{labels.photoLabel || 'Our Wedding Day'}</h1>
           <p className="font-sans text-xs tracking-widest uppercase text-slate-400">{wedding?.displayDate}</p>
         </div>
         {/* Tape effect */}
@@ -747,7 +816,7 @@ function Layout7({ config }) {
         className="mt-12 text-center"
       >
         <h2 className="font-serif text-4xl text-[var(--colorPrimary)] mb-4">
-          {couple?.groom?.firstName} <span className="text-2xl font-script">&</span> {couple?.bride?.firstName}
+          {names.name1}{names.showBoth && <> <span className="text-2xl font-script">&</span> {names.name2}</>}
         </h2>
         <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-[var(--colorTextDark)]/60">
           Capture these moments with us
@@ -760,9 +829,10 @@ function Layout7({ config }) {
 /* ─────────────────────────────────────────────────────────
    LAYOUT 8 — Sinhala Traditional (Sri Lankan style)
 ───────────────────────────────────────────────────────── */
-function Layout8({ config }) {
+function Layout8({ config, labels = {}, birthdayData = null, generalData = null }) {
   const { couple = {}, wedding = {}, events = {}, heroImage } = config;
   const ceremony = events?.ceremony || {};
+  const names = resolveNames(config, birthdayData, generalData);
 
   return (
     <div className="flex flex-col items-center w-full min-h-[85vh] relative overflow-hidden bg-[var(--colorBg)] px-6">
@@ -776,7 +846,7 @@ function Layout8({ config }) {
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative z-10 w-full max-w-xl bg-white/50 backdrop-blur-md rounded-[40px] border-4 border-double border-[var(--colorPrimary)] p-8 md:p-12 text-center my-12 shadow-2xl"
+        className="relative z-10 w-full max-w-xl bg-white/50 backdrop-blur-md rounded-[40px] border-4 border-double border-[var(--colorPrimary)] p-8 md:p-12 text-center mt-12 md:mt-20 mb-8 shadow-2xl mx-auto"
       >
         {/* Traditional Symbol */}
         <div className="mb-8 flex justify-center">
@@ -791,7 +861,7 @@ function Layout8({ config }) {
         </p>
 
         <h1 className="font-sinhala text-3xl md:text-6xl text-[var(--colorPrimary)] mb-4 tracking-tight">
-          {couple?.groom?.firstName} සහ {couple?.bride?.firstName}
+          {names.name1}{names.showBoth && ` සහ ${names.name2}`}
         </h1>
 
         <div className="flex items-center justify-center gap-4 my-8">
@@ -804,7 +874,7 @@ function Layout8({ config }) {
           <p className="font-sinhala text-2xl text-[var(--colorTextDark)]">
             {wedding?.displayDate}
           </p>
-          <p className="font-sans text-[10px] tracking-[0.4em] uppercase opacity-50 mb-4">Wedding Celebration</p>
+          <p className="font-sans text-[10px] tracking-[0.4em] uppercase opacity-50 mb-4">{labels.heroEyebrow || 'Wedding Celebration'}</p>
           
           {ceremony?.venueName && (
             <div className="bg-[var(--colorPrimary)]/5 p-4 rounded-2xl inline-block w-full max-w-xs">
@@ -823,7 +893,7 @@ function Layout8({ config }) {
           animate={{ opacity: 1 }} 
           className="w-full h-64 md:h-96 -mt-32 relative z-0"
         >
-          <img src={heroImage} className="w-full h-full object-cover" style={{ maskImage: 'linear-gradient(to top, transparent, black)' }} />
+          <Image src={heroImage} alt="Hero" fill style={{ objectFit: 'cover', maskImage: 'linear-gradient(to top, transparent, black)' }} />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--colorBg)] to-transparent" />
         </motion.div>
       )}

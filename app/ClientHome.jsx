@@ -17,62 +17,65 @@ import Footer from './components/Footer';
 import PremiumEnvelope from './components/PremiumEnvelope';
 import LayoutEight from './components/LayoutEight';
 import LayoutTen from './components/LayoutTen';
+import LayoutEleven from './components/LayoutEleven';
 import RoyalEnvelope from './components/RoyalEnvelope';
 import MintEnvelope from './components/MintEnvelope';
+import FallingPetals from './components/FallingPetals';
 
 import { PRESET_THEMES } from '../lib/themes';
+import { getLabels } from '../lib/eventLabels';
 
-// ── Shared Falling Petals Animation ──
-const FallingPetals = ({ color }) => {
-  const petals = [...Array(15)].map((_, i) => ({
-    id: i,
-    left: Math.random() * 100,
-    animationDuration: 10 + Math.random() * 15,
-    animationDelay: Math.random() * 10,
-    rotation: Math.random() * 360,
-    scale: 0.5 + Math.random() * 0.7
-  }));
-
-  return (
-    <div className="fixed inset-0 pointer-events-none z-[60] overflow-hidden drop-shadow-sm" style={{ color }}>
-      {petals.map(p => (
-        <motion.div
-          key={p.id}
-          initial={{ y: '-10vh', x: `${p.left}vw`, rotate: p.rotation, scale: p.scale, opacity: 0 }}
-          animate={{
-            y: '110vh',
-            x: [`${p.left}vw`, `${p.left - 10 + Math.random() * 20}vw`],
-            rotate: p.rotation + 360,
-            opacity: [0, 0.8, 0.8, 0]
-          }}
-          transition={{
-            duration: p.animationDuration,
-            repeat: Infinity,
-            delay: p.animationDelay,
-            ease: "linear"
-          }}
-          className="absolute top-0 opacity-80 drop-shadow-sm filter"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
-          </svg>
-        </motion.div>
-      ))}
-    </div>
-  );
-};
 
 export default function ClientHome({ config }) {
   const audioRef = useRef(null);
+  const interactionHandledRef = useRef(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [hasOpened, setHasOpened] = useState(false);
 
   // Use useSyncExternalStore for robust hydration handling
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
 
+  // Auto-play audio on first user interaction
+  useEffect(() => {
+    if (!config.audioUrl || !audioRef.current || interactionHandledRef.current) return;
+
+    let isAttemptingToPlay = false;
+
+    const playAudioOnInteract = () => {
+      if (interactionHandledRef.current) return;
+
+      if (audioRef.current && !audioPlaying && !isAttemptingToPlay) {
+        isAttemptingToPlay = true;
+        audioRef.current.play()
+          .then(() => {
+            setAudioPlaying(true);
+            interactionHandledRef.current = true;
+            window.removeEventListener('scroll', playAudioOnInteract);
+            window.removeEventListener('touchstart', playAudioOnInteract);
+            window.removeEventListener('click', playAudioOnInteract);
+          })
+          .catch(() => {
+            // Silently catch NotAllowedError and allow future attempts
+            isAttemptingToPlay = false;
+          });
+      }
+    };
+
+    window.addEventListener('scroll', playAudioOnInteract, { passive: true });
+    window.addEventListener('touchstart', playAudioOnInteract, { passive: true });
+    window.addEventListener('click', playAudioOnInteract, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', playAudioOnInteract);
+      window.removeEventListener('touchstart', playAudioOnInteract);
+      window.removeEventListener('click', playAudioOnInteract);
+    };
+  }, [config.audioUrl, audioPlaying]);
+
   // Play audio after user opens invitation
   const handleOpen = () => {
     setHasOpened(true);
+    interactionHandledRef.current = true;
     if (audioRef.current && config.audioUrl) {
       audioRef.current.play().catch(() => {});
       setAudioPlaying(true);
@@ -81,6 +84,10 @@ export default function ClientHome({ config }) {
 
   const toggleAudio = () => {
     if (!audioRef.current) return;
+    
+    // Explicit toggle logic ensures manual interaction takes precedence
+    interactionHandledRef.current = true;
+
     if (audioPlaying) {
       audioRef.current.pause();
       setAudioPlaying(false);
@@ -92,7 +99,13 @@ export default function ClientHome({ config }) {
 
   const revealStyle = config.revealStyle || 'envelope';
   const themeId = config.themeId || config.theme || 'gold';
-  
+  const baseLabels = getLabels(config.eventType);
+  const labels = config.labelOverrides
+    ? { ...baseLabels, ...Object.fromEntries(Object.entries(config.labelOverrides).filter(([, v]) => v)) }
+    : baseLabels;
+  const birthdayData = config.birthdayData || null;
+  const generalData = config.generalData || null;
+
   // Safe theme color resolution
   const resolvedColors = PRESET_THEMES.find(t => t.id === themeId)?.colors || config.theme || PRESET_THEMES[0].colors;
   const theme = {
@@ -122,22 +135,24 @@ export default function ClientHome({ config }) {
   `;
 
   const mainContent = (
-    <main className={`min-h-screen theme-${themeId} ${!hasOpened ? 'h-screen overflow-hidden' : (config.heroLayout === 9 ? 'bg-slate-950 text-white' : 'bg-[var(--colorBg)] text-[var(--colorTextDark)]')}`}>
+    <main className={`min-h-screen theme-${themeId} ${!hasOpened ? 'h-screen overflow-hidden' : 'bg-[var(--colorBg)] text-[var(--colorTextDark)]'}`}>
       {config.heroLayout === 8 ? (
-        <LayoutEight config={config} />
+        <LayoutEight config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} />
       ) : config.heroLayout === 10 ? (
-        <LayoutTen config={config} />
+        <LayoutTen config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} />
+      ) : config.heroLayout === 11 ? (
+        <LayoutEleven config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} />
       ) : (
         <>
-          <Navbar config={config} />
-          <Hero config={config} isOpened={hasOpened} />
-          <Countdown config={config} />
-          <StorySection config={config} />
-          <Gallery config={config} />
-          <Timeline config={config} />
-          <EventDetails config={config} />
-          <RSVPSection config={config} />
-          <Footer config={config} />
+          <Navbar config={config} birthdayData={birthdayData} generalData={generalData} />
+          <Hero config={config} isOpened={hasOpened} labels={labels} birthdayData={birthdayData} generalData={generalData} />
+          <Countdown config={config} labels={labels} />
+          <StorySection config={config} labels={labels} />
+          {config?.gallery && config.gallery.length > 0 && <Gallery config={config} />}
+          <Timeline config={config} labels={labels} />
+          <EventDetails config={config} labels={labels} />
+          <RSVPSection config={config} labels={labels} />
+          <Footer config={config} birthdayData={birthdayData} generalData={generalData} />
         </>
       )}
     </main>
@@ -152,19 +167,19 @@ export default function ClientHome({ config }) {
       <AnimatePresence mode="wait">
         {!hasOpened && (
           revealStyle === 'cover' ? (
-            <CoverReveal key="cover-reveal" config={config} onOpen={handleOpen} />
-          ) : revealStyle === 'couple' ? (
-            <CoupleReveal key="couple-reveal" config={config} onOpen={handleOpen} />
+            <CoverReveal key="cover-reveal" config={config} onOpen={handleOpen} labels={labels} birthdayData={birthdayData} generalData={generalData} />
+          ) : (revealStyle === 'couple' || revealStyle === 'couple_rose') ? (
+            <CoupleReveal key="couple-reveal" config={config} onOpen={handleOpen} labels={labels} birthdayData={birthdayData} generalData={generalData} />
           ) : revealStyle === 'fade' ? (
             <FadeReveal key="fade-reveal" config={config} onOpen={handleOpen} />
           ) : revealStyle === 'premium-envelope' ? (
             <PremiumEnvelope key="premium-envelope" config={config} onOpenInvitation={handleOpen} />
           ) : (revealStyle === 'royal-envelope' || revealStyle === 'royal_envelope') ? (
-            <RoyalEnvelope key="royal-envelope" config={config} onOpen={handleOpen} />
+            <RoyalEnvelope key="royal-envelope" config={config} onOpen={handleOpen} birthdayData={birthdayData} generalData={generalData} />
           ) : (revealStyle === 'mint-envelope' || revealStyle === 'mint_envelope') ? (
             <MintEnvelope key="mint-envelope" config={config} onOpenInvitation={handleOpen} />
           ) : (
-            <Envelope key="envelope-layer" config={config} onOpen={handleOpen} />
+            <Envelope key="envelope-layer" config={config} onOpen={handleOpen} labels={labels} birthdayData={birthdayData} generalData={generalData} />
           )
         )}
       </AnimatePresence>

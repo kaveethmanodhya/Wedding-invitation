@@ -10,7 +10,9 @@ import { PRESET_THEMES } from '../../lib/themes';
 import { getDietaryTitle, getDietaryItems, getInitialDietary, buildDietaryString } from '../../lib/dietary';
 
 // ── Main Page Layout Component ──
-export default function LayoutEight({ config, labels = {}, birthdayData = null, generalData = null }) {
+// Layout 11 is identical to Layout 8 except the hero section shows
+// two admin-editable lines focused on the event location.
+export default function LayoutEleven({ config, labels = {}, birthdayData = null, generalData = null }) {
   const themeId = config.themeId || config.theme || 'gold';
   const theme = PRESET_THEMES.find(t => t.id === themeId)?.colors || config.theme || PRESET_THEMES[0].colors;
   const displayName = birthdayData?.celebrantName
@@ -37,37 +39,27 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
 
     const calculateTimeLeft = () => {
       const difference = targetDate - new Date().getTime();
-      let timeLeftValues = {};
-
       if (difference > 0) {
-        timeLeftValues = {
+        return {
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
           hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
           minutes: Math.floor((difference / 1000 / 60) % 60),
           seconds: Math.floor((difference / 1000) % 60),
         };
-      } else {
-        timeLeftValues = { days: 0, hours: 0, minutes: 0, seconds: 0 };
       }
-
-      return timeLeftValues;
+      return { days: 0, hours: 0, minutes: 0, seconds: 0 };
     };
 
     setTimeout(() => setTimeLeft(calculateTimeLeft()), 0);
-
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
-
+    const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
     return () => clearInterval(timer);
   }, [config?.wedding?.dateTimeISO, config?.wedding?.date]);
 
-  // RSVP Submission logic
+  // RSVP Submission
   const handleRsvpSubmit = async (e) => {
     e.preventDefault();
     setRsvpStatus('loading');
 
-    // Construct WA message
     const dietaryList = buildDietaryString(formData.dietary, dietaryItems)
       + (formData.otherDietary ? `, ${formData.otherDietary}` : '');
 
@@ -92,7 +84,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
         color: theme.colorTextDark || '#1e293b'
       }}
     >
-      {/* ── HERO SECTION: Dynamic Breathing Feel ── */}
+      {/* ── HERO SECTION: Location Focus ── */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
         {/* Ken Burns Background */}
         <div className="absolute inset-0 z-0">
@@ -115,7 +107,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
               transition={{
                 duration: 30,
                 repeat: Infinity,
-                ease: "linear"
+                ease: 'linear'
               }}
               className="relative w-full h-full"
             >
@@ -125,53 +117,60 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
                 priority
                 sizes="100vw"
                 className="object-cover"
-                alt="Wedding Hero"
+                alt="Hero"
               />
             </motion.div>
           )}
           <div
-            className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10"
+            className="absolute inset-0"
             style={{
               backgroundImage: `linear-gradient(to bottom, transparent, rgba(0,0,0,0.1), ${theme.colorBg || '#fdfaf5'})`
             }}
           />
         </div>
 
-        {/* Hero Content */}
+        {/* ── Hero Content: two admin-editable lines ── */}
         <div className="relative z-10 text-center px-4">
           <motion.div
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.5, duration: 1.2 }}
           >
-            <p className="font-sans text-[10px] md:text-xs font-bold uppercase tracking-[0.5em] text-white/80 mb-6 drop-shadow-md" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 4px 16px rgba(0,0,0,0.7)' }}>
-              {labels.layout8JoinUs || 'Join us for the wedding of'}
-            </p>
-            <h1 className="font-serif text-[clamp(48px,10vw,120px)] leading-tight text-white drop-shadow-2xl mb-4 italic px-2" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.9), 0 6px 32px rgba(0,0,0,0.7)' }}>
+            {/* Couple names */}
+            <h1 className="font-serif text-[clamp(48px,10vw,120px)] leading-tight text-white drop-shadow-2xl italic px-2 mb-2" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.9), 0 6px 32px rgba(0,0,0,0.7)' }}>
               {displayName
                 ? displayName
-                : <>{config?.couple?.bride?.firstName || ''} <span className="font-sans text-2xl md:text-5xl not-italic block md:inline mx-2">&</span> {config?.couple?.groom?.firstName || ''}</>
+                : (
+                  <>
+                    <span className="block md:inline">{config?.couple?.bride?.firstName || ''}</span>
+                    <span className="font-sans text-2xl md:text-5xl not-italic block md:inline mx-2">&</span>
+                    <span className="block md:inline">{config?.couple?.groom?.firstName || ''}</span>
+                  </>
+                )
               }
             </h1>
+
             <div className="w-16 h-px bg-white/40 mx-auto my-8" />
-            {/* Small text line */}
+
+            {/* Small text — Hero Small Text label */}
             <p className="font-sans text-[10px] md:text-xs font-bold uppercase tracking-[0.5em] text-white/70 mb-4 drop-shadow-md" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 4px 16px rgba(0,0,0,0.7)' }}>
               {labels.layout11HeroSmall}
             </p>
-            {/* Big text */}
+
+            {/* Big text — Hero Big Text label */}
             <p className="font-serif text-[clamp(22px,4vw,52px)] leading-snug text-white/95 drop-shadow-xl italic px-2" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.9), 0 4px 24px rgba(0,0,0,0.7)' }}>
-              {labels.layout11HeroBig || config?.events?.ceremony?.venueName || ''}
+              {labels.layout11HeroBig}
             </p>
           </motion.div>
         </div>
 
-        {/* Slow Floating Decor */}
+        {/* Scroll cue */}
         <div className="absolute bottom-20 left-1/2 -translate-x-1/2 text-white/40 animate-bounce cursor-pointer">
           <ChevronDown size={32} strokeWidth={1} />
         </div>
       </section>
 
-      {/* ── COUNTDOWN SECTION: Premium Minimalism ── */}
+      {/* ── COUNTDOWN SECTION ── */}
       {timeLeft && (
         <section
           className="px-6 py-20 md:py-32"
@@ -199,7 +198,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
                   className="relative p-6 md:p-10 rounded-[20px] md:rounded-[32px] border flex flex-col items-center justify-center space-y-2 md:space-y-4 transition-all duration-500 hover:shadow-xl group"
                   style={{
                     backgroundColor: theme.colorBg || '#fdfaf5',
-                    borderColor: `${theme.colorPrimary || '#C9956A'}20` // 20% opacity
+                    borderColor: `${theme.colorPrimary || '#C9956A'}20`
                   }}
                 >
                   <span
@@ -214,8 +213,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
                   >
                     {item.label}
                   </span>
-                  {/* Subtle hover accent */}
-                  <div 
+                  <div
                     className="absolute inset-0 rounded-[20px] md:rounded-[32px] border-2 border-transparent group-hover:border-opacity-100 transition-all duration-700 pointer-events-none"
                     style={{ borderColor: theme.colorPrimary || '#C9956A' }}
                   />
@@ -226,162 +224,154 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
         </section>
       )}
 
-      {/* ── STORY SECTION: Elegant Typography ── */}
+      {/* ── STORY SECTION ── */}
       {config?.story?.invitationText?.trim() && (
-      <section
-        className="px-6 py-24 md:py-40 relative overflow-hidden"
-        style={{ backgroundColor: `${theme.colorSurface || '#ffffff'}80` }}
-      >
-        {config.sectionBackgrounds?.story && (
-          <div
-            className="absolute inset-0 pointer-events-none z-0"
-            style={{
-              backgroundImage: `url(${config.sectionBackgrounds.story})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              filter: 'blur(8px)',
-              transform: 'scale(1.02)',
-              opacity: 0.85
-            }}
-          />
-        )}
-        <div className="relative z-10 max-w-3xl mx-auto text-center space-y-12">
-          <div className="space-y-4">
-            <span
-              className="font-sans text-[10px] font-black uppercase tracking-[0.4em]"
-              style={{ color: theme.colorPrimary || '#C9956A' }}
-            >
-              {labels.storySection || 'Our Story'}
-            </span>
-            <h2
-              className="font-serif text-4xl md:text-6xl tracking-tight leading-none italic"
-              style={{ color: theme.colorTextDark || '#1e293b' }}
-            >
-              {labels.layout8EternalLabel || 'Eternal Love'}
-            </h2>
-          </div>
-          <div className="relative px-8 md:px-16">
+        <section
+          className="px-6 py-24 md:py-40 relative overflow-hidden"
+          style={{ backgroundColor: `${theme.colorSurface || '#ffffff'}80` }}
+        >
+          {config.sectionBackgrounds?.story && (
             <div
-              className="absolute -top-6 -left-0 text-7xl font-serif opacity-10"
-              style={{ color: theme.colorPrimary || '#C9956A' }}
-            >
-              “
-            </div>
-            <p
-              className="font-serif text-xl md:text-2xl leading-relaxed italic"
-              style={{ color: theme.colorTextLight || '#4A5568' }}
-            >
-              {config?.story?.invitationText}
-            </p>
-            <div
-              className="absolute -bottom-12 -right-0 text-7xl font-serif opacity-10"
-              style={{ color: theme.colorPrimary || '#C9956A' }}
-            >
-              ”
-            </div>
-          </div>
-        </div>
-      </section>
-      )}
-
-      {/* ── TIMELINE: Vertical Programme du jour ── */}
-      {Array.isArray(config.timeline) && config.timeline.length > 0 && (
-      <section
-        className="py-20 md:py-32 relative overflow-hidden"
-        style={{ backgroundColor: theme.colorBg || '#FAF7F2' }}
-      >
-        {/* Corner blur decor */}
-        <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" style={{ backgroundColor: `${theme.colorPrimary}0d` }} />
-        <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 pointer-events-none" style={{ backgroundColor: `${theme.colorPrimary}0d` }} />
-
-        <div className="max-w-4xl mx-auto px-6 relative z-10">
-          <div className="text-center mb-16 md:mb-24">
-            <span
-              className="text-[0.7rem] uppercase tracking-[0.4em] mb-3 block font-bold"
-              style={{ color: theme.colorPrimary }}
-            >
-              {labels.timelineEyebrow || 'Programme du jour'}
-            </span>
-            <h2
-              className="font-serif text-4xl md:text-5xl mb-4"
-              style={{ color: theme.colorTextDark }}
-            >
-              {labels.timelineHeading || 'Wedding Timeline'}
-            </h2>
-            <div className="h-1 w-[60px] mx-auto rounded-full" style={{ backgroundColor: `${theme.colorPrimary}4d` }} />
-          </div>
-
-          <div className="relative">
-            {/* Gradient vertical line */}
-            <div
-              className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px -translate-x-1/2"
-              style={{ background: `linear-gradient(to bottom, transparent, ${theme.colorPrimary}4d, transparent)` }}
+              className="absolute inset-0 pointer-events-none z-0"
+              style={{
+                backgroundImage: `url(${config.sectionBackgrounds.story})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                filter: 'blur(8px)',
+                transform: 'scale(1.02)',
+                opacity: 0.85
+              }}
             />
-
-            <div className="space-y-12 md:space-y-24">
-              {config.timeline.map((item, idx) => {
-                const isEven = idx % 2 === 0;
-                return (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, x: isEven ? -50 : 50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: '-100px' }}
-                    transition={{ duration: 0.8, delay: idx * 0.15 }}
-                    className={`relative flex items-center justify-start md:justify-center ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'}`}
-                  >
-                    {/* Content Card */}
-                    <div className={`w-full md:w-[45%] pl-12 md:pl-0 ${isEven ? 'md:text-right md:pr-16' : 'md:text-left md:pl-16'}`}>
-                      <div className="bg-white p-6 md:p-8 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-50 transition-transform hover:scale-[1.02]">
-                        <span
-                          className="font-sans text-[0.65rem] font-black uppercase tracking-[0.2em] mb-2 block"
-                          style={{ color: theme.colorPrimary }}
-                        >
-                          {item.time}
-                        </span>
-                        <h3
-                          className="font-serif text-2xl mb-2"
-                          style={{ color: theme.colorTextDark }}
-                        >
-                          {item.title}
-                        </h3>
-                        {(item.description || item.desc) && (
-                          <p
-                            className="font-serif italic text-sm leading-relaxed"
-                            style={{ color: `${theme.colorTextDark}99` }}
-                          >
-                            {item.description || item.desc}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Icon Node */}
-                    <div className="absolute left-4 md:left-1/2 top-0 md:top-1/2 -translate-x-1/2 md:-translate-y-1/2 z-20">
-                      <div
-                        className="w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center text-xl md:text-2xl shadow-xl border-4"
-                        style={{
-                          backgroundColor: theme.colorSurface || '#ffffff',
-                          borderColor: theme.colorBg || '#FAF7F2',
-                          color: theme.colorPrimary,
-                        }}
-                      >
-                        {item.icon || '✨'}
-                      </div>
-                    </div>
-
-                    {/* Desktop spacer */}
-                    <div className="hidden md:block w-[45%]" />
-                  </motion.div>
-                );
-              })}
+          )}
+          <div className="relative z-10 max-w-3xl mx-auto text-center space-y-12">
+            <div className="space-y-4">
+              <span
+                className="font-sans text-[10px] font-black uppercase tracking-[0.4em]"
+                style={{ color: theme.colorPrimary || '#C9956A' }}
+              >
+                {labels.storySection || 'Our Story'}
+              </span>
+              <h2
+                className="font-serif text-4xl md:text-6xl tracking-tight leading-none italic"
+                style={{ color: theme.colorTextDark || '#1e293b' }}
+              >
+                {labels.layout8EternalLabel || 'Eternal Love'}
+              </h2>
+            </div>
+            <div className="relative px-8 md:px-16">
+              <div
+                className="absolute -top-6 -left-0 text-7xl font-serif opacity-10"
+                style={{ color: theme.colorPrimary || '#C9956A' }}
+              >
+                "
+              </div>
+              <p
+                className="font-serif text-xl md:text-2xl leading-relaxed italic"
+                style={{ color: theme.colorTextLight || '#4A5568' }}
+              >
+                {config?.story?.invitationText}
+              </p>
+              <div
+                className="absolute -bottom-12 -right-0 text-7xl font-serif opacity-10"
+                style={{ color: theme.colorPrimary || '#C9956A' }}
+              >
+                "
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
       )}
 
-      {/* ── GALLERY: Premium Collection ── */}
+      {/* ── TIMELINE ── */}
+      {Array.isArray(config.timeline) && config.timeline.length > 0 && (
+        <section
+          className="py-20 md:py-32 relative overflow-hidden"
+          style={{ backgroundColor: theme.colorBg || '#FAF7F2' }}
+        >
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" style={{ backgroundColor: `${theme.colorPrimary}0d` }} />
+          <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 pointer-events-none" style={{ backgroundColor: `${theme.colorPrimary}0d` }} />
+
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
+            <div className="text-center mb-16 md:mb-24">
+              <span
+                className="text-[0.7rem] uppercase tracking-[0.4em] mb-3 block font-bold"
+                style={{ color: theme.colorPrimary }}
+              >
+                {labels.timelineEyebrow || 'Programme du jour'}
+              </span>
+              <h2
+                className="font-serif text-4xl md:text-5xl mb-4"
+                style={{ color: theme.colorTextDark }}
+              >
+                {labels.timelineHeading || 'Wedding Timeline'}
+              </h2>
+              <div className="h-1 w-[60px] mx-auto rounded-full" style={{ backgroundColor: `${theme.colorPrimary}4d` }} />
+            </div>
+
+            <div className="relative">
+              <div
+                className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px -translate-x-1/2"
+                style={{ background: `linear-gradient(to bottom, transparent, ${theme.colorPrimary}4d, transparent)` }}
+              />
+              <div className="space-y-12 md:space-y-24">
+                {config.timeline.map((item, idx) => {
+                  const isEven = idx % 2 === 0;
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: isEven ? -50 : 50 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, margin: '-100px' }}
+                      transition={{ duration: 0.8, delay: idx * 0.15 }}
+                      className={`relative flex items-center justify-start md:justify-center ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'}`}
+                    >
+                      <div className={`w-full md:w-[45%] pl-12 md:pl-0 ${isEven ? 'md:text-right md:pr-16' : 'md:text-left md:pl-16'}`}>
+                        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-50 transition-transform hover:scale-[1.02]">
+                          <span
+                            className="font-sans text-[0.65rem] font-black uppercase tracking-[0.2em] mb-2 block"
+                            style={{ color: theme.colorPrimary }}
+                          >
+                            {item.time}
+                          </span>
+                          <h3
+                            className="font-serif text-2xl mb-2"
+                            style={{ color: theme.colorTextDark }}
+                          >
+                            {item.title}
+                          </h3>
+                          {(item.description || item.desc) && (
+                            <p
+                              className="font-serif italic text-sm leading-relaxed"
+                              style={{ color: `${theme.colorTextDark}99` }}
+                            >
+                              {item.description || item.desc}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="absolute left-4 md:left-1/2 top-0 md:top-1/2 -translate-x-1/2 md:-translate-y-1/2 z-20">
+                        <div
+                          className="w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center text-xl md:text-2xl shadow-xl border-4"
+                          style={{
+                            backgroundColor: theme.colorSurface || '#ffffff',
+                            borderColor: theme.colorBg || '#FAF7F2',
+                            color: theme.colorPrimary,
+                          }}
+                        >
+                          {item.icon || '✨'}
+                        </div>
+                      </div>
+                      <div className="hidden md:block w-[45%]" />
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── GALLERY ── */}
       {config?.gallery && config.gallery.length > 0 && (
         <section
           className="px-6 py-24 md:py-32 relative overflow-hidden"
@@ -415,14 +405,13 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
                 {labels.layout8GalleryLabel || 'Love In Frames'}
               </h2>
             </div>
-
             <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4 w-full px-2">
               {config.gallery.map((photo, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
+                  viewport={{ once: true, margin: '-50px' }}
                   transition={{ duration: 0.8, delay: (idx % 5) * 0.1 }}
                   className="group relative overflow-hidden rounded-xl md:rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] transition-all duration-700 border-2 md:border-4 border-white cursor-default aspect-square"
                 >
@@ -440,7 +429,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
         </section>
       )}
 
-      {/* ── MAP & LOCATION: Interactive Display ── */}
+      {/* ── MAP & LOCATION ── */}
       <section
         className="px-6 py-24 md:py-32 relative overflow-hidden"
         style={{ backgroundColor: theme.colorSurface || '#ffffff' }}
@@ -529,7 +518,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
         </div>
       </section>
 
-      {/* ── ADVANCED RSVP SECTION ── */}
+      {/* ── RSVP SECTION ── */}
       <section
         className="px-6 py-24 md:py-40 relative overflow-hidden"
         style={{ backgroundColor: theme.colorBg || '#fdfaf5' }}
@@ -548,10 +537,9 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
           />
         )}
         <div
-          className="relative z-10 max-w-2xl mx-auto p-10 md:p-20 rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.04)] border text-center relative"
+          className="relative z-10 max-w-2xl mx-auto p-10 md:p-20 rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.04)] border text-center"
           style={{ backgroundColor: theme.colorSurface || '#ffffff', borderColor: theme.colorSecondary || '#f9f6f1' }}
         >
-          {/* Decor */}
           <div
             className="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 border rounded-full flex items-center justify-center shadow-lg"
             style={{ backgroundColor: theme.colorBg || '#fdfaf5', borderColor: theme.colorSecondary || '#f9f6f1' }}
@@ -572,10 +560,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
             >
               Kindly Reply by {config?.rsvp?.deadline || ''}
             </p>
-            <div
-              className="w-12 h-px mx-auto opacity-30"
-              style={{ backgroundColor: theme.colorPrimary || '#C9956A' }}
-            />
+            <div className="w-12 h-px mx-auto opacity-30" style={{ backgroundColor: theme.colorPrimary || '#C9956A' }} />
           </div>
 
           {rsvpStatus === 'success' ? (
@@ -592,7 +577,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
             </motion.div>
           ) : (
             <form onSubmit={handleRsvpSubmit} className="space-y-8">
-              {/* Attendance Select */}
+              {/* Attendance buttons */}
               <div className="grid grid-cols-2 gap-4">
                 {[
                   { id: 'Accept', label: 'Joyfully Accept', icon: '🎉' },
@@ -602,7 +587,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
                     key={opt.id}
                     type="button"
                     onClick={() => setFormData({ ...formData, attendance: opt.id })}
-                    className="p-6 rounded-2xl border transition-all duration-500 flex flex-col items-center gap-2 group"
+                    className="p-6 rounded-2xl border transition-all duration-500 flex flex-col items-center gap-2"
                     style={{
                       backgroundColor: formData.attendance === opt.id ? (theme.colorTextDark || '#1e293b') : (theme.colorBg || '#FAF7F2'),
                       borderColor: formData.attendance === opt.id ? (theme.colorTextDark || '#1e293b') : (theme.colorSecondary || '#E8D5B7'),
@@ -625,11 +610,11 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
                 {formData.attendance === 'Accept' && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
+                    animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     className="overflow-hidden space-y-8 pt-4"
                   >
-                    {/* Guest Count */}
+                    {/* Guest count */}
                     <div
                       className="flex flex-col items-center gap-3 p-6 rounded-2xl border"
                       style={{ backgroundColor: theme.colorBg || '#FAF7F2', borderColor: theme.colorSecondary || '#E8D5B7' }}
@@ -658,7 +643,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
                       </div>
                     </div>
 
-                    {/* Dietary Requirements - Advanced Box */}
+                    {/* Dietary */}
                     <div
                       className="p-8 rounded-[30px] border text-left space-y-4"
                       style={{ backgroundColor: theme.colorBg || '#FAF7F2', borderColor: theme.colorSecondary || '#E8D5B7' }}
@@ -678,7 +663,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
                               ...formData,
                               dietary: { ...formData.dietary, [opt.id]: !formData.dietary[opt.id] }
                             })}
-                            className="flex items-center justify-between w-full gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 transition-all group"
+                            className="flex items-center justify-between w-full gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 transition-all"
                           >
                             <span
                               className="text-[10px] sm:text-xs font-serif italic transition-colors uppercase tracking-widest text-left"
@@ -703,7 +688,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
                 )}
               </AnimatePresence>
 
-              {/* Name Input */}
+              {/* Name + submit */}
               <div className="space-y-6">
                 <div className="group relative">
                   <input
@@ -714,8 +699,8 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                     className="w-full bg-transparent border-b-2 py-4 font-serif text-2xl italic outline-none transition-all placeholder:text-slate-200"
                     style={{ borderBottomColor: theme.colorSecondary || '#E8D5B7' }}
-                    onFocus={(e) => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'}
-                    onBlur={(e) => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}
+                    onFocus={e => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'}
+                    onBlur={e => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}
                   />
                 </div>
 
@@ -727,8 +712,8 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
                     onChange={e => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full bg-transparent border-b-2 py-4 font-serif text-xl italic outline-none transition-all placeholder:text-slate-200"
                     style={{ borderBottomColor: theme.colorSecondary || '#E8D5B7' }}
-                    onFocus={(e) => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'}
-                    onBlur={(e) => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}
+                    onFocus={e => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'}
+                    onBlur={e => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}
                   />
                 </div>
 
@@ -740,8 +725,8 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
                     onChange={e => setFormData({ ...formData, otherDietary: e.target.value })}
                     className="w-full bg-transparent border-b-2 py-4 font-serif text-xl italic outline-none transition-all placeholder:text-slate-200"
                     style={{ borderBottomColor: theme.colorSecondary || '#E8D5B7' }}
-                    onFocus={(e) => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'}
-                    onBlur={(e) => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}
+                    onFocus={e => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'}
+                    onBlur={e => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}
                   />
                 </div>
 
@@ -753,22 +738,17 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
                     onChange={e => setFormData({ ...formData, message: e.target.value })}
                     className="w-full bg-transparent border-b-2 py-4 font-serif text-xl italic outline-none transition-all placeholder:text-slate-200 resize-none"
                     style={{ borderBottomColor: theme.colorSecondary || '#E8D5B7' }}
-                    onFocus={(e) => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'}
-                    onBlur={(e) => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}
+                    onFocus={e => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'}
+                    onBlur={e => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}
                   />
                 </div>
-
                 <button
                   type="submit"
                   disabled={!formData.name || !formData.attendance || rsvpStatus === 'loading'}
                   className="w-full py-5 text-white font-sans text-xs font-black uppercase tracking-[0.5em] shadow-2xl transition-all duration-500 disabled:opacity-30 rounded-2xl group flex items-center justify-center gap-3"
                   style={{ backgroundColor: theme.colorTextDark || '#1e293b' }}
-                  onMouseEnter={(e) => {
-                    if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = theme.colorPrimary || '#C9956A';
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = theme.colorTextDark || '#1e293b';
-                  }}
+                  onMouseEnter={e => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = theme.colorPrimary || '#C9956A'; }}
+                  onMouseLeave={e => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = theme.colorTextDark || '#1e293b'; }}
                 >
                   {rsvpStatus === 'loading' ? (
                     <span
@@ -785,7 +765,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
         </div>
       </section>
 
-      {/* ── FOOTER: Simple Elegant ── */}
+      {/* ── FOOTER ── */}
       <section
         className="py-32 text-center border-t relative overflow-hidden"
         style={{ backgroundColor: theme.colorBg || '#FAF7F2', borderTopColor: theme.colorSecondary || '#E8D5B7' }}
@@ -804,12 +784,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
           />
         )}
         <div className="relative z-10 space-y-8 px-6">
-          <div
-            className="text-4xl opacity-20"
-            style={{ color: theme.colorPrimary || '#C9956A' }}
-          >
-            ❦
-          </div>
+          <div className="text-4xl opacity-20" style={{ color: theme.colorPrimary || '#C9956A' }}>❦</div>
           <h2
             className="font-serif text-5xl md:text-7xl italic leading-none opacity-20"
             style={{ color: theme.colorTextDark || '#2C2018' }}

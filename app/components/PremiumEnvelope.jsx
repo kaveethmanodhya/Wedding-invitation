@@ -1,6 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function PremiumEnvelope({ config, onOpenInvitation }) {
   const [isAnimating, setIsAnimating] = useState(false);
@@ -9,6 +9,7 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
   const videoRef = useRef(null);
 
   const envelopeVideo = config?.envelopeVideo || '/videos/envelope-open.mp4';
+  const isAutoOpen = config?.envelopeOpenMode === 'auto';
 
   const handleOpen = () => {
     if (isAnimating) return;
@@ -24,6 +25,14 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
     }
   };
 
+  // Auto-open: trigger as soon as media is ready
+  useEffect(() => {
+    if (isAutoOpen && mediaReady && !isAnimating) {
+      handleOpen();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAutoOpen, mediaReady]);
+
   const handleVideoEnd = () => {
     setHasEnded(true);
     // Allow fade out animation to play before swapping components in parent
@@ -36,8 +45,8 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
     <motion.div 
       exit={{ opacity: 0 }}
       transition={{ duration: 0.8 }}
-      className={`z-[9999] flex items-center justify-center bg-gray-900/60 transition-all duration-500 ${!isAnimating ? 'cursor-pointer' : ''} ${isAnimating ? 'pointer-events-none' : ''} fixed inset-0 w-screen h-screen overflow-hidden`}
-      onClick={handleOpen}
+      className={`z-[9999] flex items-center justify-center bg-gray-900/60 transition-all duration-500 ${!isAnimating && !isAutoOpen ? 'cursor-pointer' : ''} ${isAnimating ? 'pointer-events-none' : ''} fixed inset-0 w-screen h-screen overflow-hidden`}
+      onClick={!isAutoOpen ? handleOpen : undefined}
     >
       <div className="absolute inset-0 bg-black/20 pointer-events-none" />
       
@@ -68,9 +77,11 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
       </motion.div>
 
       {/* Global Loading Indicator / Prompt */}
-      {!isAnimating && (
-         <div className={`absolute bottom-10 md:bottom-20 left-1/2 -translate-x-1/2 text-white font-sans text-xs md:text-sm uppercase tracking-[0.4em] pointer-events-none animate-pulse transition-opacity duration-1000 z-[100] ${mediaReady ? 'opacity-100' : 'opacity-0'}`}>
-           Tap Anywhere to Open
+      {!isAnimating && !isAutoOpen && (
+         <div className={`absolute bottom-10 md:bottom-20 left-1/2 -translate-x-1/2 pointer-events-none transition-opacity duration-1000 z-[100] ${mediaReady ? 'opacity-100' : 'opacity-100'}`}>
+           <span className="font-sans text-xs md:text-sm uppercase tracking-[0.4em] text-black bg-white/30 backdrop-blur-sm px-5 py-2.5 rounded-full whitespace-nowrap">
+             Tap Anywhere to Open
+           </span>
          </div>
       )}
 

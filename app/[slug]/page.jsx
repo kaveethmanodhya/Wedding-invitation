@@ -17,6 +17,36 @@ async function loadConfig(slug) {
     const doc = await db.collection('settings').findOne(query);
     if (doc) {
       const { _id, ...config } = doc;
+      // Merge eventType from event_meta — settings is never modified.
+      // Falls back to 'wedding' so all existing invitations are unaffected.
+      const eventMeta = await db.collection('event_meta').findOne({ slug: config.slug });
+      config.eventType = eventMeta?.eventType || 'wedding';
+
+      // Merge birthday-specific data
+      if (config.eventType === 'birthday') {
+        const bdDoc = await db.collection('birthdays').findOne({ slug: config.slug });
+        if (bdDoc) {
+          const { _id: _bid, slug: _bs, ...bdData } = bdDoc;
+          config.birthdayData = bdData;
+        }
+      }
+
+      // Merge general event data
+      if (config.eventType === 'general') {
+        const genDoc = await db.collection('general').findOne({ slug: config.slug });
+        if (genDoc) {
+          const { _id: _gid, slug: _gs, ...genData } = genDoc;
+          config.generalData = genData;
+        }
+      }
+
+      // Merge per-invitation label overrides
+      const loDoc = await db.collection('label_overrides').findOne({ slug: config.slug });
+      if (loDoc) {
+        const { _id: _lid, slug: _ls, ...loData } = loDoc;
+        config.labelOverrides = loData;
+      }
+
       return config;
     }
   } catch (e) {

@@ -33,6 +33,7 @@ export const getDefaultConfig = (slug) => ({
       dressCode: 'Formal'
     }
   },
+  extraEvents: [],
   gallery: [],
   audioUrl: '',
   heroImage: '',
@@ -52,7 +53,9 @@ export const getDefaultConfig = (slug) => ({
   rsvp: {
     whatsappNumber: '',
     deadline: 'December 1, 2026',
-    maxGuests: 2
+    maxGuests: 2,
+    dietaryTitle: null,   // null = use built-in default title
+    dietaryItems: null,   // null = use built-in defaults; set to [{id, label}] array to customise
   },
   envelope: {
     title: 'A Wedding Invitation',

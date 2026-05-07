@@ -87,3 +87,29 @@ html {
 .animate-pulse-slow {
   animation: pulse-slow 10s infinite ease-in-out;
 }
+
+/* ── Optimized GPU-Accelerated Petal Animations ── */
+@keyframes pureFall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes pureSway {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(40px); }
+}
+
+.css-petal-fall {
+  animation-name: pureFall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+.css-petal-sway {
+  animation-name: pureSway;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}

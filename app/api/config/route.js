@@ -69,11 +69,65 @@ export async function GET(request) {
         return NextResponse.json({ success: false, error: 'Invitation not found' }, { status: 404 });
       }
       const { _id, ...config } = doc;
+      // Merge eventType from event_meta (separate collection, settings is never modified).
+      // Defaults to 'wedding' so all existing invitations work without any data migration.
+      const eventMeta = await db.collection('event_meta').findOne({ slug: config.slug });
+      config.eventType = eventMeta?.eventType || 'wedding';
+
+      // Merge birthday-specific data (only when eventType is 'birthday')
+      if (config.eventType === 'birthday') {
+        const bdDoc = await db.collection('birthdays').findOne({ slug: config.slug });
+        if (bdDoc) {
+          const { _id: _bid, slug: _bs, ...bdData } = bdDoc;
+          config.birthdayData = bdData;
+        }
+      }
+
+      // Merge general event data (only when eventType is 'general')
+      if (config.eventType === 'general') {
+        const genDoc = await db.collection('general').findOne({ slug: config.slug });
+        if (genDoc) {
+          const { _id: _gid, slug: _gs, ...genData } = genDoc;
+          config.generalData = genData;
+        }
+      }
+
+      // Merge per-invitation label overrides (additive — never modifies settings)
+      const loDoc = await db.collection('label_overrides').findOne({ slug: config.slug });
+      if (loDoc) {
+        const { _id: _lid, slug: _ls, ...loData } = loDoc;
+        config.labelOverrides = loData;
+      }
+
       return NextResponse.json(config);
     } else {
       // List all invitations (basic info for the dashboard)
-      const list = await db.collection('settings').find({}, { projection: { slug: 1, 'couple.displayNames': 1, 'wedding.displayDate': 1, 'wedding.dateTimeISO': 1, isActive: 1 } }).toArray();
-      return NextResponse.json(list);
+      const list = await db.collection('settings').find({}, { projection: { slug: 1, 'couple.displayNames': 1, 'wedding.displayDate': 1, 'wedding.dateTimeISO': 1, isActive: 1, isFavourite: 1 } }).toArray();
+      // Enrich each item with eventType + type-specific display name
+      const slugs = list.map(i => i.slug).filter(Boolean);
+      const [eventMetas, birthdays, generals] = await Promise.all([
+        db.collection('event_meta').find({ slug: { $in: slugs } }).toArray(),
+        db.collection('birthdays').find({ slug: { $in: slugs } }, { projection: { slug: 1, celebrantName: 1 } }).toArray(),
+        db.collection('general').find({ slug: { $in: slugs } }, { projection: { slug: 1, eventTitle: 1, hostName: 1 } }).toArray(),
+      ]);
+      const metaMap = Object.fromEntries(eventMetas.map(m => [m.slug, m.eventType]));
+      const bdMap   = Object.fromEntries(birthdays.map(b => [b.slug, b]));
+      const genMap  = Object.fromEntries(generals.map(g => [g.slug, g]));
+      const enriched = list.map(item => {
+        const eventType = metaMap[item.slug] || 'wedding';
+        let displayName;
+        if (eventType === 'birthday') {
+          const name = bdMap[item.slug]?.celebrantName;
+          displayName = name ? `${name}'s Birthday` : 'Birthday Invitation';
+        } else if (eventType === 'general') {
+          displayName = genMap[item.slug]?.eventTitle || genMap[item.slug]?.hostName || 'General Event';
+        } else {
+          // wedding / engagement
+          displayName = item.couple?.displayNames || item.displayNames || 'Wedding Invitation';
+        }
+        return { ...item, eventType, displayNames: displayName };
+      });
+      return NextResponse.json(enriched);
     }
   } catch (error) {
     console.error('[api/config] GET Error:', error);
@@ -109,6 +163,38 @@ export async function POST(request) {
     return NextResponse.json({ success: true, message: `Created invitation for '${slug}'`, config: newConfig });
   } catch (error) {
     console.error('[api/config] POST Error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+/**
+ * PATCH /api/config?slug=XYZ
+ * Partially updates a single field — used for toggling isFavourite without touching the rest of the config.
+ */
+export async function PATCH(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const slug = searchParams.get('slug');
+    if (!slug) return NextResponse.json({ success: false, error: 'slug required' }, { status: 400 });
+
+    const body = await request.json();
+    // Only allow safe partial fields
+    const allowed = ['isFavourite', 'isActive'];
+    const patch = {};
+    for (const key of allowed) {
+      if (key in body) patch[key] = body[key];
+    }
+    if (Object.keys(patch).length === 0) {
+      return NextResponse.json({ success: false, error: 'No valid fields to update' }, { status: 400 });
+    }
+
+    const client = await getMongoClientPromise();
+    const db = client.db('wedding_app');
+    const query = slug === 'global_config' ? { _id: 'global_config' } : { slug };
+    const result = await db.collection('settings').updateOne(query, { $set: patch });
+    if (result.matchedCount === 0) return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 });
+    return NextResponse.json({ success: true });
+  } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

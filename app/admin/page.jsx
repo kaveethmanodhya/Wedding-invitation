@@ -1,11 +1,13 @@
 'use client';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useSyncExternalStore } from 'react';
+import NextImage from 'next/image';
 import AdminLogin from './components/AdminLogin';
 import { motion, AnimatePresence } from 'framer-motion';
 import ImageCropper from './components/ImageCropper';
 import imageCompression from 'browser-image-compression';
-import { Trash2, ImageIcon, Upload, X, Heart, Calendar, Book, MapPin, Image, Mail, Palette, Search, Layers, Sparkles, CheckCircle, AlertCircle, Save, ExternalLink, Music, Crop, RefreshCcw, Eye } from 'lucide-react';
+import { Trash2, ImageIcon, Upload, X, Heart, Calendar, Book, MapPin, Image as LucideImage, Mail, Palette, Search, Layers, Sparkles, CheckCircle, AlertCircle, Save, ExternalLink, Music, Crop, RefreshCcw, Eye } from 'lucide-react';
 import { PRESET_THEMES } from '../../lib/themes';
+import { EVENT_LABELS } from '../../lib/eventLabels';
 
 const ImageField = ({ label, hint, value, path, type, onUpload, onDelete, onCrop, accept = "image/*, video/mp4, video/webm" }) => {
   const isVideo = value?.toLowerCase()?.endsWith('.mp4') || value?.includes('video/upload');
@@ -18,7 +20,10 @@ const ImageField = ({ label, hint, value, path, type, onUpload, onDelete, onCrop
             {isVideo ? (
               <video src={value} className="w-full h-full object-cover" muted playsInline />
             ) : (
-              <img src={value} className="w-full h-full object-cover" alt={label} />
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={value} className="w-full h-full object-cover" alt={label} />
+              </>
             )}
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
               {onCrop && (
@@ -97,6 +102,19 @@ const inputCls = `w-full px-3 py-2.5 rounded-lg border border-slate-200
   placeholder:text-slate-300 transition-all duration-200`;
 
 const textareaCls = `${inputCls} resize-y min-h-[80px]`;
+
+function LabelField({ label, fieldKey, hint, value, onChange, placeholder }) {
+  return (
+    <FieldGroup label={label} hint={hint}>
+      <input
+        className={inputCls}
+        value={value}
+        onChange={e => onChange(fieldKey, e.target.value)}
+        placeholder={placeholder || ''}
+      />
+    </FieldGroup>
+  );
+}
 
 function SectionCard({ title, icon, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -202,7 +220,10 @@ function GalleryEditor({ gallery, onChange, onUpload, onDelete }) {
               style={{ aspectRatio: '3 / 4' }}
             >
               {photo.src ? (
-                <img src={photo.src} alt={photo.alt} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={photo.src} alt={photo.alt} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                </>
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                   <ImageIcon size={24} className="opacity-20" />
@@ -250,24 +271,97 @@ function GalleryEditor({ gallery, onChange, onUpload, onDelete }) {
   );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//  Extra Events editor (dynamic list)
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+function ExtraEventsEditor({ events, onChange, onUpload, onDelete }) {
+  const addEvent = () => onChange([...events, {
+    title: '', icon: '🎉', time: '', venueName: '', address: '', mapsUrl: '', dressCode: '', image: ''
+  }]);
+  const removeEvent = (i) => onChange(events.filter((_, idx) => idx !== i));
+  const updateEvent = (i, key, val) => onChange(events.map((e, idx) => idx === i ? { ...e, [key]: val } : e));
+
+  return (
+    <div className="col-span-2 flex flex-col gap-6">
+      {events.length === 0 && (
+        <p className="text-sm text-slate-400 italic text-center py-4 border border-dashed border-slate-200 rounded-xl">
+          No additional events yet. Click below to add one.
+        </p>
+      )}
+      {events.map((event, i) => (
+        <div key={i} className="relative border border-slate-200 rounded-xl p-5 bg-slate-50">
+          <button
+            type="button"
+            onClick={() => removeEvent(i)}
+            className="absolute top-3 right-3 w-7 h-7 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center hover:bg-rose-200 transition-colors"
+          >
+            <Trash2 size={14} />
+          </button>
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Extra Event {i + 1}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FieldGroup label="Title">
+              <input type="text" className={inputCls} value={event.title || ''} onChange={e => updateEvent(i, 'title', e.target.value)} placeholder="e.g. Reception" />
+            </FieldGroup>
+            <FieldGroup label="Emoji Icon">
+              <input type="text" className={inputCls} value={event.icon || ''} onChange={e => updateEvent(i, 'icon', e.target.value)} placeholder="🎉" />
+            </FieldGroup>
+            <FieldGroup label="Time">
+              <input type="text" className={inputCls} value={event.time || ''} onChange={e => updateEvent(i, 'time', e.target.value)} placeholder="2:00 PM" />
+            </FieldGroup>
+            <FieldGroup label="Dress Code">
+              <input type="text" className={inputCls} value={event.dressCode || ''} onChange={e => updateEvent(i, 'dressCode', e.target.value)} placeholder="Smart Casual" />
+            </FieldGroup>
+            <FieldGroup label="Venue Name">
+              <input type="text" className={inputCls} value={event.venueName || ''} onChange={e => updateEvent(i, 'venueName', e.target.value)} placeholder="Grand Ballroom" />
+            </FieldGroup>
+            <FieldGroup label="Address">
+              <input type="text" className={inputCls} value={event.address || ''} onChange={e => updateEvent(i, 'address', e.target.value)} placeholder="123 Main St, Colombo" />
+            </FieldGroup>
+            <FieldGroup label="Google Maps URL" hint="Paste a Google Maps link here">
+              <input type="url" className={inputCls} value={event.mapsUrl || ''} onChange={e => updateEvent(i, 'mapsUrl', e.target.value)} placeholder="https://maps.google.com/..." />
+            </FieldGroup>
+          </div>
+          <div className="mt-4">
+            <ImageField
+              label="Event Image"
+              hint="Optional photo for this event (appears in Layout 4)"
+              value={event.image || ''}
+              path={`extraEvents.${i}.image`}
+              type="general"
+              onUpload={onUpload}
+              onDelete={onDelete}
+            />
+          </div>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={addEvent}
+        className="self-start text-xs font-semibold text-[#C9956A] flex items-center gap-1 hover:underline"
+      >
+        + Add Extra Event
+      </button>
+    </div>
+  );
+}
+
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //  MAIN ADMIN PAGE (Multi-Tenant Container)
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 export default function AdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [view, setView] = useState('list'); // 'list' or 'edit'
   const [selectedSlug, setSelectedSlug] = useState(null);
   const [toast, setToast] = useState(null);
 
+  const isAuthenticated = useSyncExternalStore(
+    () => () => {},
+    () => typeof localStorage !== 'undefined' && localStorage.getItem('wedding_admin_auth') === 'true',
+    () => false,
+  );
+
   const showToast = useCallback((type, message) => {
     setToast({ type, message });
     setTimeout(() => setToast(null), 4000);
-  }, []);
-
-  useEffect(() => {
-    if (localStorage.getItem('wedding_admin_auth') === 'true') {
-      setIsAuthenticated(true);
-    }
   }, []);
 
   if (!isAuthenticated) {
@@ -275,7 +369,7 @@ export default function AdminPage() {
       <AdminLogin
         onLogin={() => {
           localStorage.setItem('wedding_admin_auth', 'true');
-          setIsAuthenticated(true);
+          window.location.reload();
         }}
       />
     );
@@ -331,7 +425,7 @@ function InvitationList({ onEdit, showToast }) {
       setInvitations(data.map(item => ({
         ...item,
         slug: item.slug || 'global_config',
-        displayNames: item.couple?.displayNames || item.displayNames || 'Legacy Invitation'
+        displayNames: item.displayNames || item.couple?.displayNames || 'Legacy Invitation'
       })));
     } catch (err) {
       console.error('[InvitationList] Fetch error:', err);
@@ -342,7 +436,24 @@ function InvitationList({ onEdit, showToast }) {
     }
   };
 
-  useEffect(() => { fetchInvitations(); }, []);
+  useEffect(() => { fetchInvitations(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const toggleFavourite = async (slug, current) => {
+    // Optimistic update
+    setInvitations(prev => prev.map(inv => inv.slug === slug ? { ...inv, isFavourite: !current } : inv));
+    try {
+      const res = await fetch(`/api/config?slug=${slug}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isFavourite: !current }),
+      });
+      if (!res.ok) throw new Error('Failed');
+    } catch {
+      // Revert on failure
+      setInvitations(prev => prev.map(inv => inv.slug === slug ? { ...inv, isFavourite: current } : inv));
+      showToast('error', 'Failed to update favourite');
+    }
+  };
 
   const handleDeleteInvitation = async (slug) => {
     setLoading(true);
@@ -474,7 +585,23 @@ function InvitationList({ onEdit, showToast }) {
               return (
                 <div key={inv.slug} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
                   <div className="flex justify-between items-start mb-4">
-                    <div className="w-12 h-12 bg-[#C9956A]/10 rounded-2xl flex items-center justify-center text-2xl"><Heart size={20} className="text-[#C9956A]" /></div>
+                    <button
+                      type="button"
+                      onClick={() => toggleFavourite(inv.slug, !!inv.isFavourite)}
+                      title={inv.isFavourite ? 'Remove from favourites' : 'Add to favourites'}
+                      className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-200 ${
+                        inv.isFavourite
+                          ? 'bg-rose-50 hover:bg-rose-100'
+                          : 'bg-[#C9956A]/10 hover:bg-rose-50'
+                      }`}
+                    >
+                      <Heart
+                        size={20}
+                        className={`transition-all duration-200 ${
+                          inv.isFavourite ? 'text-rose-500 fill-rose-500' : 'text-[#C9956A]'
+                        }`}
+                      />
+                    </button>
                     <div className="flex flex-col items-end gap-1.5">
                       <span className={`text-[0.6rem] font-bold uppercase tracking-widest px-2 py-1 rounded-md ${inv.slug === 'global_config'
                           ? 'bg-slate-50 text-slate-400'
@@ -491,8 +618,13 @@ function InvitationList({ onEdit, showToast }) {
                       )}
                     </div>
                   </div>
-                  <h3 className="text-lg font-serif text-slate-800 mb-1 line-clamp-1">{inv.displayNames || 'Untitled Wedding'}</h3>
-                  <p className="text-slate-400 text-xs mb-6">Slug: <span className="text-slate-600 font-mono tracking-tighter">/{inv.slug}</span></p>
+                  <h3 className="text-lg font-serif text-slate-800 mb-1 line-clamp-1">{inv.displayNames || 'Untitled Invitation'}</h3>
+                  <p className="text-slate-400 text-xs mb-6">
+                    {inv.eventType && inv.eventType !== 'wedding' && (
+                      <span className="inline-block mr-2 px-1.5 py-0.5 rounded text-[0.55rem] font-bold uppercase tracking-widest bg-violet-50 text-violet-400">{inv.eventType}</span>
+                    )}
+                    Slug: <span className="text-slate-600 font-mono tracking-tighter">/{inv.slug}</span>
+                  </p>
 
                   <div className="flex gap-2 relative z-10">
                     <button
@@ -627,6 +759,11 @@ function AdminDashboard({ slug, onBack, showToast }) {
   const [fetchError, setFetchError] = useState(null);
   const [activeTab, setActiveTab] = useState('couple');
   const [confirmDelete, setConfirmDelete] = useState(null); // { path, url, isGallery, index }
+  const [eventType, setEventType] = useState('wedding');
+  const [savingEventType, setSavingEventType] = useState(false);
+  const [birthdayData, setBirthdayData] = useState({ celebrantName: '', age: null, birthdayTheme: '', wishMessage: '' });
+  const [generalData, setGeneralData] = useState({ eventTitle: '', hostName: '', customBodyText: '', eventType2: '' });
+  const [labelOverrides, setLabelOverrides] = useState({});
 
   // ------ Cropper State ------------------------------------------------------------------------------------------------------------------------------
   const [cropping, setCropping] = useState(null); // { file, path, type, aspect }
@@ -775,6 +912,23 @@ function AdminDashboard({ slug, onBack, showToast }) {
       const data = await res.json();
       if (data.success === false) throw new Error(data.error || 'Failed to fetch invitation config');
       setConfig(data);
+      const resolvedType = data.eventType || 'wedding';
+      setEventType(resolvedType);
+      // Load type-specific data from separate collections (settings is never modified)
+      if (resolvedType === 'birthday') {
+        const bRes = await fetch(`/api/birthday-data?slug=${slug}`);
+        const bData = await bRes.json();
+        if (bData.success !== false) setBirthdayData(bData);
+      }
+      if (resolvedType === 'general') {
+        const gRes = await fetch(`/api/general-data?slug=${slug}`);
+        const gData = await gRes.json();
+        if (gData.success !== false) setGeneralData(gData);
+      }
+      // Load per-invitation label overrides
+      const loRes = await fetch(`/api/label-overrides?slug=${slug}`);
+      const loData = await loRes.json();
+      if (loData && loData.success !== false) setLabelOverrides(loData);
     } catch (err) {
       console.error('[AdminDashboard] Load error:', err);
       setFetchError(err.message);
@@ -793,6 +947,81 @@ function AdminDashboard({ slug, onBack, showToast }) {
       // no-op here now
     }
   }, [activeTab]);
+
+  const handleEventTypeSave = async (newType) => {
+    setSavingEventType(true);
+    try {
+      const res = await fetch(`/api/event-type?slug=${slug}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventType: newType }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setEventType(newType);
+        showToast('success', `Event type set to "${newType}"`);
+        // Load type-specific data when switching to birthday or general
+        if (newType === 'birthday') {
+          const bRes = await fetch(`/api/birthday-data?slug=${slug}`);
+          const bData = await bRes.json();
+          if (!bData.success === false) setBirthdayData(bData);
+        }
+        if (newType === 'general') {
+          const gRes = await fetch(`/api/general-data?slug=${slug}`);
+          const gData = await gRes.json();
+          if (!gData.success === false) setGeneralData(gData);
+        }
+      } else {
+        throw new Error(data.error || 'Unknown error');
+      }
+    } catch (err) {
+      showToast('error', `Failed to update event type: ${err.message}`);
+    } finally {
+      setSavingEventType(false);
+    }
+  };
+
+  const handleBirthdayDataSave = async () => {
+    try {
+      const res = await fetch(`/api/birthday-data?slug=${slug}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(birthdayData),
+      });
+      if (res.ok) showToast('success', 'Birthday details saved');
+      else showToast('error', 'Failed to save birthday details');
+    } catch (err) {
+      showToast('error', `Failed to save: ${err.message}`);
+    }
+  };
+
+  const handleGeneralDataSave = async () => {
+    try {
+      const res = await fetch(`/api/general-data?slug=${slug}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(generalData),
+      });
+      if (res.ok) showToast('success', 'Event details saved');
+      else showToast('error', 'Failed to save event details');
+    } catch (err) {
+      showToast('error', `Failed to save: ${err.message}`);
+    }
+  };
+
+  const handleLabelOverridesSave = async () => {
+    try {
+      const res = await fetch(`/api/label-overrides?slug=${slug}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(labelOverrides),
+      });
+      if (res.ok) showToast('success', 'Labels saved successfully!');
+      else showToast('error', 'Failed to save labels');
+    } catch (err) {
+      showToast('error', `Failed to save labels: ${err.message}`);
+    }
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -895,7 +1124,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
         </div>
         <h2 className="text-2xl font-serif text-slate-800 mb-2">Editor Error</h2>
         <p className="text-slate-500 text-sm mb-8 leading-relaxed max-w-sm">
-          We couldn't load the configuration for <span className="font-bold text-slate-700">/{slug}</span>.
+          We couldn&apos;t load the configuration for <span className="font-bold text-slate-700">/{slug}</span>.
           {fetchError || 'Configuration data is missing or incomplete.'}
         </p>
         <div className="flex flex-col gap-3 w-full max-w-xs">
@@ -918,7 +1147,8 @@ function AdminDashboard({ slug, onBack, showToast }) {
 
   const tabs = [
     { id: 'couple', label: '💑 Couple' },
-    { id: 'wedding', label: '📅 Wedding' },
+    { id: 'wedding', label: '📅 Event' },
+    { id: 'labels', label: '✏️ Labels' },
     { id: 'story', label: '📖 Story' },
     { id: 'events', label: '📍 Events' },
     { id: 'gallery', label: '🖼 Gallery' },
@@ -965,6 +1195,23 @@ function AdminDashboard({ slug, onBack, showToast }) {
               </svg>
               View Live
             </a>
+            {/* Event Type Selector */}
+            <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-lg border border-slate-200 bg-slate-50">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Type</span>
+              <select
+                value={eventType}
+                disabled={savingEventType}
+                onChange={e => handleEventTypeSave(e.target.value)}
+                className="text-xs font-semibold text-slate-700 bg-transparent border-none outline-none cursor-pointer disabled:opacity-60"
+                title="Event type controls section headings and message labels"
+              >
+                <option value="wedding">💍 Wedding</option>
+                <option value="engagement">💌 Engagement</option>
+                <option value="birthday">🎂 Birthday</option>
+                <option value="general">📩 General</option>
+              </select>
+              {savingEventType && <span className="w-3 h-3 rounded-full border-2 border-slate-300 border-t-[#C9956A] animate-spin" />}
+            </div>
             {/* Active / Inactive toggle */}
             <button
               type="button"
@@ -1012,7 +1259,61 @@ function AdminDashboard({ slug, onBack, showToast }) {
 
       <form id="config-form" onSubmit={handleSave}>
         <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-5">
-          {activeTab === 'couple' && (
+          {/* ── BIRTHDAY FIELDS — only visible when eventType === 'birthday' ── */}
+          {activeTab === 'couple' && eventType === 'birthday' && (
+            <SectionCard title="Birthday Details" icon="🎂">
+              <FieldGroup label="Celebrant Name">
+                <input className={inputCls} value={birthdayData.celebrantName || ''}
+                  onChange={e => setBirthdayData(d => ({ ...d, celebrantName: e.target.value }))} />
+              </FieldGroup>
+              <FieldGroup label="Age">
+                <input type="number" className={inputCls} value={birthdayData.age || ''}
+                  onChange={e => setBirthdayData(d => ({ ...d, age: Number(e.target.value) }))} />
+              </FieldGroup>
+              <FieldGroup label="Party Theme">
+                <input className={inputCls} value={birthdayData.birthdayTheme || ''}
+                  onChange={e => setBirthdayData(d => ({ ...d, birthdayTheme: e.target.value }))} />
+              </FieldGroup>
+              <FieldGroup label="Wish Message" hint="Shown on the hero/cover">
+                <textarea className={textareaCls} value={birthdayData.wishMessage || ''}
+                  onChange={e => setBirthdayData(d => ({ ...d, wishMessage: e.target.value }))} />
+              </FieldGroup>
+              <div className="col-span-2">
+                <button type="button" onClick={handleBirthdayDataSave}
+                  className="px-6 py-2 bg-[#C9956A] text-white rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
+                  Save Birthday Details
+                </button>
+              </div>
+            </SectionCard>
+          )}
+          {/* ── GENERAL EVENT FIELDS — only visible when eventType === 'general' ── */}
+          {activeTab === 'couple' && eventType === 'general' && (
+            <SectionCard title="Event Details" icon="📩">
+              <FieldGroup label="Event Title">
+                <input className={inputCls} value={generalData.eventTitle || ''}
+                  onChange={e => setGeneralData(d => ({ ...d, eventTitle: e.target.value }))} />
+              </FieldGroup>
+              <FieldGroup label="Host Name">
+                <input className={inputCls} value={generalData.hostName || ''}
+                  onChange={e => setGeneralData(d => ({ ...d, hostName: e.target.value }))} />
+              </FieldGroup>
+              <FieldGroup label="Custom Body Text" hint="Main invitation paragraph">
+                <textarea className={textareaCls} value={generalData.customBodyText || ''}
+                  onChange={e => setGeneralData(d => ({ ...d, customBodyText: e.target.value }))} />
+              </FieldGroup>
+              <FieldGroup label="Event Sub-type" hint="e.g. Corporate, Social, Religious">
+                <input className={inputCls} value={generalData.eventType2 || ''}
+                  onChange={e => setGeneralData(d => ({ ...d, eventType2: e.target.value }))} />
+              </FieldGroup>
+              <div className="col-span-2">
+                <button type="button" onClick={handleGeneralDataSave}
+                  className="px-6 py-2 bg-[#C9956A] text-white rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
+                  Save Event Details
+                </button>
+              </div>
+            </SectionCard>
+          )}
+          {activeTab === 'couple' && (eventType === 'wedding' || eventType === 'engagement') && (
             <SectionCard title="Couple Information" icon={<Heart size={18} className="text-rose-400" />}>
               <FieldGroup label="Bride First Name">
                 <input
@@ -1085,7 +1386,10 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 style={{ aspectRatio: '3 / 4' }}
               >
                 {config?.heroImage ? (
-                  <img src={config.heroImage} className="w-full h-full object-cover" alt="Hero Preview" />
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={config.heroImage} className="w-full h-full object-cover" alt="Hero Preview" />
+                  </>
                 ) : (
                   <div className="text-center p-6">
                     <ImageIcon size={32} className="opacity-20 mx-auto" />
@@ -1170,6 +1474,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     { id: 8, label: 'Layout 8: Premium 3D Reveal', desc: 'Immersive envelope opening with high-end typography' },
                     { id: 9, label: 'Layout 9: Modern Full Cover', desc: 'Natural height background with no text; modern dark/gradient UI' },
                     { id: 10, label: 'Layout 10: Mint Arch Premium', desc: 'Clean, elegant arch-based design with mandala details' },
+                    { id: 11, label: 'Layout 11: Location Hero', desc: 'Same as Layout 8 — hero highlights venue name with two custom editable lines' },
                   ].map(layout => {
                     const active = (config?.heroLayout ?? 1) === layout.id;
                     return (
@@ -1250,6 +1555,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
           )}
 
           {activeTab === 'events' && (
+            <>
             <SectionCard title="Ceremony Details" icon={<MapPin size={18} className="text-emerald-400" />}>
               <FieldGroup label="Title">
                 <input
@@ -1318,10 +1624,20 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 onDelete={handleDeleteImage}
               />
             </SectionCard>
+
+            <SectionCard title="Additional Events" icon={<Calendar size={18} className="text-violet-400" />} defaultOpen={false}>
+              <ExtraEventsEditor
+                events={config?.extraEvents || []}
+                onChange={val => setPath('extraEvents', val)}
+                onUpload={handleUpload}
+                onDelete={handleDeleteImage}
+              />
+            </SectionCard>
+            </>
           )}
 
           {activeTab === 'gallery' && (
-            <SectionCard title="Gallery Photos" icon={<Image size={18} className="text-sky-400" />}>
+            <SectionCard title="Gallery Photos" icon={<LucideImage size={18} className="text-sky-400" />}>
               <GalleryEditor
                 gallery={config?.gallery || []}
                 onChange={val => setPath('gallery', val)}
@@ -1358,6 +1674,79 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 </FieldGroup>
               </SectionCard>
 
+              {/* ── Dietary Requirements Editor ── */}
+              <SectionCard title="Dietary Requirements" icon={<span className="text-green-400">🥗</span>}>
+                <p className="text-xs text-slate-400 mb-4">
+                  Customise the dietary section shown on RSVP forms. Leave blank to use the built-in defaults.
+                </p>
+
+                {/* Section title */}
+                <FieldGroup label="Section Title" hint='e.g. "Dietary Requirements & Allergies"'>
+                  <input
+                    type="text"
+                    className={inputCls}
+                    placeholder="Dietary Requirements & Allergies"
+                    value={config?.rsvp?.dietaryTitle || ''}
+                    onChange={e => setPath('rsvp.dietaryTitle', e.target.value || null)}
+                  />
+                </FieldGroup>
+
+                {/* Items list */}
+                <FieldGroup label="Dietary Options" hint="Each item will appear as a checkbox. Leave empty to use defaults.">
+                  <div className="space-y-2 mt-1">
+                    {(config?.rsvp?.dietaryItems || []).map((item, idx) => (
+                      <div key={idx} className="flex gap-2 items-center">
+                        <input
+                          type="text"
+                          className={`${inputCls} flex-1`}
+                          placeholder={`Option ${idx + 1} label`}
+                          value={item.label || ''}
+                          onChange={e => {
+                            const updated = [...(config.rsvp.dietaryItems || [])];
+                            updated[idx] = { ...updated[idx], label: e.target.value };
+                            setPath('rsvp.dietaryItems', updated);
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="shrink-0 px-3 py-1.5 rounded-lg bg-red-900/30 text-red-400 hover:bg-red-900/50 text-xs"
+                          onClick={() => {
+                            const updated = (config.rsvp.dietaryItems || []).filter((_, i) => i !== idx);
+                            setPath('rsvp.dietaryItems', updated.length ? updated : null);
+                          }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+
+                    <button
+                      type="button"
+                      className="mt-2 px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs"
+                      onClick={() => {
+                        const existing = config?.rsvp?.dietaryItems || [];
+                        setPath('rsvp.dietaryItems', [
+                          ...existing,
+                          { id: `option${existing.length + 1}`, label: '' }
+                        ]);
+                      }}
+                    >
+                      + Add Option
+                    </button>
+
+                    {(config?.rsvp?.dietaryItems || []).length > 0 && (
+                      <button
+                        type="button"
+                        className="mt-1 ml-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs"
+                        onClick={() => setPath('rsvp.dietaryItems', null)}
+                      >
+                        Reset to defaults
+                      </button>
+                    )}
+                  </div>
+                </FieldGroup>
+              </SectionCard>
+
               <SectionCard title="Opening Animation" icon={<Sparkles size={18} className="text-purple-400" />}>
                 <FieldGroup label="Animation Style" hint="Choose how guests first see your invitation">
                   <div className="flex flex-wrap gap-x-6 gap-y-4 mt-1">
@@ -1373,7 +1762,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                         checked={config.revealStyle === 'envelope'}
                         onChange={() => setPath('revealStyle', 'envelope')}
                       />
-                      <span className={`text-sm font-medium ${config.revealStyle === 'envelope' ? 'text-slate-900' : 'text-slate-500'}`}>Envelope Reveal</span>
+                      <span className={`text-sm font-medium ${config.revealStyle === 'envelope' ? 'text-slate-900' : 'text-slate-500'}`}>Liquid Glass</span>
                     </label>
                     <label className="flex items-center gap-2.5 cursor-pointer group">
                       <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${config.revealStyle === 'couple' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
@@ -1463,6 +1852,21 @@ function AdminDashboard({ slug, onBack, showToast }) {
                       />
                       <span className={`text-sm font-medium ${config.revealStyle === 'mint-envelope' ? 'text-slate-900' : 'text-slate-500'}`}>DOOR opening Animation</span>
                     </label>
+
+                    <label className="flex items-center gap-2.5 cursor-pointer group">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${config.revealStyle === 'couple_rose' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
+                        {config.revealStyle === 'couple_rose' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
+                      </div>
+                      <input
+                        type="radio"
+                        className="hidden"
+                        name="revealStyle"
+                        value="couple_rose"
+                        checked={config.revealStyle === 'couple_rose'}
+                        onChange={() => setPath('revealStyle', 'couple_rose')}
+                      />
+                      <span className={`text-sm font-medium ${config.revealStyle === 'couple_rose' ? 'text-slate-900' : 'text-slate-500'}`}>Couple with Rose</span>
+                    </label>
                   </div>
                 </FieldGroup>
 
@@ -1479,6 +1883,20 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     </label>
                   </FieldGroup>
                 </div>
+
+                {config.revealStyle === 'envelope' && (
+                  <div className="col-span-2 mt-6 pt-6 border-t border-slate-50">
+                    <ImageField
+                      label="Liquid Glass Background Image"
+                      hint="Upload an optional background image (leave empty for 3D ribbed effect)"
+                      value={config?.coverImage || ''}
+                      path="coverImage"
+                      type="general"
+                      onUpload={handleUpload}
+                      onDelete={handleDeleteImage}
+                    />
+                  </div>
+                )}
 
                 {(config.revealStyle === 'fade' || config.revealStyle === 'cover') && (
                   <div className="col-span-2 mt-6 pt-6 border-t border-slate-50">
@@ -1516,6 +1934,20 @@ function AdminDashboard({ slug, onBack, showToast }) {
                       onUpload={handleUpload}
                       onDelete={handleDeleteImage}
                       onCrop={handleCropExisting}
+                    />
+                  </div>
+                )}
+
+                {config.revealStyle === 'couple_rose' && (
+                  <div className="col-span-2 mt-4 pt-6 border-t border-slate-50">
+                    <ImageField
+                      label="Rose Couple GIF"
+                      hint="Upload the GIF to be used in the center of the animation"
+                      value={config.coupleRevealRoseGif || ''}
+                      path="coupleRevealRoseGif"
+                      type="general"
+                      onUpload={handleUpload}
+                      onDelete={handleDeleteImage}
                     />
                   </div>
                 )}
@@ -1748,6 +2180,24 @@ function AdminDashboard({ slug, onBack, showToast }) {
                           onUpload={handleUpload}
                           onDelete={handleDeleteImage}
                         />
+                        <FieldGroup label="Open Mode" hint="How the envelope opens for your guests">
+                          <div className="flex gap-4 mt-1">
+                            <label className="flex items-center gap-2.5 cursor-pointer group">
+                              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${(config.envelopeOpenMode || 'onclick') === 'onclick' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
+                                {(config.envelopeOpenMode || 'onclick') === 'onclick' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
+                              </div>
+                              <input type="radio" className="hidden" name="envelopeOpenMode" value="onclick" checked={(config.envelopeOpenMode || 'onclick') === 'onclick'} onChange={() => setPath('envelopeOpenMode', 'onclick')} />
+                              <span className={`text-sm font-medium ${(config.envelopeOpenMode || 'onclick') === 'onclick' ? 'text-slate-900' : 'text-slate-500'}`}>On Click Open</span>
+                            </label>
+                            <label className="flex items-center gap-2.5 cursor-pointer group">
+                              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${config.envelopeOpenMode === 'auto' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
+                                {config.envelopeOpenMode === 'auto' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
+                              </div>
+                              <input type="radio" className="hidden" name="envelopeOpenMode" value="auto" checked={config.envelopeOpenMode === 'auto'} onChange={() => setPath('envelopeOpenMode', 'auto')} />
+                              <span className={`text-sm font-medium ${config.envelopeOpenMode === 'auto' ? 'text-slate-900' : 'text-slate-500'}`}>Auto Open</span>
+                            </label>
+                          </div>
+                        </FieldGroup>
                       </div>
                     </div>
                   </div>
@@ -1925,7 +2375,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
           )}
 
           {activeTab === 'backgrounds' && (
-            <SectionCard title="Section Backgrounds" icon={<Image size={18} className="text-slate-400" />}>
+            <SectionCard title="Section Backgrounds" icon={<LucideImage size={18} className="text-slate-400" />}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {['hero', 'story', 'events', 'gallery', 'rsvp', 'footer'].map(sec => (
                   <ImageField
@@ -1950,6 +2400,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <div className="flex flex-col gap-3">
                   {config.layout1EventBanner && (
                     <div className="w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={config.layout1EventBanner} className="w-full h-full object-cover" alt="Layout 1 Event Banner Preview" />
                     </div>
                   )}
@@ -2022,6 +2473,102 @@ function AdminDashboard({ slug, onBack, showToast }) {
               </FieldGroup>
             </SectionCard>
           )}
+
+          {activeTab === 'labels' && (() => {
+            const defaults = EVENT_LABELS[eventType] || EVENT_LABELS.wedding;
+            const lbl = (key) => labelOverrides[key] ?? '';
+            const setLbl = (key, val) => setLabelOverrides(prev => ({ ...prev, [key]: val }));
+            const layout = config?.heroLayout ?? 1;
+            // Helpers — which layouts use a given label
+            const heroUsesEyebrow   = layout === 1 || layout === 8;
+            const heroUsesHeading   = layout === 2;
+            const heroUsesFamilies  = layout === 4 || layout === 6 || layout === 10;
+            const heroUsesPhotoLbl  = layout === 7;
+            const heroUsesLocation  = layout === 11 || layout === 8;
+            const storyUsesHeading6 = layout === 6;
+            const storyUsesCaption7 = layout === 7;
+            const storyUsesSection  = layout === 10;
+            const eventsUsesSubtitle = layout === 6;
+            const isLayout8         = layout === 8;
+            const isLayout10        = layout === 10;
+            const isLayout11        = layout === 11;
+            // Labels used on every layout
+            const always = true;
+            return (
+              <>
+                <div className="rounded-xl bg-amber-50 border border-amber-100 px-5 py-3 text-xs text-amber-700 mb-1">
+                  Leave a field <strong>empty</strong> to use the default for <strong>{eventType}</strong> type. The placeholder shows the current default value.
+                  {' '}<span className="opacity-70">Fields not used by layout {layout} are hidden.</span>
+                </div>
+
+                {(heroUsesEyebrow || heroUsesHeading || heroUsesFamilies || heroUsesPhotoLbl || heroUsesLocation) && (
+                <SectionCard title="Hero Section" icon="🎯">
+                  {heroUsesEyebrow && <LabelField label="Eyebrow Text" fieldKey="heroEyebrow" hint='Small text above the main heading' value={lbl('heroEyebrow')} onChange={setLbl} placeholder={defaults['heroEyebrow']} />}
+                  {heroUsesHeading && <LabelField label="Main Heading" fieldKey="heroHeading" hint='Primary hero heading shown on the invite' value={lbl('heroHeading')} onChange={setLbl} placeholder={defaults['heroHeading']} />}
+                  {heroUsesFamilies && <LabelField label="Families / Hosts Line" fieldKey="heroFamiliesLine" hint='Text shown below the names, e.g. "Together with their families invite you"' value={lbl('heroFamiliesLine')} onChange={setLbl} placeholder={defaults['heroFamiliesLine']} />}
+                  {heroUsesFamilies && <LabelField label="Families Line (iCal / text export)" fieldKey="heroFamiliesIcal" hint='Same line used in calendar exports — use \, for literal commas' value={lbl('heroFamiliesIcal')} onChange={setLbl} placeholder={defaults['heroFamiliesIcal']} />}
+                  {heroUsesPhotoLbl && <LabelField label="Polaroid Card Label" fieldKey="photoLabel" hint='Text on the polaroid-style photo card' value={lbl('photoLabel')} onChange={setLbl} placeholder={defaults['photoLabel']} />}
+                  {heroUsesLocation && <LabelField label="Hero Small Text" fieldKey="layout11HeroSmall" hint='Small uppercase line shown above the big location text, e.g. "The celebration takes place at"' value={lbl('layout11HeroSmall')} onChange={setLbl} placeholder={defaults['layout11HeroSmall']} />}
+                  {heroUsesLocation && <LabelField label="Hero Big Text" fieldKey="layout11HeroBig" hint='Large italic text shown prominently in the hero, e.g. venue name or custom location text' value={lbl('layout11HeroBig')} onChange={setLbl} placeholder={config?.events?.ceremony?.venueName || 'Venue name (auto-filled from Events if left blank)'} />}
+                </SectionCard>
+                )}
+
+                <SectionCard title="Opening Animation" icon="🎬">
+                  <LabelField label="Couple / Host Reveal Tagline" fieldKey="coupleRevealTagline" hint='Text shown during the opening couple reveal animation' value={lbl('coupleRevealTagline')} onChange={setLbl} placeholder={defaults['coupleRevealTagline']} />
+                  <LabelField label="Cover Reveal Tagline" fieldKey="coverRevealTagline" hint='Text shown on the cover-style opening reveal' value={lbl('coverRevealTagline')} onChange={setLbl} placeholder={defaults['coverRevealTagline']} />
+                </SectionCard>
+
+                <SectionCard title="Envelope" icon="✉️">
+                  <LabelField label="Envelope Title" fieldKey="envelopeTitle" hint='Title printed on the envelope e.g. "A Birthday Invitation"' value={lbl('envelopeTitle')} onChange={setLbl} placeholder={defaults['envelopeTitle']} />
+                </SectionCard>
+
+                {(storyUsesHeading6 || storyUsesCaption7 || storyUsesSection || always) && (
+                <SectionCard title="Story & Photos" icon="📖">
+                  {storyUsesSection && <LabelField label="Story Nav Link" fieldKey="storySection" hint='Label used in the navigation link to the story section' value={lbl('storySection')} onChange={setLbl} placeholder={defaults['storySection']} />}
+                  {storyUsesHeading6 && <LabelField label="Story Heading (Layout 6)" fieldKey="storyHeading6" hint='Main heading for the story section in layout 6' value={lbl('storyHeading6')} onChange={setLbl} placeholder={defaults['storyHeading6']} />}
+                  {(isLayout8 || isLayout11) && <LabelField label="Story Main Title (Layout 8/11)" fieldKey="layout8EternalLabel" hint='Large italic heading in the story section' value={lbl('layout8EternalLabel')} onChange={setLbl} placeholder={defaults['layout8EternalLabel']} />}
+                  {(isLayout8 || isLayout11) && <LabelField label="Layout 8/11 — Join Us Line" fieldKey="layout8JoinUs" hint='Opening line before the names, e.g. "Join us for the wedding of"' value={lbl('layout8JoinUs')} onChange={setLbl} placeholder={defaults['layout8JoinUs']} />}
+                  {(isLayout8 || isLayout11) && <LabelField label="Layout 8/11 — Gallery Label" fieldKey="layout8GalleryLabel" hint='Label shown above the photo gallery' value={lbl('layout8GalleryLabel')} onChange={setLbl} placeholder={defaults['layout8GalleryLabel']} />}
+                  {storyUsesCaption7 && <LabelField label="Photo Caption (Layout 7)" fieldKey="storyCaption7" hint='Caption shown under the photo strip in layout 7' value={lbl('storyCaption7')} onChange={setLbl} placeholder={defaults['storyCaption7']} />}
+                  <LabelField label="Story Footer Text" fieldKey="storyFooter" hint='Closing line at the end of the story section' value={lbl('storyFooter')} onChange={setLbl} placeholder={defaults['storyFooter']} />
+                  {!heroUsesPhotoLbl && <LabelField label="Polaroid Card Label" fieldKey="photoLabel" hint='Text on the polaroid-style photo card' value={lbl('photoLabel')} onChange={setLbl} placeholder={defaults['photoLabel']} />}
+                </SectionCard>
+                )}
+
+                <SectionCard title="Timeline & Countdown" icon="⏳">
+                  <LabelField label="Timeline Eyebrow" fieldKey="timelineEyebrow" hint='Small uppercase label above the timeline heading' value={lbl('timelineEyebrow')} onChange={setLbl} placeholder={defaults['timelineEyebrow']} />
+                  <LabelField label="Timeline Heading" fieldKey="timelineHeading" hint='Main heading for the schedule / timeline section' value={lbl('timelineHeading')} onChange={setLbl} placeholder={defaults['timelineHeading']} />
+                  <LabelField label="Countdown Label" fieldKey="countdownLabel" hint='Small text above the countdown timer' value={lbl('countdownLabel')} onChange={setLbl} placeholder={defaults['countdownLabel']} />
+                  <LabelField label="Countdown Heading" fieldKey="countdownHeading" hint='Heading above the countdown timer' value={lbl('countdownHeading')} onChange={setLbl} placeholder={defaults['countdownHeading']} />
+                </SectionCard>
+
+                {eventsUsesSubtitle && (
+                <SectionCard title="Event Details" icon="📍">
+                  <LabelField label="Event Section Subtitle (Layout 6)" fieldKey="eventDetailsSubtitle" hint='Italic script text below "The Celebration" heading in layout 6' value={lbl('eventDetailsSubtitle')} onChange={setLbl} placeholder={defaults['eventDetailsSubtitle']} />
+                </SectionCard>
+                )}
+
+                <SectionCard title="RSVP" icon="💬">
+                  <LabelField label="WhatsApp Message Header" fieldKey="rsvpMessageHeader" hint='First line of the WhatsApp RSVP message' value={lbl('rsvpMessageHeader')} onChange={setLbl} placeholder={defaults['rsvpMessageHeader']} />
+                  {isLayout10 && <LabelField label="WhatsApp RSVP Alt Header" fieldKey="rsvpMessageHeaderAlt" hint='Alternative RSVP message header used in layout 10' value={lbl('rsvpMessageHeaderAlt')} onChange={setLbl} placeholder={defaults['rsvpMessageHeaderAlt']} />}
+                </SectionCard>
+
+                <SectionCard title="Navigation" icon="🧭">
+                  <LabelField label="Nav Display Names" fieldKey="navNames" hint='Override the names shown in the navigation bar (leave empty to use default)' value={lbl('navNames')} onChange={setLbl} placeholder={defaults['navNames'] || 'e.g. John & Jane'} />
+                </SectionCard>
+
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleLabelOverridesSave}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#C9956A] hover:bg-[#b8845a] text-white text-sm font-semibold transition-colors shadow-sm"
+                  >
+                    <Save size={14} /> Save Labels
+                  </button>
+                </div>
+              </>
+            );
+          })()}
 
           <details className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
             <summary className="px-6 py-4 cursor-pointer text-xs font-bold tracking-wide text-slate-500 uppercase hover:bg-slate-50 transition-colors flex items-center gap-2">

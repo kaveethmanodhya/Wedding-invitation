@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 
-export default function Timeline({ config }) {
+export default function Timeline({ config, labels = {} }) {
   const { timeline = [], theme = {} } = config || {};
   const listRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -43,7 +43,7 @@ export default function Timeline({ config }) {
             transition={{ duration: 0.6 }}
             className="text-[0.7rem] uppercase tracking-[0.4em] text-[var(--colorPrimary)] mb-3 block font-bold"
           >
-            The Big Day
+            {labels.timelineEyebrow || 'The Big Day'}
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -51,7 +51,7 @@ export default function Timeline({ config }) {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4"
           >
-            Wedding Timeline
+            {labels.timelineHeading || 'Wedding Timeline'}
           </motion.h2>
           <motion.div
             initial={{ width: 0 }}

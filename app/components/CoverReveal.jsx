@@ -1,14 +1,15 @@
 'use client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore } from 'react';
 
-export default function CoverReveal({ config, onOpen }) {
-  const [mounted, setMounted] = useState(false);
+export default function CoverReveal({ config, onOpen, labels = {}, birthdayData = null, generalData = null }) {
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
   const { couple = {}, wedding = {}, revealCoverImage } = config || {};
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const displayName = birthdayData?.celebrantName
+    ? birthdayData.celebrantName
+    : (generalData?.eventTitle || generalData?.hostName)
+      ? (generalData.eventTitle || generalData.hostName)
+      : null;
 
   if (!mounted) return null;
 
@@ -47,7 +48,7 @@ export default function CoverReveal({ config, onOpen }) {
 
         <div className="relative z-10 flex flex-col items-center">
           <p className="font-script text-2xl md:text-3xl text-[var(--colorPrimary)] mb-6">
-            We're getting married!
+            {labels.coverRevealTagline || "We're getting married!"}
           </p>
 
           {/* Decorative element */}
@@ -58,7 +59,10 @@ export default function CoverReveal({ config, onOpen }) {
           </div>
 
           <h1 className="font-serif text-4xl md:text-6xl font-bold tracking-tight text-[#2C2018] mb-12 leading-tight">
-            {(couple?.groom?.firstName || '').toUpperCase()} & {(couple?.bride?.firstName || '').toUpperCase()}
+            {displayName
+              ? displayName.toUpperCase()
+              : <>{(couple?.groom?.firstName || '').toUpperCase()} & {(couple?.bride?.firstName || '').toUpperCase()}</>
+            }
           </h1>
 
           <motion.button

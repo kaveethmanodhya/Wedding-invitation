@@ -1,14 +1,30 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-export default function Navbar({ config }) {
+export default function Navbar({ config, birthdayData = null, generalData = null }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const sentinelRef = useRef(null);
+
+  const displayName = birthdayData?.celebrantName
+    || generalData?.eventTitle
+    || generalData?.hostName
+    || config?.couple?.displayNames
+    || '';
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setScrolled(!entry.isIntersecting);
+      },
+      { threshold: [1.0], rootMargin: '-60px 0px 0px 0px' }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
   }, []);
 
   const links = [
@@ -20,10 +36,11 @@ export default function Navbar({ config }) {
   const closeMenu = () => setMenuOpen(false);
 
   const layout = config?.heroLayout ?? 1;
-  const isLayout9 = layout === 9;
+  const isLayout9 = false;
 
   return (
     <>
+      <div ref={sentinelRef} className="absolute top-0 left-0 w-full h-px pointer-events-none z-[-1]" />
       <nav
         className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between
           px-6 md:px-12 transition-all duration-300
@@ -39,7 +56,7 @@ export default function Navbar({ config }) {
               ? (isLayout9 ? 'text-white' : 'text-[var(--colorPrimary)]') 
               : (isLayout9 ? 'text-white' : 'text-[var(--colorTextDark)]')}`}
         >
-          {config?.couple?.displayNames || ''}
+          {displayName}
         </span>
 
         {/* Desktop links */}

@@ -1,19 +1,16 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
+import { getDietaryTitle, getDietaryItems, getInitialDietary, buildDietaryString } from '../../lib/dietary';
 
-export default function RSVPSection({ config }) {
+export default function RSVPSection({ config, labels = {} }) {
   const rsvp = config?.rsvp || {};
+  const dietaryItems = getDietaryItems(config);
+  const dietaryTitle = getDietaryTitle(config);
   const [formData, setFormData] = useState({
     name: '', phone: '',
     attendance: '', guests: '1',
     events: { ceremony: true },
-    dietary: { 
-      vegetarian: false, 
-      vegan: false, 
-      glutenFree: false, 
-      noPorkBeef: false,
-      other: '' 
-    },
+    dietary: { ...getInitialDietary(dietaryItems), other: '' },
     message: ''
   });
   const [errors, setErrors] = useState({});
@@ -53,14 +50,13 @@ export default function RSVPSection({ config }) {
         .map(([name]) => name.charAt(0).toUpperCase() + name.slice(1))
         .join(', ');
       
-      const dietaryList = Object.entries(formData.dietary)
-        .filter(([key, val]) => val === true && key !== 'other')
-        .map(([key]) => key.charAt(0).toUpperCase() + key.slice(1))
-        .concat(formData.dietary.other ? [formData.dietary.other] : [])
-        .join(', ') || 'None';
+      const dietaryList = buildDietaryString(
+        formData.dietary,
+        dietaryItems
+      ) + (formData.dietary.other ? `, ${formData.dietary.other}` : '');
 
       const waMessage =
-        `💍 *Wedding invitation Reply* 💍\n\n` +
+        `${labels.rsvpMessageHeader || '💍 *Wedding Invitation Reply* 💍'}\n\n` +
         `*Guest Name:* ${formData.name}\n` +
         `*Phone:* ${formData.phone || 'Not provided'}\n` +
         `*Attendance:* ${formData.attendance === 'Attending' ? '✅ Joyfully Accepts' : '❌ Regretfully Declines'}\n` +
@@ -111,13 +107,6 @@ export default function RSVPSection({ config }) {
   } else if (layout === 8) {
     inputCls = `w-full px-4 py-3 rounded-lg border-2 border-[var(--colorPrimary)]/30 bg-white focus:border-[var(--colorPrimary)] outline-none transition-all font-sinhala text-base`;
     btnCls = "w-full py-4 rounded-xl bg-[var(--colorPrimary)] text-white font-sinhala text-lg hover:bg-[var(--colorTextDark)] transition-all shadow-[0_10px_30px_rgba(0,0,0,0.1)]";
-  } else if (layout === 9) {
-    // Modern Dark / nature arch hybrid
-    bgClass = "bg-slate-900";
-    inputCls = `w-full px-6 py-4 rounded-xl font-sans text-base bg-white/5 border border-white/10 text-white placeholder:text-white/50 focus:border-[var(--colorPrimary)] focus:bg-white/10 outline-none transition-all duration-300`;
-    labelCls = "block font-sans text-[10px] font-bold tracking-[0.2em] uppercase text-white mb-2";
-    btnCls = "w-full flex items-center justify-center py-5 bg-gradient-to-r from-[var(--colorPrimary)] to-[var(--colorSecondary)] text-white font-sans text-[11px] font-bold tracking-[0.3em] uppercase hover:opacity-90 transition-all duration-500 shadow-[0_10px_40px_rgba(0,0,0,0.3)] rounded-xl";
-    optionBtnCls = (active) => `flex items-center gap-3 cursor-pointer font-sans text-sm font-bold uppercase tracking-widest px-6 py-4 border rounded-xl transition-all duration-300 ${active ? 'bg-[var(--colorPrimary)] text-white border-[var(--colorPrimary)] shadow-[0_10px_20px_var(--colorPrimary)/30] scale-105' : 'bg-white/5 border-white/10 text-white/70 hover:border-white/30'}`;
   }
 
   if (status === 'success') {
@@ -126,7 +115,7 @@ export default function RSVPSection({ config }) {
         id="rsvp"
         className="py-20 md:py-28 transition-colors duration-500"
         style={{
-          backgroundColor: layout === 9 ? '#020617' : 'var(--colorBg)',
+          backgroundColor: 'var(--colorBg)',
           ...(config?.sectionBackgrounds?.rsvp ? {
             backgroundImage: `url(${config.sectionBackgrounds.rsvp})`,
             backgroundSize: 'cover',
@@ -137,10 +126,10 @@ export default function RSVPSection({ config }) {
         }}
       >
         <div className="max-w-lg mx-auto px-6 text-center">
-          <div className={`${layout === 4 ? 'bg-white text-[var(--colorTextDark)]' : layout === 9 ? 'bg-white/5 border-white/10 text-white backdrop-blur-xl' : 'bg-[var(--colorPrimary)]/10 text-[var(--colorTextDark)]'} border border-[var(--colorPrimary)]/25 rounded-2xl p-10 shadow-xl`}>
+          <div className={`${layout === 4 ? 'bg-white text-[var(--colorTextDark)]' : 'bg-[var(--colorPrimary)]/10 text-[var(--colorTextDark)]'} border border-[var(--colorPrimary)]/25 rounded-2xl p-10 shadow-xl`}>
             <p className="text-4xl mb-4 text-[var(--colorPrimary)] drop-shadow-sm">🌿</p>
-            <h2 className={`font-serif text-3xl mb-4 italic ${layout === 9 ? 'text-white' : 'text-[var(--colorTextDark)]'}`}>Thank You</h2>
-            <p className={`font-serif text-xl leading-relaxed ${layout === 9 ? 'text-white/70' : 'text-[var(--colorTextDark)]/80'}`}>
+            <h2 className="font-serif text-3xl mb-4 italic text-[var(--colorTextDark)]">Thank You</h2>
+            <p className="font-serif text-xl leading-relaxed text-[var(--colorTextDark)]/80">
               Your reply has been received.<br />We look forward to celebrating with you!
             </p>
           </div>
@@ -152,8 +141,8 @@ export default function RSVPSection({ config }) {
   return (
     <section
       id="rsvp"
-      className={`py-20 md:py-32 relative overflow-hidden transition-colors duration-500 ${layout === 9 ? 'text-white' : ''}`}
-      style={{ backgroundColor: layout === 9 ? '#020617' : 'var(--colorBg)' }}
+      className="py-20 md:py-32 relative overflow-hidden transition-colors duration-500"
+      style={{ backgroundColor: 'var(--colorBg)' }}
     >
       {/* ── SECTION BACKGROUND IMAGE ── */}
       {config?.sectionBackgrounds?.rsvp && (
@@ -169,7 +158,7 @@ export default function RSVPSection({ config }) {
           }}
         />
       )}
-      <div className={`absolute inset-0 z-[1] pointer-events-none ${layout === 9 ? 'bg-black/40' : 'bg-white/5'}`} />
+      <div className="absolute inset-0 z-[1] pointer-events-none bg-white/5" />
       {layout === 1 && (
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 20% 80%, var(--colorPrimary) 0%, transparent 55%), radial-gradient(circle at 80% 20%, var(--colorPrimary) 0%, transparent 55%)', opacity: 0.05 }} />
       )}
@@ -181,8 +170,7 @@ export default function RSVPSection({ config }) {
       )}
 
       <div className={`relative max-w-2xl mx-auto px-6 transition-all ${layout === 4 ? 'bg-white p-10 md:p-16 shadow-2xl border-t-[12px] border-[var(--colorPrimary)]'
-        : layout === 9 ? 'bg-slate-900/40 p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.3)] rounded-[40px] border border-white/10 backdrop-blur-xl'
-          : layout === 3 ? 'bg-[var(--colorBg)] p-8 md:p-14 shadow-2xl border border-[var(--colorPrimary)]/30'
+        : layout === 3 ? 'bg-[var(--colorBg)] p-8 md:p-14 shadow-2xl border border-[var(--colorPrimary)]/30'
             : layout === 2 ? 'bg-white/40 p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.05)] rounded-[40px] border border-white/60 backdrop-blur-md'
               : 'bg-[var(--colorPrimary)]/5 p-6 md:p-10 border border-[var(--colorPrimary)]/20'
         }`}>
@@ -193,11 +181,6 @@ export default function RSVPSection({ config }) {
             <>
               <h2 className="font-sans text-5xl md:text-6xl font-bold text-[var(--colorTextDark)] mb-4 tracking-tighter">Please Confirm</h2>
               <p className="font-sans text-xs md:text-sm text-[var(--colorTextDark)] opacity-70">Kindly respond by {rsvp?.deadline || ''}</p>
-            </>
-          ) : layout === 9 ? (
-            <>
-              <h2 className="font-sans text-5xl md:text-6xl font-bold text-white mb-4 tracking-tighter">Please Confirm</h2>
-              <p className="font-sans text-xs md:text-sm text-white opacity-70 uppercase tracking-[0.2em]">Kindly respond by {rsvp?.deadline || ''}</p>
             </>
           ) : layout === 3 ? (
             <>
@@ -275,46 +258,43 @@ export default function RSVPSection({ config }) {
 
           {/* ── GUEST SELECTION ── */}
           {formData.attendance === 'Attending' && (
-            <div className={`flex flex-col gap-6 py-4 border-y ${layout === 9 ? 'border-white/10' : 'border-gray-100'}`}>
+            <div className="flex flex-col gap-6 py-4 border-y border-gray-100">
               <div className="flex items-center justify-center gap-4">
-                <span className={`font-sans text-sm ${layout === 9 ? 'text-white/60' : 'text-[var(--colorTextDark)] opacity-60'}`}>
+                <span className="font-sans text-sm text-[var(--colorTextDark)] opacity-60">
                   {layout === 8 ? 'පැමිණෙන අමුත්තන් සංඛ්‍යාව?' : 'How many guests will attend?'}
                 </span>
                 <select
-                  className={`w-16 h-10 border rounded text-center font-sans font-bold text-sm cursor-pointer transition-colors ${layout === 9 ? 'bg-white/10 border-white/20 text-white hover:border-[var(--colorPrimary)]' : 'border-gray-300 text-[var(--colorTextDark)] hover:border-[var(--colorPrimary)]'}`}
+                  className="w-16 h-10 border rounded text-center font-sans font-bold text-sm cursor-pointer transition-colors border-gray-300 text-[var(--colorTextDark)] hover:border-[var(--colorPrimary)]"
                   value={formData.guests}
                   onChange={e => setFormData(f => ({ ...f, guests: e.target.value }))}
                 >
-                  {guestOptions.map(n => <option key={n} value={n} className={layout === 9 ? 'bg-slate-800' : ''}>{n}</option>)}
+                  {guestOptions.map(n => <option key={n} value={n}>{n}</option>)}
                 </select>
               </div>
 
               {/* ── DIETARY REQUIREMENTS ── */}
               <div className="space-y-4">
-                <label className={labelCls}>Dietary Requirements & Allergies</label>
+                <label className={labelCls}>{dietaryTitle}</label>
                 <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { key: 'vegetarian', label: 'Vegetarian' },
-                    { key: 'vegan', label: 'Vegan' },
-                    { key: 'glutenFree', label: 'Gluten-Free' },
-                    { key: 'noPorkBeef', label: 'No Pork/Beef' }
-                  ].map(option => (
-                    <label key={option.key} className="flex items-center gap-3 cursor-pointer group">
-                      <div className={`w-5 h-5 border-2 flex items-center justify-center transition-all ${formData.dietary[option.key] ? 'bg-[var(--colorPrimary)] border-[var(--colorPrimary)]' : (layout === 9 ? 'border-white/20' : 'border-gray-200')}`}>
-                        {formData.dietary[option.key] && <CheckIcon size={12} color="white" />}
+                  {dietaryItems.map(option => {
+                    return (
+                    <label key={option.id} className="flex items-center gap-3 cursor-pointer group">
+                      <div className={`w-5 h-5 border-2 flex items-center justify-center transition-all ${formData.dietary[option.id] ? 'bg-[var(--colorPrimary)] border-[var(--colorPrimary)]' : 'border-gray-200'}`}>
+                        {formData.dietary[option.id] && <CheckIcon size={12} color="white" />}
                       </div>
                       <input 
                         type="checkbox" 
                         className="sr-only" 
-                        checked={formData.dietary[option.key]} 
+                        checked={!!formData.dietary[option.id]} 
                         onChange={() => setFormData(f => ({ 
                           ...f, 
-                          dietary: { ...f.dietary, [option.key]: !f.dietary[option.key] } 
+                          dietary: { ...f.dietary, [option.id]: !f.dietary[option.id] } 
                         }))} 
                       />
-                      <span className={`text-xs font-serif transition-colors ${layout === 9 ? 'text-white/70 group-hover:text-white' : 'text-[var(--colorTextDark)]/70 group-hover:text-[var(--colorTextDark)]'}`}>{option.label}</span>
+                      <span className="text-xs font-serif transition-colors text-[var(--colorTextDark)]/70 group-hover:text-[var(--colorTextDark)]">{option.label}</span>
                     </label>
-                  ))}
+                    );
+                  })}
                 </div>
                 <input
                   type="text"
@@ -331,11 +311,11 @@ export default function RSVPSection({ config }) {
           <div className="flex flex-col gap-6">
             <div className="space-y-6">
               <div>
-                <label className={`${labelCls} ${layout === 9 ? 'text-[var(--colorPrimary)]' : ''}`}>{layout === 8 ? 'සම්පූර්ණ නම' : 'Full Name'}</label>
+                <label className={labelCls}>{layout === 8 ? 'සම්පූර්ණ නම' : 'Full Name'}</label>
                 <input
                   type="text"
                   className={inputCls}
-                  placeholder={layout === 8 ? 'ඔබේ නම මෙහි සටහන් කරන්න...' : layout === 9 ? 'Kasun Perera' : "e.g. Kasun Perera"}
+                  placeholder={layout === 8 ? 'ඔබේ නම මෙහි සටහන් කරන්න...' : "e.g. Kasun Perera"}
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
                 />
@@ -343,11 +323,11 @@ export default function RSVPSection({ config }) {
               </div>
 
               <div>
-                <label className={`${labelCls} ${layout === 9 ? 'text-[var(--colorPrimary)]' : ''}`}>{layout === 8 ? 'දුරකථන අංකය' : 'Phone Number'}</label>
+                <label className={labelCls}>{layout === 8 ? 'දුරකථන අංකය' : 'Phone Number'}</label>
                 <input
                   type="tel"
                   className={inputCls}
-                  placeholder={layout === 8 ? '07x xxxxxxx' : layout === 9 ? '071 234 5678' : "e.g. 071 234 5678"}
+                  placeholder={layout === 8 ? '07x xxxxxxx' : "e.g. 071 234 5678"}
                   value={formData.phone}
                   onChange={e => setFormData({ ...formData, phone: e.target.value })}
                 />

@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 function useReveal() {
   const ref = useRef(null);
@@ -52,8 +53,8 @@ function Layout1({ config, ref1, ref2, ref3 }) {
         </div>
         <div className="grid grid-cols-2 gap-6 relative">
           {config.gallery?.slice(0, 2).map((img, i) => (
-            <div key={i} className={`rounded-[2rem] overflow-hidden shadow-2xl aspect-[3/4] border-4 border-white/40 backdrop-blur-md ${i === 1 ? 'mt-16 -ml-4' : 'mb-16'}`}>
-              <img src={img.src} alt={img.alt || 'Story Image'} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 hover:saturate-100 opacity-90" />
+            <div key={i} className={`relative rounded-[2rem] overflow-hidden shadow-2xl aspect-[3/4] border-4 border-white/40 backdrop-blur-md ${i === 1 ? 'mt-16 -ml-4' : 'mb-16'}`}>
+              <Image src={img.src} alt={img.alt || 'Story Image'} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover hover:scale-105 transition-transform duration-700 hover:saturate-100 opacity-90" />
             </div>
           ))}
         </div>
@@ -130,8 +131,8 @@ function Layout3({ config, ref1, ref2, ref3, ref4 }) {
         
         <div ref={ref4} className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-5xl mx-auto opacity-0 translate-y-8 transition-all duration-700 delay-300 mt-8 mb-16">
            {config.gallery?.slice(0, 4).map((img, i) => (
-              <div key={i} className="w-full aspect-square rounded-lg overflow-hidden shadow-lg border-2 border-[var(--colorBg)] transition-transform duration-500 hover:scale-105">
-                 <img src={img.src} className="w-full h-full object-cover" alt={`Journey ${i}`} />
+              <div key={i} className="w-full aspect-square rounded-lg overflow-hidden shadow-lg border-2 border-[var(--colorBg)] transition-transform duration-500 hover:scale-105 relative">
+                 <Image src={img.src} alt={`Journey ${i}`} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
               </div>
            ))}
         </div>
@@ -166,7 +167,7 @@ function Layout4({ config, ref1, ref2, ref3 }) {
 
       <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-1000 delay-300 mb-20 max-w-2xl mx-auto">
         <p className="font-serif text-2xl md:text-3xl leading-relaxed text-[var(--colorTextDark)] italic">
-          "{story?.invitationText || ''}"
+          &ldquo;{story?.invitationText || ''}&rdquo;
         </p>
       </div>
 
@@ -213,13 +214,13 @@ function Layout5({ config, ref1, ref2, ref3 }) {
 }
 
 // ── LAYOUT 6 — Watercolor Floral Story ──
-function Layout6({ config, ref1, ref2, ref3 }) {
+function Layout6({ config, ref1, ref2, ref3, labels = {} }) {
   const { story } = config;
   return (
     <div className="max-w-4xl mx-auto px-6 py-24 text-center">
       <div ref={ref1} className="opacity-0 translate-y-8 transition-all duration-1000 mb-16">
         <span className="text-4xl mb-4 block">🌸</span>
-        <h2 className="font-script text-6xl text-[var(--colorPrimary)] mb-2">Our Love Story</h2>
+        <h2 className="font-script text-6xl text-[var(--colorPrimary)] mb-2">{labels.storyHeading6 || 'Our Love Story'}</h2>
         <div className="flex justify-center gap-2">
           <div className="w-2 h-2 rounded-full bg-[var(--colorPrimary)]/20" />
           <div className="w-2 h-2 rounded-full bg-[var(--colorPrimary)]/40" />
@@ -247,7 +248,7 @@ function Layout6({ config, ref1, ref2, ref3 }) {
 }
 
 // ── LAYOUT 7 — Polaroid Scrapbook Story ──
-function Layout7({ config, ref1, ref2, ref3 }) {
+function Layout7({ config, ref1, ref2, ref3, labels = {} }) {
   const { story } = config;
   return (
     <div className="max-w-5xl mx-auto px-6 py-24">
@@ -255,10 +256,10 @@ function Layout7({ config, ref1, ref2, ref3 }) {
         <div className="md:w-1/2 relative">
           <div className="absolute -top-4 -left-4 w-24 h-24 bg-[var(--colorPrimary)]/10 rounded-full blur-3xl" />
           <div ref={ref1} className="opacity-0 translate-y-8 transition-all duration-700 bg-white p-4 pb-16 shadow-2xl border border-slate-100 -rotate-3 relative z-10 w-full max-w-sm ml-auto">
-            <div className="aspect-square bg-slate-100 overflow-hidden mb-4">
-               <img src={config.gallery?.[2]?.src || config.heroImage} className="w-full h-full object-cover sepia-[0.2]" />
+            <div className="aspect-square bg-slate-100 overflow-hidden mb-4 relative">
+               <Image src={config.gallery?.[2]?.src || config.heroImage} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover sepia-[0.2]" alt="" />
             </div>
-            <p className="font-script text-3xl text-slate-700 text-center">Moments Together</p>
+            <p className="font-script text-3xl text-slate-700 text-center">{labels.storyCaption7 || 'Moments Together'}</p>
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-white/60 backdrop-blur-sm border border-white/20 shadow-sm" />
           </div>
         </div>
@@ -322,19 +323,25 @@ function Layout8({ config, ref1, ref2, ref3 }) {
   );
 }
 
-export default function StorySection({ config }) {
+export default function StorySection({ config, labels = {} }) {
   const ref1 = useReveal();
   const ref2 = useReveal();
   const ref3 = useReveal();
   const ref4 = useReveal();
   const layout = config?.heroLayout ?? 1;
 
+  // Hide the entire section when no story content has been entered
+  const hasStory =
+    config?.story?.invitationText?.trim() ||
+    (Array.isArray(config?.story?.paragraphs) && config.story.paragraphs.some(p => p?.trim()));
+  if (!hasStory) return null;
+
   // The background color is handled globally by var(--colorBg)
   return (
     <section 
       id="story" 
       className="overflow-hidden transition-colors duration-500 relative"
-      style={{ backgroundColor: layout === 9 ? '#020617' : 'var(--colorBg)' }}
+      style={{ backgroundColor: 'var(--colorBg)' }}
     >
       {/* ── SECTION BACKGROUND IMAGE ── */}
       {config.sectionBackgrounds?.story && (
@@ -350,15 +357,15 @@ export default function StorySection({ config }) {
           }} 
         />
       )}
-      <div className={`absolute inset-0 z-[1] pointer-events-none ${layout === 9 ? 'bg-black/40' : 'bg-white/5'}`} />
+      <div className="absolute inset-0 z-[1] pointer-events-none bg-white/5" />
       {layout === 9 ? (
         <Layout9 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
       ) : layout === 8 ? (
         <Layout8 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
       ) : layout === 7 ? (
-        <Layout7 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
+        <Layout7 config={config} ref1={ref1} ref2={ref2} ref3={ref3} labels={labels} />
       ) : layout === 6 ? (
-        <Layout6 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
+        <Layout6 config={config} ref1={ref1} ref2={ref2} ref3={ref3} labels={labels} />
       ) : layout === 5 ? (
         <Layout5 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
       ) : layout === 4 ? (
@@ -378,27 +385,27 @@ export default function StorySection({ config }) {
 function Layout9({ config, ref1, ref2, ref3 }) {
   const { story } = config;
   return (
-    <div className="max-w-5xl mx-auto px-6 py-24 md:py-32 relative text-white">
+    <div className="max-w-5xl mx-auto px-6 py-24 md:py-32 relative">
       <div ref={ref1} className="opacity-0 translate-y-8 transition-all duration-1000 mb-16 text-center">
-        <h2 className="font-sans text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4 leading-none bg-gradient-to-r from-white via-white/80 to-white/40 bg-clip-text text-transparent">
+        <h2 className="font-sans text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4 leading-none text-[var(--colorTextDark)]">
           The Story
         </h2>
         <div className="h-1 w-24 bg-[var(--colorPrimary)] mx-auto rounded-full" />
       </div>
 
-      <div className="relative z-10 bg-white/5 backdrop-blur-2xl p-10 md:p-20 rounded-[40px] border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden">
+      <div className="relative z-10 bg-[var(--colorSurface)]/60 backdrop-blur-2xl p-10 md:p-20 rounded-[40px] border border-[var(--colorPrimary)]/15 shadow-[0_20px_50px_rgba(0,0,0,0.08)] overflow-hidden">
         {/* Glow effect */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--colorPrimary)]/10 rounded-full blur-[100px] -z-10" />
         
         <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-1000 delay-300 mb-12">
-          <p className="font-serif text-3xl md:text-4xl text-white font-medium leading-tight mb-8">
+          <p className="font-serif text-3xl md:text-4xl text-[var(--colorTextDark)] font-medium leading-tight mb-8">
             {story?.invitationText || ''}
           </p>
         </div>
 
         <div ref={ref3} className="opacity-0 translate-y-8 transition-all duration-1000 delay-500 grid md:grid-cols-2 gap-8">
           {(story?.paragraphs || []).map((p, i) => (
-            <p key={i} className="font-sans text-base md:text-lg text-white/70 leading-relaxed font-light">
+            <p key={i} className="font-sans text-base md:text-lg text-[var(--colorTextDark)]/70 leading-relaxed font-light">
               {p}
             </p>
           ))}

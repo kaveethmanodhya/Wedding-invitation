@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import { MapPin } from 'lucide-react';
+import { MapPin, Calendar } from 'lucide-react';
 
 function useReveal(delay = 0) {
   const ref = useRef(null);
@@ -24,6 +24,14 @@ function useReveal(delay = 0) {
 
 const PlaneIcon = () => (<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 11l19-9-9 19-2-8-8-2z" /></svg>);
 const CalendarIcon = () => (<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>);
+
+// ── Helper: merge base events + extraEvents into a flat array ──
+function getAllEvents(config) {
+  return [
+    ...Object.values(config?.events || {}),
+    ...(config?.extraEvents || [])
+  ];
+}
 
 function ActionButtons({ event, config }) {
   const handleAddToCalendar = () => {
@@ -89,11 +97,12 @@ function EventCard1({ event, delay, config }) {
 
 function Layout1({ config }) {
   const headerRef = useReveal(0);
-  const events = config?.events || {};
+  const allEvents = getAllEvents(config);
   return (
     <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
       {(config?.layout1EventBanner || config?.gallery?.[2]) && (
         <div className="w-full h-64 md:h-80 relative overflow-hidden mb-16 rounded-[2rem] shadow-xl isolate">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={config?.layout1EventBanner || config?.gallery?.[2]?.src} alt="Banner" className="absolute inset-0 w-full h-full object-cover attachment-fixed object-[center_30%]" style={{ transform: 'scale(1.05)' }} />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--colorBg)] to-transparent opacity-80" />
           <div ref={headerRef} className="absolute inset-0 flex flex-col items-center justify-center opacity-0 translate-y-8 transition-all duration-700">
@@ -111,9 +120,9 @@ function Layout1({ config }) {
         </div>
       )}
 
-      <div className={`flex flex-wrap justify-center gap-8 md:gap-12 ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
-        {Object.entries(events).map(([key, event], idx) => (
-          <EventCard1 key={key} event={event} delay={idx * 150} config={config} />
+      <div className={`flex flex-wrap justify-center gap-8 md:gap-12 ${allEvents.length === 0 ? 'hidden' : ''}`}>
+        {allEvents.map((event, idx) => (
+          <EventCard1 key={idx} event={event} delay={idx * 150} config={config} />
         ))}
       </div>
     </div>
@@ -143,18 +152,18 @@ function EventCard2({ event, delay, config }) {
 
 function Layout2({ config }) {
   const headerRef = useReveal(0);
-  const events = config?.events || {};
+  const allEvents = getAllEvents(config);
   return (
     <div className="max-w-6xl mx-auto px-6 py-24 md:py-32 relative">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[var(--colorPrimary)] opacity-5 rounded-full blur-3xl pointer-events-none" />
       <div ref={headerRef} className="opacity-0 translate-y-8 transition-all duration-700 mb-20 text-center relative z-10 w-full">
         <h2 className="font-script text-6xl md:text-8xl text-[var(--colorPrimary)] mb-6 leading-none drop-shadow-sm tracking-wide">
-          Celebrations
+          When & Where
         </h2>
       </div>
-      <div className={`flex flex-wrap justify-center gap-12 relative z-10 w-full ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
-        {Object.entries(events).map(([key, event], idx) => (
-          <EventCard2 key={key} event={event} delay={idx * 150} config={config} />
+      <div className={`flex flex-wrap justify-center gap-12 relative z-10 w-full ${allEvents.length === 0 ? 'hidden' : ''}`}>
+        {allEvents.map((event, idx) => (
+          <EventCard2 key={idx} event={event} delay={idx * 150} config={config} />
         ))}
       </div>
     </div>
@@ -190,18 +199,18 @@ function EventCard3({ event, delay, config }) {
 
 function Layout3({ config }) {
   const headerRef = useReveal(0);
-  const events = config?.events || {};
+  const allEvents = getAllEvents(config);
   return (
     <div className="max-w-6xl mx-auto px-6 py-28 md:py-36 rounded-[3rem] border border-[var(--colorPrimary)]/20 mt-12 mb-12 shadow-sm bg-[var(--colorBg)]/50 backdrop-blur-[2px]">
       <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
         <span className="text-3xl text-[var(--colorPrimary)] mb-4 block">❀</span>
-        <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 tracking-wide">Celebrations</h2>
+        <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 tracking-wide">When & Where</h2>
         <div className="w-24 h-0.5 bg-[var(--colorPrimary)] mx-auto opacity-60" />
       </div>
 
-      <div className={`grid md:grid-cols-2 gap-10 md:gap-14 justify-center ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
-        {Object.entries(events).map(([key, event], idx) => (
-          <div key={key} className={Object.keys(events).length === 1 ? 'md:col-span-2' : ''}>
+      <div className={`grid md:grid-cols-2 gap-10 md:gap-14 justify-center ${allEvents.length === 0 ? 'hidden' : ''}`}>
+        {allEvents.map((event, idx) => (
+          <div key={idx} className={allEvents.length === 1 ? 'md:col-span-2' : ''}>
             <EventCard3 event={event} delay={idx * 150} config={config} />
           </div>
         ))}
@@ -214,15 +223,11 @@ function Layout3({ config }) {
 function EventCard5({ event, delay, config }) {
   const ref = useReveal(delay);
   return (
-    <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 flex flex-col items-center border-t border-[var(--colorTextDark)]/10 py-12 w-full group">
-      <div className="w-full flex flex-col md:flex-row items-center mb-6">
-        <div className="md:w-1/4 mb-4 md:mb-0">
-          <p className="font-serif text-3xl text-[var(--colorTextDark)]">{event.time}</p>
-        </div>
-        <div className="md:w-3/4 text-center md:text-left">
-          <h3 className="font-sans text-[clamp(24px,4vw,36px)] font-bold uppercase tracking-tighter text-[var(--colorTextDark)] mb-2 group-hover:text-[var(--colorPrimary)] transition-colors">{event.title}</h3>
-          <p className="font-serif italic text-lg text-[var(--colorTextDark)]/60">{event.venueName}</p>
-        </div>
+    <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 flex flex-col items-center text-center border-t border-[var(--colorTextDark)]/10 py-12 w-full group">
+      <div className="w-full flex flex-col items-center mb-6">
+        <p className="font-serif text-3xl text-[var(--colorTextDark)] mb-3">{event.time}</p>
+        <h3 className="font-sans text-[clamp(24px,4vw,36px)] font-bold uppercase tracking-tighter text-[var(--colorTextDark)] mb-2 group-hover:text-[var(--colorPrimary)] transition-colors">{event.title}</h3>
+        <p className="font-serif italic text-lg text-[var(--colorTextDark)]/60">{event.venueName}</p>
       </div>
       <ActionButtons event={event} config={config} />
     </div>
@@ -230,16 +235,16 @@ function EventCard5({ event, delay, config }) {
 }
 
 function Layout5({ config }) {
-  const events = config?.events || {};
+  const allEvents = getAllEvents(config);
   return (
     <div className="max-w-4xl mx-auto px-6 py-24">
-      <div className="mb-20">
-        <h2 className="font-sans text-[clamp(40px,8vw,80px)] font-extrabold uppercase tracking-tighter text-[var(--colorTextDark)]/10 leading-none mb-[-20px] text-center md:text-left">Details</h2>
-        <p className="font-serif text-3xl italic text-[var(--colorTextDark)] relative z-10 text-center md:text-left md:pl-4">Where it all begins</p>
+      <div className="mb-20 text-center">
+        <h2 className="font-sans text-[clamp(40px,8vw,80px)] font-extrabold uppercase tracking-tighter text-[var(--colorTextDark)]/10 leading-none mb-[-20px]">Details</h2>
+        <p className="font-serif text-3xl italic text-[var(--colorTextDark)] relative z-10">When & Where</p>
       </div>
       <div className="flex flex-col">
-        {Object.entries(events).map(([key, event], idx) => (
-          <EventCard5 key={key} event={event} delay={idx * 100} config={config} />
+        {allEvents.map((event, idx) => (
+          <EventCard5 key={idx} event={event} delay={idx * 100} config={config} />
         ))}
       </div>
     </div>
@@ -264,18 +269,18 @@ function EventCard6({ event, delay, config }) {
   );
 }
 
-function Layout6({ config }) {
-  const events = config?.events || {};
+function Layout6({ config, labels = {} }) {
+  const allEvents = getAllEvents(config);
   return (
     <div className="max-w-6xl mx-auto px-6 py-24 text-center relative z-10">
       <div className="mb-16">
         <span className="text-2xl mb-4 block opacity-40">❦</span>
         <h2 className="font-serif text-5xl text-[var(--colorTextDark)] mb-2 drop-shadow-[0_2px_10px_rgba(255,255,255,0.8)]">The Celebration</h2>
-        <p className="font-script text-3xl text-[var(--colorPrimary)] opacity-90 drop-shadow-sm">Lovely moments together</p>
+        <p className="font-script text-3xl text-[var(--colorPrimary)] opacity-90 drop-shadow-sm">{labels.eventDetailsSubtitle || 'Lovely moments together'}</p>
       </div>
       <div className="flex flex-wrap justify-center gap-8 px-4">
-        {Object.entries(events).map(([key, event], idx) => (
-          <div key={key} className="w-full max-w-sm">
+        {allEvents.map((event, idx) => (
+          <div key={idx} className="w-full max-w-sm">
             <EventCard6 event={event} delay={idx * 150} config={config} />
           </div>
         ))}
@@ -291,7 +296,8 @@ function EventCard7({ event, delay, config }) {
     <div ref={ref} className="opacity-0 translate-y-8 transition-all duration-700 bg-white p-4 pb-12 shadow-xl border border-slate-100 rotate-1 group hover:rotate-0 transition-all duration-500 max-w-xs mx-auto">
       <div className="aspect-square bg-slate-50 mb-4 overflow-hidden relative">
         {event.image ? (
-          <img src={event.image} className="w-full h-full object-cover" />
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={event.image} alt={event.title || 'Event venue'} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-slate-200">
             <span className="text-5xl">📍</span>
@@ -310,15 +316,15 @@ function EventCard7({ event, delay, config }) {
 }
 
 function Layout7({ config }) {
-  const events = config?.events || {};
+  const allEvents = getAllEvents(config);
   return (
     <div className="max-w-6xl mx-auto px-6 py-24 text-center">
       <div className="mb-20">
-        <h2 className="font-script text-5xl text-slate-800 mb-2 underline decoration-[var(--colorPrimary)]/30 underline-offset-8">Our Plans</h2>
+        <h2 className="font-script text-5xl text-slate-800 mb-2 underline decoration-[var(--colorPrimary)]/30 underline-offset-8">When & Where</h2>
       </div>
       <div className="flex flex-col md:flex-row flex-wrap items-center justify-center gap-12 w-full">
-        {Object.entries(events).map(([key, event], idx) => (
-          <EventCard7 key={key} event={event} delay={idx * 100} config={config} />
+        {allEvents.map((event, idx) => (
+          <EventCard7 key={idx} event={event} delay={idx * 100} config={config} />
         ))}
       </div>
     </div>
@@ -363,7 +369,7 @@ function EventCard8({ event, delay }) {
 }
 
 function Layout8({ config }) {
-  const events = config?.events || {};
+  const allEvents = getAllEvents(config);
   return (
     <div className="max-w-6xl mx-auto px-6 py-28">
       <div className="text-center mb-20">
@@ -373,22 +379,22 @@ function Layout8({ config }) {
         <div className="w-16 h-1 bg-[var(--colorPrimary)] mx-auto rounded-full" />
       </div>
       <div className="grid md:grid-cols-2 gap-12">
-        {Object.entries(events).map(([key, event], idx) => (
-          <EventCard8 key={key} event={event} delay={idx * 150} />
+        {allEvents.map((event, idx) => (
+          <EventCard8 key={idx} event={event} delay={idx * 150} />
         ))}
       </div>
     </div>
   );
 }
 
-export default function EventDetails({ config }) {
+export default function EventDetails({ config, labels = {} }) {
   const layout = config?.heroLayout ?? 1;
 
-  return (
+  return ( 
     <section 
       id="events" 
       className="overflow-hidden transition-colors duration-500 relative"
-      style={{ backgroundColor: layout === 9 ? '#020617' : 'var(--colorBg)' }}
+      style={{ backgroundColor: 'var(--colorBg)' }}
     >
       {/* ── SECTION BACKGROUND IMAGE ── */}
       {config.sectionBackgrounds?.events && (
@@ -404,11 +410,11 @@ export default function EventDetails({ config }) {
           }} 
         />
       )}
-      <div className={`absolute inset-0 z-[1] pointer-events-none ${layout === 9 ? 'bg-black/40' : 'bg-white/5'}`} />
+      <div className="absolute inset-0 z-[1] pointer-events-none bg-white/5" />
       {layout === 9 ? <Layout9 config={config} /> : 
        layout === 8 ? <Layout8 config={config} /> : 
        layout === 7 ? <Layout7 config={config} /> : 
-       layout === 6 ? <Layout6 config={config} /> : 
+       layout === 6 ? <Layout6 config={config} labels={labels} /> : 
        layout === 5 ? <Layout5 config={config} /> : 
        layout === 4 ? <Layout4 config={config} /> : 
        layout === 3 ? <Layout3 config={config} /> : 
@@ -418,46 +424,111 @@ export default function EventDetails({ config }) {
 }
 
 // ── LAYOUT 9 — Modern Dark Events ──
-function EventCard9({ event, delay }) {
+function EventCard9({ event, delay, date, config }) {
   const ref = useReveal(delay);
+
+  const handleAddToCalendar = () => {
+    const title = encodeURIComponent(`${config?.couple?.displayNames || 'Wedding'}'s ${event?.title || 'Event'}`);
+    const details = encodeURIComponent(`We would love to see you at our ${event?.title || 'Event'}!\n\nVenue: ${event?.venueName || ''}\nAddress: ${event?.address || ''}`);
+    const location = encodeURIComponent(event?.address || event?.venueName || '');
+    const dateStr = config?.wedding?.dateTimeISO || '';
+    const start = dateStr.replace(/[-:]/g, '').split('.')[0] || '';
+    const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}&dates=${start}/${start}`;
+    window.open(googleUrl, '_blank');
+  };
+
   return (
     <article
       ref={ref}
-      className="opacity-0 translate-y-8 transition-all duration-1000 bg-white/95 rounded-[2.5rem] p-10 flex flex-col items-center text-center gap-4 w-full max-w-sm relative group transition-all duration-500 shadow-2xl"
+      className="opacity-0 translate-y-8 transition-all duration-1000 relative w-full max-w-sm group"
     >
-      <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center text-3xl mb-2">
-        {event.icon || '📍'}
-      </div>
-      <h3 className="font-sans text-3xl md:text-4xl font-black uppercase tracking-tighter text-slate-900">{event.title}</h3>
-      <p className="font-sans text-xs tracking-[0.4em] uppercase text-[var(--colorPrimary)] font-bold">{event.time}</p>
-      
-      <div className="h-px w-12 bg-slate-200 my-2" />
+      {/* Card */}
+      <div className="relative bg-white rounded-[2rem] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.10)] border border-[var(--colorPrimary)]/10 flex flex-col">
+        {/* Top accent bar */}
+        <div className="h-1.5 w-full bg-gradient-to-r from-[var(--colorPrimary)] via-[var(--colorSecondary)] to-[var(--colorPrimary)]" />
 
-      <div className="flex flex-col gap-1 w-full max-w-xs text-center mb-8">
-        <span className="font-sans font-bold uppercase tracking-widest text-[10px] text-slate-700">{event.venueName}</span>
-        <span className="font-sans text-xs text-slate-500 mt-1 leading-relaxed">{event.address}</span>
-      </div>
+        <div className="flex flex-col items-center text-center px-8 pt-10 pb-8 gap-0">
+          {/* Icon badge */}
+          <div className="w-16 h-16 rounded-2xl bg-[var(--colorPrimary)]/10 flex items-center justify-center text-3xl mb-6 shadow-inner">
+            {event.icon || '📍'}
+          </div>
 
-      <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="mt-auto flex items-center gap-3 px-10 py-4 bg-white text-black font-sans text-[10px] font-bold tracking-[0.3em] uppercase hover:bg-[var(--colorPrimary)] hover:text-white transition-all duration-500 rounded-xl shadow-xl shadow-black/20">
-        <PlaneIcon /> Get Directions
-      </a>
+          {/* Title */}
+          <h3 className="font-sans text-3xl md:text-4xl font-black uppercase tracking-tight text-[var(--colorTextDark)] leading-tight mb-3">
+            {event.title}
+          </h3>
+    {/* Date */}
+          {date && (
+            <p className="font-serif text-xl md:text-2xl italic text-[var(--colorTextDark)] font-semibold mb-5">
+              {date}
+            </p>
+          )}
+          {!date && <div className="mb-5" />}
+          {/* Time */}
+          <p className="font-sans text-sm tracking-[0.4em] uppercase text-[var(--colorPrimary)] font-bold mb-1">
+            {event.time}
+          </p>
+
+          
+
+          <div className="w-10 h-px bg-[var(--colorPrimary)]/30 mb-6" />
+
+          {/* Venue */}
+          <span className="font-sans font-bold uppercase tracking-[0.18em] text-[11px] text-[var(--colorPrimary)] mb-1">
+            {event.venueName}
+          </span>
+          <span className="font-serif text-sm text-[var(--colorTextDark)]/55 leading-relaxed max-w-[220px]">
+            {event.address}
+          </span>
+
+          {event.dressCode && event.dressCode !== 'none' && (
+            <div className="mt-5 px-4 py-2 bg-[var(--colorPrimary)]/8 rounded-full flex items-center gap-2 border border-[var(--colorPrimary)]/15">
+              <span className="text-xs">👗</span>
+              <span className="font-sans text-[9px] uppercase tracking-widest text-[var(--colorPrimary)] font-bold">
+                {event.dressCode}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Action buttons */}
+        <div className="px-8 pb-8 flex flex-col gap-3">
+          {event.mapsUrl && (
+            <a
+              href={event.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-3 w-full py-4 bg-[var(--colorTextDark)] text-[var(--colorBg)] font-sans text-[10px] font-bold tracking-[0.3em] uppercase rounded-2xl hover:bg-[var(--colorPrimary)] transition-all duration-300 shadow-sm"
+            >
+              <MapPin size={14} /> Get Directions
+            </a>
+          )}
+          <button
+            onClick={handleAddToCalendar}
+            className="flex items-center justify-center gap-3 w-full py-4 bg-[var(--colorBg)] text-[var(--colorTextDark)] font-sans text-[10px] font-bold tracking-[0.3em] uppercase rounded-2xl border border-[var(--colorPrimary)]/20 hover:bg-[var(--colorPrimary)] hover:text-white hover:border-[var(--colorPrimary)] transition-all duration-300 shadow-sm"
+          >
+            <Calendar size={14} /> Add to Calendar
+          </button>
+        </div>
+      </div>
     </article>
   );
 }
 
 function Layout9({ config }) {
   const headerRef = useReveal(0);
-  const events = config?.events || {};
+  const allEvents = getAllEvents(config);
   return (
     <div className="max-w-6xl mx-auto px-6 py-24 md:py-32">
       <div ref={headerRef} className="text-center mb-20 opacity-0 translate-y-8 transition-all duration-1000">
-        <h2 className="font-sans text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-4 bg-gradient-to-r from-white via-white/80 to-white/40 bg-clip-text text-transparent">The Events</h2>
-        <p className="font-sans text-[10px] tracking-[0.6em] uppercase text-white/40 font-bold">Time & Locations</p>
+        <p className="font-sans text-[10px] tracking-[0.6em] uppercase text-[var(--colorPrimary)] font-bold mb-4">Time &amp; Locations</p>
+        <h2 className="font-serif text-5xl md:text-7xl italic text-[var(--colorTextDark)] mb-4 leading-none">When & Where</h2>
+        <div className="w-20 h-px bg-[var(--colorPrimary)]/40 mx-auto" />
       </div>
 
-      <div className={`flex flex-wrap justify-center gap-8 ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
-        {Object.entries(events).map(([key, event], idx) => (
-          <EventCard9 key={key} event={event} delay={idx * 150} />
+      <div className={`flex flex-wrap justify-center gap-8 ${allEvents.length === 0 ? 'hidden' : ''}`}>
+        {allEvents.map((event, idx) => (
+          <EventCard9 key={idx} event={event} delay={idx * 150} date={config?.wedding?.displayDate} config={config} />
         ))}
       </div>
     </div>
@@ -488,6 +559,7 @@ function EventCard4({ event, delay, config }) {
 
           <div className="w-full h-48 md:h-56 bg-slate-100 rounded-2xl overflow-hidden relative group/map mb-2 border border-slate-200 shadow-inner">
              {hasImage ? (
+               // eslint-disable-next-line @next/next/no-img-element
                <img src={event.image} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/map:scale-110" alt="Venue" />
              ) : (
                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/gray-floral.png')] opacity-20" />
@@ -539,7 +611,7 @@ function EventCard4({ event, delay, config }) {
 
 function Layout4({ config }) {
   const headerRef = useReveal(0);
-  const { events } = config;
+  const allEvents = getAllEvents(config);
   return (
     <div className="max-w-6xl mx-auto px-6 py-24 md:py-32 relative">
       <div ref={headerRef} className="text-center mb-20 opacity-0 translate-y-8 transition-all duration-1000">
@@ -548,9 +620,9 @@ function Layout4({ config }) {
         <div className="w-24 h-px bg-[var(--colorPrimary)] opacity-30 mx-auto" />
       </div>
 
-      <div className={`flex flex-wrap justify-center gap-10 md:gap-14 ${Object.keys(events).length === 0 ? 'hidden' : ''}`}>
-        {Object.entries(events).map(([key, event], idx) => (
-          <EventCard4 key={key} event={event} delay={idx * 200} config={config} />
+      <div className={`flex flex-wrap justify-center gap-10 md:gap-14 ${allEvents.length === 0 ? 'hidden' : ''}`}>
+        {allEvents.map((event, idx) => (
+          <EventCard4 key={idx} event={event} delay={idx * 200} config={config} />
         ))}
       </div>
       

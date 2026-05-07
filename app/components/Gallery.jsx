@@ -4,6 +4,11 @@ import Image from 'next/image';
 
 export default function Gallery({ config }) {
   const gallery = config?.gallery || [];
+  
+  if (!gallery || gallery.length === 0) {
+    return null;
+  }
+
   const headerRef = useRef(null);
   const layout = config?.heroLayout ?? 1;
 
@@ -28,7 +33,7 @@ export default function Gallery({ config }) {
     <section 
       id="gallery" 
       className="py-20 md:py-28 transition-colors duration-500 relative overflow-hidden"
-      style={{ backgroundColor: layout === 9 ? '#020617' : 'var(--colorBg)' }}
+      style={{ backgroundColor: 'var(--colorBg)' }}
     >
       {/* ── SECTION BACKGROUND IMAGE ── */}
       {config.sectionBackgrounds?.gallery && (
@@ -44,7 +49,7 @@ export default function Gallery({ config }) {
           }} 
         />
       )}
-      <div className={`absolute inset-0 z-[1] pointer-events-none ${layout === 9 ? 'bg-black/40' : 'bg-white/5'}`} />
+      <div className="absolute inset-0 z-[1] pointer-events-none bg-white/5" />
       <div className="max-w-5xl mx-auto px-6">
         
 
@@ -52,9 +57,9 @@ export default function Gallery({ config }) {
         {(layout === 5 || layout === 6 || layout === 7 || layout === 8 || layout === 9) && (
           <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
             {layout === 5 && (
-              <div className="text-left border-l-4 border-[var(--colorTextDark)] pl-8">
+              <div className="text-center">
                 <h2 className="font-sans text-5xl md:text-7xl font-bold uppercase tracking-tighter text-[var(--colorTextDark)] opacity-80 leading-none mb-2">Moments</h2>
-                <p className="font-serif text-3xl italic text-[var(--colorTextDark)]/40 italic">A visual journey of us</p>
+                <p className="font-serif text-3xl italic text-[var(--colorTextDark)]/40">A visual journey of us</p>
               </div>
             )}
             {layout === 6 && (
@@ -79,8 +84,8 @@ export default function Gallery({ config }) {
             )}
             {layout === 9 && (
               <div className="text-center">
-                <h2 className="font-sans text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-4 bg-gradient-to-r from-white via-white/80 to-white/40 bg-clip-text text-transparent">Gallery</h2>
-                <p className="font-sans text-[10px] tracking-[0.6em] uppercase text-white/40 font-bold">The Moments Captured In Time</p>
+                <h2 className="font-sans text-5xl md:text-7xl font-black uppercase tracking-tighter text-[var(--colorTextDark)] mb-4">Gallery</h2>
+                <p className="font-sans text-[10px] tracking-[0.6em] uppercase text-[var(--colorTextDark)]/40 font-bold">The Moments Captured In Time</p>
               </div>
             )}
           </div>
@@ -132,7 +137,7 @@ export default function Gallery({ config }) {
         </div>
       ) : layout === 5 ? (
         // Layout 5: Minimalist Modern Grid
-        <div className="grid grid-cols-2 lg:flex lg:flex-row lg:overflow-x-auto gap-4 px-4 max-w-full no-scrollbar pb-8">
+        <div className="grid grid-cols-2 justify-items-center lg:flex lg:flex-row lg:flex-wrap lg:justify-center gap-4 px-4 max-w-full no-scrollbar pb-8">
           {gallery.map((photo, idx) => (
             <div
               key={idx}

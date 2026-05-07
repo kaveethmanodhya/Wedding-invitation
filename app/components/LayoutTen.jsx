@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -6,6 +7,7 @@ import {
   ArrowRight, Mail, Navigation, Info, Users
 } from 'lucide-react';
 import { PRESET_THEMES } from '../../lib/themes';
+import { getDietaryTitle, getDietaryItems, getInitialDietary, buildDietaryString } from '../../lib/dietary';
 
 // ── Elaborate SVG Mandalas ──
 const TopMandala = ({ className = "" }) => (
@@ -71,14 +73,17 @@ const SectionBackground = ({ image, opacity = 0.4 }) => {
   );
 };
 
-export default function LayoutTen({ config }) {
+export default function LayoutTen({ config, labels = {}, birthdayData = null, generalData = null }) {
   // Use admin panel theme setting
   const themeId = config.themeId || config.theme || 'gold';
   const theme = PRESET_THEMES.find(t => t.id === themeId)?.colors || config.theme || PRESET_THEMES[0].colors;
 
+  const dietaryItems = getDietaryItems(config);
+  const dietaryTitle = getDietaryTitle(config);
+
   const [formData, setFormData] = useState({
     name: '', phone: '', attendance: '', guests: '1',
-    dietary: { vegetarian: false, vegan: false, glutenFree: false, noPorkBeef: false },
+    dietary: getInitialDietary(dietaryItems),
     message: ''
   });
   const [rsvpStatus, setRsvpStatus] = useState('idle');
@@ -95,14 +100,11 @@ export default function LayoutTen({ config }) {
     }
     setRsvpStatus('loading');
 
-    let dietaryNotes = Object.entries(formData.dietary)
-      .filter(([_, value]) => value)
-      .map(([key, _]) => key === 'noPorkBeef' ? 'No Pork/Beef' : key)
-      .join(', ');
+    let dietaryNotes = buildDietaryString(formData.dietary, dietaryItems);
 
     const selectedEvents = formData.attendance === 'Accept' ? 'Yes' : 'No';
 
-    const waMessage = `💍 *Wedding RSVP* 💍\n\n*Name:* ${formData.name}\n*Phone:* ${formData.phone || 'N/A'}\n*Attendance:* ${formData.attendance === 'Accept' ? 'Joyfully Accept' : 'Regret Decline'}\n${formData.attendance === 'Accept' ? `*Guests:* ${formData.guests}\n*Dietary:* ${dietaryNotes || 'None'}\n` : ''}*Message:* ${formData.message || 'N/A'}`;
+    const waMessage = `${labels.rsvpMessageHeaderAlt || '💍 *Wedding RSVP* 💍'}\n\n*Name:* ${formData.name}\n*Phone:* ${formData.phone || 'N/A'}\n*Attendance:* ${formData.attendance === 'Accept' ? 'Joyfully Accept' : 'Regret Decline'}\n${formData.attendance === 'Accept' ? `*Guests:* ${formData.guests}\n*Dietary:* ${dietaryNotes || 'None'}\n` : ''}*Message:* ${formData.message || 'N/A'}`;
     const cleanNumber = config?.rsvp?.whatsappNumber?.replace(/[+\s-]/g, '') || '';
     if (cleanNumber) {
       window.open(`https://wa.me/${cleanNumber}?text=${encodeURIComponent(waMessage)}`, '_blank');
@@ -110,7 +112,7 @@ export default function LayoutTen({ config }) {
     setRsvpStatus('success');
   };
 
-  let hDay = 'WEDNESDAY', hMonth = 'APR', hDate = '15', hYear = '2026', hTime = 'AT 10:00 AM';
+  let hDay = '', hMonth = '', hDate = '', hYear = '', hTime = '';
   if (config?.wedding?.dateTimeISO) {
     const d = new Date(config.wedding.dateTimeISO);
     if (!isNaN(d.getTime())) {
@@ -122,7 +124,7 @@ export default function LayoutTen({ config }) {
     }
   }
 
-  const [timeLeft, setTimeLeft] = useState({ days: 12, hours: 8, minutes: 45, seconds: 22 });
+  const [timeLeft, setTimeLeft] = useState(null);
 
   useEffect(() => {
     if (!config?.wedding?.dateTimeISO) return;
@@ -175,11 +177,11 @@ export default function LayoutTen({ config }) {
                 <div className="relative w-full aspect-[3/4] z-0 overflow-hidden">
                    {/* Sharp Layer (Top) */}
                    <div className="absolute inset-0 z-0" style={{ maskImage: 'linear-gradient(to bottom, black 0%, transparent 65%)', WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 65%)' }}>
-                      <img src={config.heroImage} className="w-full h-full object-cover object-top" alt="Hero Background Sharp" />
+                      <Image src={config.heroImage} fill priority sizes="(max-width: 850px) 100vw, 850px" className="object-cover object-top" alt="Hero Background Sharp" />
                    </div>
                    {/* Blurred Layer (Bottom) */}
                    <div className="absolute inset-0 z-[1]" style={{ maskImage: 'linear-gradient(to top, black 0%, transparent 90%)', WebkitMaskImage: 'linear-gradient(to top, black 0%, transparent 90%)' }}>
-                      <img src={config.heroImage} className="w-full h-full object-cover object-top blur-[10px] scale-105" alt="Hero Background Blurred" />
+                      <Image src={config.heroImage} fill sizes="(max-width: 850px) 100vw, 850px" className="object-cover object-top blur-[10px] scale-105" alt="Hero Background Blurred" />
                    </div>
                    {/* Fade to White at bottom */}
                    <div className="absolute inset-0 z-[2] bg-gradient-to-b from-transparent via-white/10 to-white" />
@@ -201,9 +203,14 @@ export default function LayoutTen({ config }) {
           <div className="mt-[-25%] md:mt-[-15%] text-center max-w-2xl mx-auto w-full z-20 px-4">
             
             <h1 className="flex flex-col items-center justify-center text-[3.5rem] md:text-[5.5rem] leading-[0.9] font-serif uppercase tracking-[0.2em] mb-12 drop-shadow-md" style={{ color: theme.colorTextDark }}>
-              <span>{config?.couple?.groom?.firstName || 'Groom'}</span>
-              <span className="text-2xl md:text-3xl font-sans font-light opacity-50 my-1">&</span>
-              <span>{config?.couple?.bride?.firstName || 'Bride'}</span>
+              {birthdayData?.celebrantName || generalData?.eventTitle || generalData?.hostName
+                ? <span>{birthdayData?.celebrantName || generalData?.eventTitle || generalData?.hostName}</span>
+                : <>
+                    <span>{config?.couple?.groom?.firstName || 'Groom'}</span>
+                    <span className="text-2xl md:text-3xl font-sans font-light opacity-50 my-1">&</span>
+                    <span>{config?.couple?.bride?.firstName || 'Bride'}</span>
+                  </>
+              }
             </h1>
 
             {/* Date Banner Now Below Names */}
@@ -224,7 +231,7 @@ export default function LayoutTen({ config }) {
             </div>
 
             <p className="font-serif italic text-xl md:text-2xl opacity-90 mx-auto max-w-[450px] leading-relaxed" style={{ color: theme.colorTextLight }}>
-              Together with their families invite you to their wedding
+              {labels.heroFamiliesLine || 'Together with their families invite you to their wedding'}
             </p>
           </div>
         </div>
@@ -240,9 +247,9 @@ export default function LayoutTen({ config }) {
         style={{ backgroundColor: 'transparent' }}
       >
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl md:text-5xl italic mb-16 drop-shadow-sm" style={{ color: theme.colorPrimary }}>The Celebration Begins In</h2>
+          <h2 className="text-4xl md:text-5xl italic mb-16 drop-shadow-sm" style={{ color: theme.colorPrimary }}>{labels.countdownHeading || 'The Celebration Begins In'}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-            {[
+            {timeLeft && [
               { label: 'Days', value: timeLeft.days },
               { label: 'Hours', value: timeLeft.hours.toString().padStart(2, '0') },
               { label: 'Minutes', value: timeLeft.minutes.toString().padStart(2, '0') },
@@ -268,6 +275,7 @@ export default function LayoutTen({ config }) {
         </div>
       </section>
 
+      {(config?.story?.invitationText?.trim() || (config?.story?.paragraphs && config.story.paragraphs.some(p => p?.trim()))) && (
       <section 
         className="py-16 px-6 text-center relative overflow-visible" 
         style={{ backgroundColor: 'transparent' }}
@@ -277,13 +285,13 @@ export default function LayoutTen({ config }) {
         </div>
         <SectionBackground image={config.sectionBackgrounds?.story || config.story?.bgImage} opacity={0.4} />
         <div className="max-w-3xl mx-auto relative p-12 md:p-16 rounded-[3rem] shadow-[0_30px_60px_rgba(0,0,0,0.1)]" style={{ backgroundColor: theme.colorSurface }}>
-          <span className="font-sans text-[10px] uppercase tracking-[0.5em] font-bold block mb-12" style={{ color: theme.colorPrimary }}>Our Story</span>
+          <span className="font-sans text-[10px] uppercase tracking-[0.5em] font-bold block mb-12" style={{ color: theme.colorPrimary }}>{labels.storySection || 'Our Story'}</span>
 
-          <div className="absolute top-8 left-4 md:left-8 text-[120px] leading-none font-serif opacity-10" style={{ color: theme.colorTextDark }}>"</div>
+          <div className="absolute top-8 left-4 md:left-8 text-[120px] leading-none font-serif opacity-10" style={{ color: theme.colorTextDark }}>&ldquo;</div>
           <p className="text-2xl md:text-3xl italic leading-relaxed px-6 relative z-10 drop-shadow-sm" style={{ color: theme.colorTextDark }}>
-            {config?.story?.invitationText || "In the presence of our family and friends, we will share our vows and embark on an eternal journey of love."}
+            {config?.story?.invitationText}
           </p>
-          <div className="absolute bottom-[20%] right-4 md:right-8 text-[120px] leading-none font-serif opacity-10" style={{ color: theme.colorTextDark }}>"</div>
+          <div className="absolute bottom-[20%] right-4 md:right-8 text-[120px] leading-none font-serif opacity-10" style={{ color: theme.colorTextDark }}>&rdquo;</div>
 
           <div className="w-16 h-[2px] mx-auto my-12 opacity-50 rounded-full" style={{ backgroundColor: theme.colorPrimary }} />
 
@@ -296,6 +304,7 @@ export default function LayoutTen({ config }) {
           )}
         </div>
       </section>
+      )}
 
       {config?.gallery && config.gallery.length > 0 && (
         <section 
@@ -313,10 +322,12 @@ export default function LayoutTen({ config }) {
             </div>
             <div className="flex flex-wrap justify-center gap-4 md:gap-6">
               {config.gallery.map((img, idx) => (
-                <div key={idx} className="w-[calc(50%-0.5rem)] md:w-[calc(25%-1.2rem)] max-w-[280px] aspect-[4/5] relative overflow-hidden group rounded-2xl shadow-[0_15px_30px_rgba(0,0,0,0.2)] border" style={{ borderColor: 'rgba(0,0,0,0.05)' }}>
-                  <img
+                <div key={idx} className="w-[calc(50%-0.5rem)] md:w-[calc(25%-1.2rem)] max-w-[280px] aspect-[4/5] relative overflow-hidden group rounded-2xl shadow-[0_15px_30px_rgba(0,0,0,0.2)] border cursor-default" style={{ borderColor: 'rgba(0,0,0,0.05)' }}>
+                  <Image
                     src={typeof img === 'string' ? img : (img.src || img.url)}
-                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                    fill
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    className="object-cover transition-transform duration-1000 group-hover:scale-110"
                     loading="lazy"
                     alt={`Gallery capture ${idx + 1}`}
                   />
@@ -344,7 +355,7 @@ export default function LayoutTen({ config }) {
           
           {config?.events?.ceremony?.image ? (
               <div className="w-full h-64 md:h-80 relative overflow-hidden mb-16 md:mb-24 rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] isolate">
-                <img src={config.events.ceremony.image} alt="Banner" className="absolute inset-0 w-full h-full object-cover" />
+                <div className="absolute inset-0"><Image src={config.events.ceremony.image} fill sizes="(max-width: 1152px) 100vw, 1152px" alt="Banner" className="object-cover" /></div>
                 <div className="absolute inset-0 bg-white/40 backdrop-blur-[1px]" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center translate-y-2">
                   <p className="font-sans text-[0.7rem] md:text-[10px] tracking-[0.4em] uppercase font-bold drop-shadow-md mb-2" style={{ color: theme.colorTextDark }}>Mark Your Calendar</p>
@@ -358,8 +369,8 @@ export default function LayoutTen({ config }) {
              </div>
           )}
 
-          <div className={`flex flex-wrap justify-center gap-8 ${!config?.events || Object.keys(config.events).length === 0 ? 'hidden' : ''}`}>
-            {Object.entries(config?.events || {}).map(([key, event], idx) => {
+          <div className={`flex flex-wrap justify-center gap-8 ${[...Object.values(config?.events || {}), ...(config?.extraEvents || [])].length === 0 ? 'hidden' : ''}`}>
+            {[...Object.values(config?.events || {}), ...(config?.extraEvents || [])].map((event, idx) => {
               const handleAddToCalendar = () => {
                 const title = encodeURIComponent(`${config?.couple?.bride?.firstName || 'Wedding'}'s ${event?.title || 'Event'}`);
                 const details = encodeURIComponent(`We would love to see you at our ${event?.title || 'Event'}! \n\nVenue: ${event?.venueName || ''}\nAddress: ${event?.address || ''}`);
@@ -372,7 +383,7 @@ export default function LayoutTen({ config }) {
 
               return (
                 <motion.div
-                  key={key}
+                  key={idx}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.15 }}
@@ -390,7 +401,9 @@ export default function LayoutTen({ config }) {
                       
                       <div className="w-12 h-[1px] mx-auto mb-6 opacity-30" style={{ backgroundColor: theme.colorPrimary }} />
                       
-                      <p className="font-sans text-[10px] md:text-xs tracking-[0.3em] font-bold mb-6 italic" style={{ color: theme.colorPrimary }}>{event.time}</p>
+                      <p className="font-sans text-[10px] md:text-xs tracking-[0.3em] font-bold mb-6 italic" style={{ color: theme.colorPrimary }}>
+                        {event.time || (config?.wedding?.displayDate ? config.wedding.displayDate : '')}
+                      </p>
 
                       <div className="space-y-2 mb-10 text-center flex-1">
                         <p className="font-serif text-xl leading-snug font-bold" style={{ color: theme.colorTextDark }}>{event.venueName}</p>
@@ -427,6 +440,103 @@ export default function LayoutTen({ config }) {
           </div>
         </div>
       </section>
+
+      {/* ── TIMELINE SECTION (only when admin has added items) ── */}
+      {Array.isArray(config.timeline) && config.timeline.length > 0 && (
+        <section
+          className="py-20 md:py-32 relative overflow-hidden"
+          style={{ backgroundColor: theme.colorBg || '#FAF7F2' }}
+        >
+          {/* Corner blur decor */}
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" style={{ backgroundColor: `${theme.colorPrimary}0d` }} />
+          <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 pointer-events-none" style={{ backgroundColor: `${theme.colorPrimary}0d` }} />
+
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
+            <div className="text-center mb-16 md:mb-24">
+              <span
+                className="text-[0.7rem] uppercase tracking-[0.4em] mb-3 block font-bold"
+                style={{ color: theme.colorPrimary }}
+              >
+                Schedule
+              </span>
+              <h2
+                className="font-serif text-4xl md:text-5xl mb-4"
+                style={{ color: theme.colorTextDark }}
+              >
+                Timeline of the event
+              </h2>
+              <div className="h-1 w-[60px] mx-auto rounded-full" style={{ backgroundColor: `${theme.colorPrimary}4d` }} />
+            </div>
+
+            <div className="relative">
+              {/* Gradient vertical line */}
+              <div
+                className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px -translate-x-1/2"
+                style={{ background: `linear-gradient(to bottom, transparent, ${theme.colorPrimary}4d, transparent)` }}
+              />
+
+              <div className="space-y-12 md:space-y-24">
+                {config.timeline.map((item, idx) => {
+                  const isEven = idx % 2 === 0;
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: isEven ? -50 : 50 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, margin: '-100px' }}
+                      transition={{ duration: 0.8, delay: idx * 0.15 }}
+                      className={`relative flex items-center justify-start md:justify-center ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'}`}
+                    >
+                      {/* Content Card */}
+                      <div className={`w-full md:w-[45%] pl-12 md:pl-0 ${isEven ? 'md:text-right md:pr-16' : 'md:text-left md:pl-16'}`}>
+                        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-50 transition-transform hover:scale-[1.02]">
+                          <span
+                            className="font-sans text-[0.65rem] font-black uppercase tracking-[0.2em] mb-2 block"
+                            style={{ color: theme.colorPrimary }}
+                          >
+                            {item.time}
+                          </span>
+                          <h3
+                            className="font-serif text-2xl mb-2"
+                            style={{ color: theme.colorTextDark }}
+                          >
+                            {item.title}
+                          </h3>
+                          {(item.description || item.desc) && (
+                            <p
+                              className="font-serif italic text-sm leading-relaxed"
+                              style={{ color: `${theme.colorTextDark}99` }}
+                            >
+                              {item.description || item.desc}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Icon Node */}
+                      <div className="absolute left-4 md:left-1/2 top-0 md:top-1/2 -translate-x-1/2 md:-translate-y-1/2 z-20">
+                        <div
+                          className="w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center text-xl md:text-2xl shadow-xl border-4"
+                          style={{
+                            backgroundColor: theme.colorSurface || '#ffffff',
+                            borderColor: theme.colorBg || '#FAF7F2',
+                            color: theme.colorPrimary,
+                          }}
+                        >
+                          {item.icon || '✨'}
+                        </div>
+                      </div>
+
+                      {/* Desktop spacer */}
+                      <div className="hidden md:block w-[45%]" />
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section 
         className="py-20 px-6 relative overflow-visible" 
@@ -494,19 +604,19 @@ export default function LayoutTen({ config }) {
                       value={formData.guests}
                       onChange={e => setFormData(f => ({ ...f, guests: e.target.value }))}
                     >
-                      {[1,2,3,4,5,6].map(n => <option key={n} value={n}>{n}</option>)}
+                      {Array.from({ length: config?.rsvp?.maxGuests || 2 }, (_, i) => i + 1).map(n => <option key={n} value={n}>{n}</option>)}
                     </select>
                  </div>
 
                  <div className="space-y-5">
-                   <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: theme.colorTextDark }}>Dietary Restrictions</p>
+                   <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: theme.colorTextDark }}>{dietaryTitle}</p>
                    <div className="grid grid-cols-2 gap-y-4 gap-x-2">
-                     {[{key: 'vegetarian', label: 'Vegetarian'}, {key: 'vegan', label: 'Vegan'}, {key: 'glutenFree', label: 'Gluten-Free'}, {key: 'noPorkBeef', label: 'No Pork / Beef'}].map(opt => (
-                        <label key={opt.key} className="flex items-center gap-3 cursor-pointer group">
-                          <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${formData.dietary[opt.key] ? '' : 'bg-transparent'}`} style={{ backgroundColor: formData.dietary[opt.key] ? theme.colorPrimary : 'transparent', borderColor: theme.colorPrimary }}>
-                             {formData.dietary[opt.key] && <Check size={12} color="white" />}
+                     {dietaryItems.map(opt => (
+                        <label key={opt.id} className="flex items-center gap-3 cursor-pointer group">
+                          <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${formData.dietary[opt.id] ? '' : 'bg-transparent'}`} style={{ backgroundColor: formData.dietary[opt.id] ? theme.colorPrimary : 'transparent', borderColor: theme.colorPrimary }}>
+                             {formData.dietary[opt.id] && <Check size={12} color="white" />}
                           </div>
-                          <input type="checkbox" className="sr-only" checked={formData.dietary[opt.key]} onChange={() => setFormData(f => ({ ...f, dietary: { ...f.dietary, [opt.key]: !f.dietary[opt.key] } }))} />
+                          <input type="checkbox" className="sr-only" checked={!!formData.dietary[opt.id]} onChange={() => setFormData(f => ({ ...f, dietary: { ...f.dietary, [opt.id]: !f.dietary[opt.id] } }))} />
                           <span className="font-serif text-[14px] opacity-80 transition-colors group-hover:opacity-100" style={{ color: theme.colorTextDark }}>{opt.label}</span>
                         </label>
                      ))}
@@ -518,7 +628,7 @@ export default function LayoutTen({ config }) {
             <div className="pt-4">
               <textarea
                 rows={3}
-                placeholder="Message to the couple..."
+                placeholder="Message to wish..."
                 className="w-full border-b-2 px-4 py-4 text-lg font-serif outline-none transition-shadow focus:border-b-4 bg-transparent resize-y"
                 style={{ borderColor: theme.colorPrimary, color: theme.colorTextDark }}
                 value={formData.message}
@@ -557,7 +667,11 @@ export default function LayoutTen({ config }) {
         </div>
         <div className="relative z-10 px-6">
           <h2 className="font-script text-5xl mb-4 drop-shadow-md" style={{ color: theme.colorPrimary }}>
-            {config?.couple?.displayNames || ((config?.couple?.bride?.firstName && config?.couple?.groom?.firstName) ? `${config?.couple?.bride?.firstName} & ${config?.couple?.groom?.firstName}` : '')}
+            {birthdayData?.celebrantName || generalData?.eventTitle || generalData?.hostName
+              || config?.couple?.displayNames
+              || ((config?.couple?.bride?.firstName && config?.couple?.groom?.firstName)
+                  ? `${config?.couple?.bride?.firstName} & ${config?.couple?.groom?.firstName}`
+                  : '')}
           </h2>
           <p className="font-serif text-sm tracking-[0.3em] uppercase mb-10" style={{ color: theme.colorBg, opacity: 0.8 }}>
             {config?.wedding?.displayDate || config?.wedding?.date || ''}

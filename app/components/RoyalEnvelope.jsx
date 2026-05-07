@@ -11,7 +11,7 @@ import { useState, useSyncExternalStore } from 'react';
  * - Professional wax seal with initials
  * - Smooth opening flap and sliding card
  */
-export default function RoyalEnvelope({ config, onOpen }) {
+export default function RoyalEnvelope({ config, onOpen, birthdayData = null, generalData = null }) {
   const [stage, setStage] = useState('closed'); // closed | opening | sliding
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
 
@@ -33,6 +33,15 @@ export default function RoyalEnvelope({ config, onOpen }) {
   };
 
   if (!mounted) return null;
+
+  const displayName = birthdayData?.celebrantName
+    || generalData?.eventTitle
+    || generalData?.hostName
+    || null;
+  const initial1 = displayName
+    ? (displayName[0] || '').toUpperCase()
+    : (config.couple?.bride?.firstName?.[0] || 'D').toUpperCase();
+  const initial2 = displayName ? null : (config.couple?.groom?.firstName?.[0] || 'C').toUpperCase();
 
   const brideInitial = config.couple?.bride?.firstName?.[0] || 'D';
   const groomInitial = config.couple?.groom?.firstName?.[0] || 'C';
@@ -140,9 +149,13 @@ export default function RoyalEnvelope({ config, onOpen }) {
             <div className="relative z-10 w-full">
               <p className="font-serif italic text-[#C5A059] text-sm mb-4">You are cordially invited</p>
               <h2 className="font-serif text-3xl md:text-4xl text-[#3D0010] mb-4 leading-tight">
-                {config.couple?.bride?.firstName} <br/>
-                <span className="font-script text-2xl text-[#C5A059]">&</span> <br/>
-                {config.couple?.groom?.firstName}
+                {displayName
+                  ? displayName
+                  : <>{config.couple?.bride?.firstName} <br/>
+                      <span className="font-script text-2xl text-[#C5A059]">&</span> <br/>
+                      {config.couple?.groom?.firstName}
+                    </>
+                }
               </h2>
               <div className="w-12 h-px bg-[#C5A059]/30 mx-auto mb-4" />
               <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-[#3D0010]/60">
@@ -273,9 +286,8 @@ export default function RoyalEnvelope({ config, onOpen }) {
                       />
                     ) : (
                       <span className="font-serif font-black italic text-[#D4AF37] text-lg md:text-xl whitespace-nowrap select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
-                        {(config.couple?.bride?.firstName?.[0] || 'D').toUpperCase()} 
-                        <span className="font-script text-[10px] mx-1 not-italic font-normal">&</span> 
-                        {(config.couple?.groom?.firstName?.[0] || 'C').toUpperCase()}
+                        {initial1}
+                        {initial2 && <><span className="font-script text-[10px] mx-1 not-italic font-normal">&</span>{initial2}</>}
                       </span>
                     )}
                   </div>
