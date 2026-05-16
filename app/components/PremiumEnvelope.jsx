@@ -11,6 +11,27 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
   const envelopeVideo = config?.envelopeVideo || '/videos/envelope-open.mp4';
   const isAutoOpen = config?.envelopeOpenMode === 'auto';
 
+  useEffect(() => {
+    // 1. Force remove loading screen after 2.5s no matter what
+    const failsafe = setTimeout(() => {
+      setMediaReady(true);
+    }, 2500);
+
+    // 2. Clear old aggressive Service Workers
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          // Unregister existing to flush bad caches
+          registration.unregister();
+        }
+        // Re-register the new, safe worker
+        navigator.serviceWorker.register('/service-worker.js');
+      });
+    }
+
+    return () => clearTimeout(failsafe);
+  }, []);
+
   const handleOpen = () => {
     if (isAnimating) return;
     setIsAnimating(true);
