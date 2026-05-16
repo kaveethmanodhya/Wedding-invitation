@@ -383,7 +383,7 @@ export default function Hero({ config, isOpened, labels = {}, birthdayData = nul
       <div className="absolute inset-0 pointer-events-none z-[1]" style={{ background: 'radial-gradient(circle at 50% 50%, var(--colorPrimary) 0%, transparent 60%)', opacity: 0.03 }} />
       <div className={`relative z-10 w-full flex justify-center ${layout === 9 ? 'p-0' : 'py-20 px-4'}`}>
         {layout === 9 ? <Layout9 config={config} /> : 
-         layout === 8 ? <Layout8 config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} /> : 
+         (layout === 8 || layout === 11) ? <Layout8 config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} /> : 
          layout === 7 ? <Layout7 config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} /> : 
          layout === 6 ? <Layout6 config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} /> : 
          layout === 5 ? <Layout5 config={config} birthdayData={birthdayData} generalData={generalData} /> : 

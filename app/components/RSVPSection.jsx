@@ -159,7 +159,7 @@ export default function RSVPSection({ config, labels = {} }) {
   } else if (layout === 7) {
     inputCls = `w-full px-4 py-3 bg-white border-b-2 border-slate-200 focus:border-[var(--colorPrimary)] outline-none transition-all font-script text-xl`;
     btnCls = "w-full py-3 bg-slate-800 text-white font-script text-2xl hover:bg-[var(--colorPrimary)] transition-all rounded-sm shadow-md";
-  } else if (layout === 8) {
+  } else if (layout === 8 || layout === 11) {
     inputCls = `w-full px-4 py-3 rounded-lg border-2 border-[var(--colorPrimary)]/30 bg-white focus:border-[var(--colorPrimary)] outline-none transition-all font-sinhala text-base`;
     btnCls = "w-full py-4 rounded-xl bg-[var(--colorPrimary)] text-white font-sinhala text-lg hover:bg-[var(--colorTextDark)] transition-all shadow-[0_10px_30px_rgba(0,0,0,0.1)]";
   }
@@ -253,15 +253,15 @@ export default function RSVPSection({ config, labels = {} }) {
             </>
           ) : (
             <>
-              <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">{layout === 8 ? 'අපි ඔබ එනතුරු බලා සිටිමු' : 'We Hope to See You'}</p>
-              <h2 className={layout === 8 ? 'font-sinhala text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3' : 'font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3'}>
-                {layout === 8 ? 'ඔබේ සහභාගීත්වය තහවුරු කරන්න' : 'Please Confirm'}
+              <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">{(layout === 8 || layout === 11) ? 'අපි ඔබ එනතුරු බලා සිටිමු' : 'We Hope to See You'}</p>
+              <h2 className={(layout === 8 || layout === 11) ? 'font-sinhala text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3' : 'font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3'}>
+                {(layout === 8 || layout === 11) ? 'ඔබේ සහභාගීත්වය තහවුරු කරන්න' : 'Please Confirm'}
               </h2>
               <span className="text-[var(--colorPrimary)]/60 text-2xl">❧</span>
               <p className="font-sans text-sm text-[var(--colorTextDark)]/55 mt-3">
-                {layout === 8 ? 'කරුණාකර ' : 'Kindly respond by '}
+                {(layout === 8 || layout === 11) ? 'කරුණාකර ' : 'Kindly respond by '}
                 <strong className="text-[var(--colorPrimary)]">{rsvp?.deadline || ''}</strong>
-                {layout === 8 ? ' දිනට පෙර දන්වන්න' : ''}
+                {(layout === 8 || layout === 11) ? ' දිනට පෙර දන්වන්න' : ''}
               </p>
             </>
           )}
@@ -342,9 +342,9 @@ export default function RSVPSection({ config, labels = {} }) {
             {status === 'loading' ? (
               <span className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
             ) : status === 'success' ? (
-              <>{layout === 8 ? 'සාර්ථකයි ✨' : 'Sent ✨'}</>
+              <>{(layout === 8 || layout === 11) ? 'සාර්ථකයි ✨' : 'Sent ✨'}</>
             ) : (
-              <>{layout === 8 ? 'සහභාගීත්වය දන්වන්න (WhatsApp)' : 'Confirm via WhatsApp'}</>
+              <>{(layout === 8 || layout === 11) ? 'සහභාගීත්වය දන්වන්න (WhatsApp)' : 'Confirm via WhatsApp'}</>
             )}
           </button>
 

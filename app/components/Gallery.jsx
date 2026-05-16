@@ -61,7 +61,7 @@ export default function Gallery({ config }) {
         
 
         {/* Header Layouts */}
-        {(layout === 5 || layout === 6 || layout === 7 || layout === 8 || layout === 9) && (
+        {(layout === 5 || layout === 6 || layout === 7 || layout === 8 || layout === 9 || layout === 11) && (
           <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
             {layout === 5 && (
               <div className="text-center">
@@ -82,7 +82,7 @@ export default function Gallery({ config }) {
                 {subtitleText && <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-slate-400 mt-4">{subtitleText}</p>}
               </div>
             )}
-            {layout === 8 && (
+            {(layout === 8 || layout === 11) && (
               <div className="text-center">
                 {subtitleText && <p className="font-sinhala text-xl text-[var(--colorPrimary)] mb-2">{subtitleText}</p>}
                 {titleText && <h2 className="font-sinhala text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4">{titleText}</h2>}
@@ -100,7 +100,7 @@ export default function Gallery({ config }) {
       </div>
 
       {/* Grid Layouts */}
-      {layout === 8 ? (
+      {(layout === 8 || layout === 11) ? (
         // Layout 8: Traditional Solid Grid
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-6 max-w-7xl mx-auto">
           {gallery.map((photo, idx) => (

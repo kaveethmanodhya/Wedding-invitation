@@ -412,7 +412,7 @@ export default function EventDetails({ config, labels = {} }) {
       )}
       <div className="absolute inset-0 z-[1] pointer-events-none bg-white/5" />
       {layout === 9 ? <Layout9 config={config} /> : 
-       layout === 8 ? <Layout8 config={config} /> : 
+       (layout === 8 || layout === 11) ? <Layout8 config={config} /> : 
        layout === 7 ? <Layout7 config={config} /> : 
        layout === 6 ? <Layout6 config={config} labels={labels} /> : 
        layout === 5 ? <Layout5 config={config} /> : 

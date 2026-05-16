@@ -24,11 +24,30 @@ export default function LayoutEleven({ config, labels = {}, birthdayData = null,
   const dietaryItems = getDietaryItems(config);
   const dietaryTitle = getDietaryTitle(config);
 
-  const [formData, setFormData] = useState({
-    name: '', phone: '', attendance: '', guests: '1',
-    dietary: getInitialDietary(dietaryItems),
-    otherDietary: '', message: ''
-  });
+  const defaultRsvpFields = [
+    { id: "guestName", type: "text", label: "Guest Name", placeholder: "Enter your full name", required: true },
+    { id: "attending", type: "button-group", label: "Attending?", options: "Joyfully Accept,Regretfully Decline", required: true },
+    { id: "guestCount", type: "guest-count", label: "Guest Count", placeholder: "1", required: true },
+    { id: "menu", type: "checkbox-group", label: "Menu Choice", options: "Chicken,Fish,Vegetarian", required: false },
+    { id: "message", type: "textarea", label: "Message to the Couple", placeholder: "Write your wishes here...", required: false }
+  ];
+
+  const currentLayout = config?.heroLayout || 11;
+  const layoutSettings = config?.layoutSettings?.[`layout_${currentLayout}`] || {};
+  const layoutSpecificFields = layoutSettings?.rsvpFields;
+  const globalFields = config?.rsvp?.fields;
+
+  const galleryTitle = layoutSettings.galleryTitle !== undefined ? layoutSettings.galleryTitle : (labels.layout8GalleryLabel || 'Love In Frames');
+  const gallerySubtitle = layoutSettings.gallerySubtitle !== undefined ? layoutSettings.gallerySubtitle : 'Captured Moments';
+
+  const fieldsToRender = (layoutSpecificFields && layoutSpecificFields.length > 0) 
+    ? layoutSpecificFields 
+    : (globalFields && globalFields.length > 0) 
+      ? globalFields 
+      : defaultRsvpFields;
+
+  const [formData, setFormData] = useState({});
+  const [errors, setErrors] = useState({});
   const [rsvpStatus, setRsvpStatus] = useState('idle');
 
   // ── Countdown Logic ──
@@ -60,16 +79,25 @@ export default function LayoutEleven({ config, labels = {}, birthdayData = null,
     e.preventDefault();
     setRsvpStatus('loading');
 
-    const dietaryList = buildDietaryString(formData.dietary, dietaryItems)
-      + (formData.otherDietary ? `, ${formData.otherDietary}` : '');
+    let isValid = true;
+    const newErrors = {};
+    fieldsToRender.forEach(field => {
+      if (field.required && !formData[field.id]?.toString().trim()) {
+        newErrors[field.id] = 'This field is required.';
+        isValid = false;
+      }
+    });
+    setErrors(newErrors);
+    if (!isValid) {
+      setRsvpStatus('idle');
+      return;
+    }
 
-    const waMessage =
-      `${labels.rsvpMessageHeader || '💍 *Wedding Invitation Reply* 💍'}\n\n` +
-      `*Guest:* ${formData.name}\n` +
-      `${formData.phone ? `*Phone:* ${formData.phone}\n` : ''}` +
-      `*Status:* ${formData.attendance === 'Accept' ? '✅ Joyfully Accepts' : '❌ Regretfully Declines'}\n` +
-      `${formData.attendance === 'Accept' ? `*Guests:* ${formData.guests}\n*Dietary:* ${dietaryList}\n` : ''}` +
-      `*Message:* ${formData.message || 'None'}`;
+    const fieldsText = fieldsToRender.map(field => {
+      return `*${field.label}:* ${formData[field.id] || 'Not provided'}`;
+    }).join('\n');
+
+    const waMessage = `${labels.rsvpMessageHeader || '💍 *Wedding Invitation Reply* 💍'}\n\n${fieldsText}`;
 
     const cleanNumber = config?.rsvp?.whatsappNumber?.replace(/[+\s-]/g, '') || '';
     window.open(`https://wa.me/${cleanNumber}?text=${encodeURIComponent(waMessage)}`, '_blank');
@@ -396,13 +424,13 @@ export default function LayoutEleven({ config, labels = {}, birthdayData = null,
                 className="font-sans text-[10px] font-bold uppercase tracking-[0.4em]"
                 style={{ color: theme.colorTextLight || '#4A5568' }}
               >
-                Captured Moments
+                {gallerySubtitle}
               </span>
               <h2
                 className="font-serif text-4xl md:text-5xl italic"
                 style={{ color: theme.colorTextDark || '#1e293b' }}
               >
-                {labels.layout8GalleryLabel || 'Love In Frames'}
+                {galleryTitle}
               </h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4 w-full px-2">
@@ -577,174 +605,87 @@ export default function LayoutEleven({ config, labels = {}, birthdayData = null,
             </motion.div>
           ) : (
             <form onSubmit={handleRsvpSubmit} className="space-y-8">
-              {/* Attendance buttons */}
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { id: 'Accept', label: 'Joyfully Accept', icon: '🎉' },
-                  { id: 'Decline', label: 'Regretfully Decline', icon: '🕊️' }
-                ].map(opt => (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => setFormData({ ...formData, attendance: opt.id })}
-                    className="p-6 rounded-2xl border transition-all duration-500 flex flex-col items-center gap-2"
-                    style={{
-                      backgroundColor: formData.attendance === opt.id ? (theme.colorTextDark || '#1e293b') : (theme.colorBg || '#FAF7F2'),
-                      borderColor: formData.attendance === opt.id ? (theme.colorTextDark || '#1e293b') : (theme.colorSecondary || '#E8D5B7'),
-                      boxShadow: formData.attendance === opt.id ? '0 10px 20px rgba(0,0,0,0.1)' : 'none',
-                      transform: formData.attendance === opt.id ? 'scale(1.02)' : 'scale(1)'
-                    }}
-                  >
-                    <span className="text-2xl">{opt.icon}</span>
-                    <span
-                      className="text-[10px] font-black uppercase tracking-widest"
-                      style={{ color: formData.attendance === opt.id ? (theme.colorSurface || '#ffffff') : (theme.colorTextLight || '#8A7F6A') }}
-                    >
-                      {opt.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
+              <div className="space-y-8 text-left">
+                {fieldsToRender.map((field, idx) => {
+                  const isAttending = formData.attending && (formData.attending.toLowerCase().includes('accept') || formData.attending.toLowerCase().includes('yes') || formData.attending.toLowerCase().includes('attending'));
+                  const isAlwaysVisible = field.id === 'guestName' || field.id === 'attending';
+                  
+                  if (!isAlwaysVisible && !isAttending) return null;
 
-              <AnimatePresence>
-                {formData.attendance === 'Accept' && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden space-y-8 pt-4"
-                  >
-                    {/* Guest count */}
-                    <div
-                      className="flex flex-col items-center gap-3 p-6 rounded-2xl border"
-                      style={{ backgroundColor: theme.colorBg || '#FAF7F2', borderColor: theme.colorSecondary || '#E8D5B7' }}
-                    >
-                      <label
-                        className="font-sans text-[10px] font-black uppercase tracking-widest"
-                        style={{ color: theme.colorTextLight || '#8A7F6A' }}
-                      >
-                        Total Guests Attending?
+                  return (
+                    <div key={field.id || idx} className="flex flex-col">
+                      <label className="font-sans text-[10px] font-black uppercase tracking-widest text-[var(--colorTextLight)] mb-2" style={{ color: theme.colorTextLight || '#8A7F6A' }}>
+                        {field.label} {field.required && "*"}
                       </label>
-                      <div className="flex gap-4">
-                        {Array.from({ length: config?.rsvp?.maxGuests || 2 }, (_, i) => i + 1).map(num => (
-                          <button
-                            key={num}
-                            type="button"
-                            onClick={() => setFormData({ ...formData, guests: String(num) })}
-                            className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all shadow-sm"
-                            style={{
-                              backgroundColor: formData.guests === String(num) ? (theme.colorPrimary || '#C9956A') : (theme.colorSurface || '#ffffff'),
-                              color: formData.guests === String(num) ? (theme.colorSurface || '#ffffff') : (theme.colorTextLight || '#8A7F6A')
-                            }}
-                          >
-                            {num}
-                          </button>
-                        ))}
-                      </div>
+
+                      {field.type === 'textarea' ? (
+                        <textarea 
+                          required={field.required} 
+                          placeholder={field.placeholder} 
+                          className="w-full bg-transparent border-b-2 py-4 font-serif text-xl italic outline-none transition-all placeholder:text-slate-300 resize-none" 
+                          style={{ borderBottomColor: theme.colorSecondary || '#E8D5B7', color: theme.colorTextDark || '#1e293b' }} 
+                          value={formData[field.id] || ''} 
+                          onChange={e => setFormData({ ...formData, [field.id]: e.target.value })} 
+                          onFocus={e => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'}
+                          onBlur={e => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}
+                        />
+                      ) : field.type === 'button-group' ? (
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          {field.options?.split(',').map((opt, i) => {
+                            const active = formData[field.id] === opt.trim();
+                            return (
+                              <label key={i} className="flex-1 p-4 rounded-2xl border transition-all duration-300 flex items-center justify-center cursor-pointer text-center" style={{ backgroundColor: active ? (theme.colorTextDark || '#1e293b') : (theme.colorBg || '#FAF7F2'), borderColor: active ? (theme.colorTextDark || '#1e293b') : (theme.colorSecondary || '#E8D5B7'), transform: active ? 'scale(1.02)' : 'scale(1)' }}>
+                                <input type="radio" name={field.id} value={opt.trim()} className="hidden" required={field.required && !formData[field.id]} onChange={e => setFormData({ ...formData, [field.id]: e.target.value })} />
+                                <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: active ? (theme.colorSurface || '#ffffff') : (theme.colorTextLight || '#8A7F6A') }}>{opt.trim()}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      ) : field.type === 'checkbox-group' ? (
+                        <div className="flex flex-col gap-2">
+                          {field.options?.split(',').map((opt, i) => {
+                            const isChecked = (formData[field.id] || '').includes(opt.trim());
+                            return (
+                              <label key={i} className="flex items-center gap-3 cursor-pointer group p-3 rounded-xl border border-transparent hover:border-slate-200 transition-all">
+                                <div className={`shrink-0 w-5 h-5 rounded-md border flex items-center justify-center transition-all`} style={{ backgroundColor: isChecked ? (theme.colorPrimary || '#C9956A') : (theme.colorSurface || '#ffffff'), borderColor: isChecked ? (theme.colorPrimary || '#C9956A') : (theme.colorSecondary || '#E8D5B7') }}>
+                                  {isChecked && <Check size={12} style={{ color: theme.colorSurface || '#ffffff' }} />}
+                                </div>
+                                <input type="checkbox" className="hidden" value={opt.trim()} onChange={e => {
+                                  let current = formData[field.id] ? formData[field.id].split(', ') : [];
+                                  if (e.target.checked) current.push(opt.trim());
+                                  else current = current.filter(o => o !== opt.trim());
+                                  setFormData({ ...formData, [field.id]: current.join(', ') });
+                                }} />
+                                <span className="text-sm font-serif italic transition-colors" style={{ color: theme.colorTextLight || '#8A7F6A' }}>{opt.trim()}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      ) : field.type === 'guest-count' ? (
+                        <select name={field.id} required={field.required} className="w-full bg-transparent border-b-2 py-4 font-serif text-xl italic outline-none transition-all cursor-pointer appearance-none" style={{ borderBottomColor: theme.colorSecondary || '#E8D5B7', color: theme.colorTextDark || '#1e293b' }} value={formData[field.id] || ''} onChange={e => setFormData({ ...formData, [field.id]: e.target.value })} onFocus={e => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'} onBlur={e => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}>
+                          <option value="">-- Number of Guests --</option>
+                          {Array.from({ length: config?.rsvp?.maxGuests || 5 }, (_, i) => i + 1).map(num => (
+                            <option key={num} value={num}>{num} {num === 1 ? 'Guest' : 'Guests'}</option>
+                          ))}
+                        </select>
+                      ) : field.type === 'select' ? (
+                        <select name={field.id} required={field.required} className="w-full bg-transparent border-b-2 py-4 font-serif text-xl italic outline-none transition-all cursor-pointer appearance-none" style={{ borderBottomColor: theme.colorSecondary || '#E8D5B7', color: theme.colorTextDark || '#1e293b' }} value={formData[field.id] || ''} onChange={e => setFormData({ ...formData, [field.id]: e.target.value })} onFocus={e => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'} onBlur={e => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}>
+                          <option value="">-- Please Select --</option>
+                          {field.options?.split(',').map((opt, i) => (
+                            <option key={i} value={opt.trim()}>{opt.trim()}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input type={field.type} name={field.id} required={field.required} placeholder={field.placeholder} className="w-full bg-transparent border-b-2 py-4 font-serif text-xl italic outline-none transition-all placeholder:text-slate-300" style={{ borderBottomColor: theme.colorSecondary || '#E8D5B7', color: theme.colorTextDark || '#1e293b' }} value={formData[field.id] || ''} onChange={e => setFormData({ ...formData, [field.id]: e.target.value })} onFocus={e => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'} onBlur={e => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'} />
+                      )}
+                      {errors[field.id] && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-widest">{errors[field.id]}</p>}
                     </div>
+                  );
+                })}
 
-                    {/* Dietary */}
-                    <div
-                      className="p-8 rounded-[30px] border text-left space-y-4"
-                      style={{ backgroundColor: theme.colorBg || '#FAF7F2', borderColor: theme.colorSecondary || '#E8D5B7' }}
-                    >
-                      <h4
-                        className="font-serif text-lg italic flex items-center gap-2"
-                        style={{ color: theme.colorTextDark || '#3A2828' }}
-                      >
-                        <Info size={16} style={{ color: theme.colorPrimary || '#C9956A' }} /> {dietaryTitle}
-                      </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {dietaryItems.map(opt => (
-                          <button
-                            key={opt.id}
-                            type="button"
-                            onClick={() => setFormData({
-                              ...formData,
-                              dietary: { ...formData.dietary, [opt.id]: !formData.dietary[opt.id] }
-                            })}
-                            className="flex items-center justify-between w-full gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 transition-all"
-                          >
-                            <span
-                              className="text-[10px] sm:text-xs font-serif italic transition-colors uppercase tracking-widest text-left"
-                              style={{ color: theme.colorTextLight || '#8A7F6A' }}
-                            >
-                              {opt.label}
-                            </span>
-                            <div
-                              className="shrink-0 w-5 h-5 rounded-md border flex items-center justify-center transition-all"
-                              style={{
-                                backgroundColor: formData.dietary[opt.id] ? (theme.colorPrimary || '#C9956A') : (theme.colorSurface || '#ffffff'),
-                                borderColor: formData.dietary[opt.id] ? (theme.colorPrimary || '#C9956A') : (theme.colorSecondary || '#E8D5B7')
-                              }}
-                            >
-                              {formData.dietary[opt.id] && <Check size={12} style={{ color: theme.colorSurface || '#ffffff' }} />}
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Name + submit */}
-              <div className="space-y-6">
-                <div className="group relative">
-                  <input
-                    required
-                    type="text"
-                    placeholder="Your Full Name"
-                    value={formData.name}
-                    onChange={e => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-transparent border-b-2 py-4 font-serif text-2xl italic outline-none transition-all placeholder:text-slate-200"
-                    style={{ borderBottomColor: theme.colorSecondary || '#E8D5B7' }}
-                    onFocus={e => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'}
-                    onBlur={e => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}
-                  />
-                </div>
-
-                <div className="group relative">
-                  <input
-                    type="tel"
-                    placeholder="Phone Number (optional)"
-                    value={formData.phone}
-                    onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full bg-transparent border-b-2 py-4 font-serif text-xl italic outline-none transition-all placeholder:text-slate-200"
-                    style={{ borderBottomColor: theme.colorSecondary || '#E8D5B7' }}
-                    onFocus={e => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'}
-                    onBlur={e => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}
-                  />
-                </div>
-
-                <div className="group relative">
-                  <input
-                    type="text"
-                    placeholder="Other dietary notes (optional)"
-                    value={formData.otherDietary}
-                    onChange={e => setFormData({ ...formData, otherDietary: e.target.value })}
-                    className="w-full bg-transparent border-b-2 py-4 font-serif text-xl italic outline-none transition-all placeholder:text-slate-200"
-                    style={{ borderBottomColor: theme.colorSecondary || '#E8D5B7' }}
-                    onFocus={e => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'}
-                    onBlur={e => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}
-                  />
-                </div>
-
-                <div className="group relative">
-                  <textarea
-                    rows={3}
-                    placeholder="A message for the couple (optional)"
-                    value={formData.message}
-                    onChange={e => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full bg-transparent border-b-2 py-4 font-serif text-xl italic outline-none transition-all placeholder:text-slate-200 resize-none"
-                    style={{ borderBottomColor: theme.colorSecondary || '#E8D5B7' }}
-                    onFocus={e => e.target.style.borderBottomColor = theme.colorPrimary || '#C9956A'}
-                    onBlur={e => e.target.style.borderBottomColor = theme.colorSecondary || '#E8D5B7'}
-                  />
-                </div>
                 <button
                   type="submit"
-                  disabled={!formData.name || !formData.attendance || rsvpStatus === 'loading'}
+                  disabled={rsvpStatus === 'loading'}
                   className="w-full py-5 text-white font-sans text-xs font-black uppercase tracking-[0.5em] shadow-2xl transition-all duration-500 disabled:opacity-30 rounded-2xl group flex items-center justify-center gap-3"
                   style={{ backgroundColor: theme.colorTextDark || '#1e293b' }}
                   onMouseEnter={e => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = theme.colorPrimary || '#C9956A'; }}

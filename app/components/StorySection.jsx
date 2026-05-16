@@ -360,7 +360,7 @@ export default function StorySection({ config, labels = {} }) {
       <div className="absolute inset-0 z-[1] pointer-events-none bg-white/5" />
       {layout === 9 ? (
         <Layout9 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
-      ) : layout === 8 ? (
+      ) : (layout === 8 || layout === 11) ? (
         <Layout8 config={config} ref1={ref1} ref2={ref2} ref3={ref3} />
       ) : layout === 7 ? (
         <Layout7 config={config} ref1={ref1} ref2={ref2} ref3={ref3} labels={labels} />
