@@ -207,7 +207,7 @@ export async function PUT(request) {
   try {
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
-    const data = await request.json();
+    const reqBody = await request.json();
 
     if (!slug) {
       return NextResponse.json({ success: false, error: 'Slug parameter is required for updates.' }, { status: 400 });
@@ -219,23 +219,30 @@ export async function PUT(request) {
     // ── Legacy Support Query ─────────────────────────────────────
     const query = (slug === 'global_config') ? { _id: 'global_config' } : { slug };
 
-    // ── Image Cleanup Logic ──────────────────────────────────────
     // Fetch the old configuration to check for replaced images
     const oldDoc = await db.collection('settings').findOne(query);
-    if (oldDoc) {
-      // compare and purge replaced Cloudinary assets
-      await cleanupReplacedImages(oldDoc, data);
+    if (!oldDoc) {
+      return NextResponse.json({ success: false, error: 'Invitation not found' }, { status: 404 });
     }
+
+    // compare and purge replaced Cloudinary assets
+    await cleanupReplacedImages(oldDoc, reqBody);
+
+    // Example logic to ensure they are saved:
+    const updateData = {
+      ...reqBody,
+      layoutSettings: reqBody.layoutSettings || oldDoc.layoutSettings,
+      rsvp: {
+        ...reqBody.rsvp,
+        fields: reqBody.rsvp?.fields || oldDoc.rsvp?.fields
+      }
+    };
 
     // Perform update
     const result = await db.collection('settings').updateOne(
       query,
-      { $set: data }
+      { $set: updateData }
     );
-
-    if (result.matchedCount === 0) {
-      return NextResponse.json({ success: false, error: 'Invitation not found' }, { status: 404 });
-    }
 
     return NextResponse.json({ success: true, message: 'Config updated successfully!' });
   } catch (error) {

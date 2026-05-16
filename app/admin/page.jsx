@@ -752,6 +752,14 @@ function InvitationList({ onEdit, showToast }) {
 }
 
 function AdminDashboard({ slug, onBack, showToast }) {
+  const defaultRsvpFields = [
+    { id: "guestName", type: "text", label: "Guest Name", placeholder: "Enter your full name", required: true },
+    { id: "attending", type: "button-group", label: "Attending?", options: "Joyfully Accept,Regretfully Decline", required: true },
+    { id: "guestCount", type: "guest-count", label: "Guest Count", placeholder: "1", required: true },
+    { id: "menu", type: "checkbox-group", label: "Menu Choice", options: "Chicken,Fish,Vegetarian", required: false },
+    { id: "message", type: "textarea", label: "Message to the Couple", placeholder: "Write your wishes here...", required: false }
+  ];
+
   // ------ Data State ------------------------------------------------------------------------------------------------------------------------------------------------
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -1637,14 +1645,42 @@ function AdminDashboard({ slug, onBack, showToast }) {
           )}
 
           {activeTab === 'gallery' && (
-            <SectionCard title="Gallery Photos" icon={<LucideImage size={18} className="text-sky-400" />}>
-              <GalleryEditor
-                gallery={config?.gallery || []}
-                onChange={val => setPath('gallery', val)}
-                onUpload={handleUpload}
-                onDelete={handleDeleteImage}
-              />
-            </SectionCard>
+            <div className="flex flex-col gap-5">
+              <SectionCard title={`Gallery Layout Texts (Layout ${config?.heroLayout || 1})`} icon={<Book size={18} className="text-slate-400" />}>
+                <div className="col-span-2 space-y-2 mb-4">
+                  <p className="text-xs text-slate-500">Configure titles for the gallery. If left empty, no text will be displayed on the live site.</p>
+                </div>
+                <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FieldGroup label="Gallery Title">
+                    <input 
+                      type="text" 
+                      className={inputCls} 
+                      placeholder="Captured Moments"
+                      value={config?.layoutSettings?.[`layout_${config?.heroLayout || 1}`]?.galleryTitle ?? ''} 
+                      onChange={e => setPath(`layoutSettings.layout_${config?.heroLayout || 1}.galleryTitle`, e.target.value)} 
+                    />
+                  </FieldGroup>
+                  <FieldGroup label="Gallery Subtitle">
+                    <input 
+                      type="text" 
+                      className={inputCls} 
+                      placeholder="A glimpse into our beautiful journey"
+                      value={config?.layoutSettings?.[`layout_${config?.heroLayout || 1}`]?.gallerySubtitle ?? ''} 
+                      onChange={e => setPath(`layoutSettings.layout_${config?.heroLayout || 1}.gallerySubtitle`, e.target.value)} 
+                    />
+                  </FieldGroup>
+                </div>
+              </SectionCard>
+
+              <SectionCard title="Gallery Photos" icon={<LucideImage size={18} className="text-sky-400" />}>
+                <GalleryEditor
+                  gallery={config?.gallery || []}
+                  onChange={val => setPath('gallery', val)}
+                  onUpload={handleUpload}
+                  onDelete={handleDeleteImage}
+                />
+              </SectionCard>
+            </div>
           )}
 
           {activeTab === 'rsvp' && (
@@ -1745,6 +1781,126 @@ function AdminDashboard({ slug, onBack, showToast }) {
                     )}
                   </div>
                 </FieldGroup>
+              </SectionCard>
+
+              <SectionCard title={`RSVP Form Builder (Layout ${config?.heroLayout || 1})`} icon={<Layers size={18} className="text-blue-500" />}>
+                <div className="col-span-2 space-y-6">
+                  <p className="text-xs text-slate-500 mb-2">Build and customize the exact fields shown to your guests on the RSVP form.</p>
+                  
+                  {(config?.layoutSettings?.[`layout_${config?.heroLayout || 1}`]?.rsvpFields || defaultRsvpFields).map((field, idx) => {
+                    const currentFields = config?.layoutSettings?.[`layout_${config?.heroLayout || 1}`]?.rsvpFields || defaultRsvpFields;
+                    
+                    return (
+                      <div key={field.id || idx} className="flex flex-col gap-4 p-5 bg-slate-50 border border-slate-200 rounded-xl relative group">
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            const updated = currentFields.filter((_, i) => i !== idx);
+                            setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, updated);
+                          }}
+                          className="absolute top-3 right-3 px-3 py-1.5 bg-rose-100 text-rose-600 rounded-lg text-xs font-bold hover:bg-rose-200 transition-colors"
+                        >
+                          Remove
+                        </button>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full pr-20">
+                          <FieldGroup label="Field Label (Shown to Guest)">
+                            <input 
+                              type="text" 
+                              className={inputCls} 
+                              value={field.label || ''} 
+                              placeholder="e.g., Guest Name"
+                              onChange={e => {
+                                const updated = [...currentFields];
+                                updated[idx] = { ...updated[idx], label: e.target.value };
+                                setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, updated);
+                              }} 
+                            />
+                          </FieldGroup>
+                          
+                          <FieldGroup label="Input Type">
+                            <select 
+                              className={inputCls} 
+                              value={field.type || 'text'}
+                              onChange={e => {
+                                const updated = [...currentFields];
+                                updated[idx] = { ...updated[idx], type: e.target.value };
+                                setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, updated);
+                              }}
+                            >
+                              <option value="text">Short Text</option>
+                              <option value="textarea">Long Text (Message)</option>
+                              <option value="number">Number Input</option>
+                              <option value="guest-count">Guest Count (Strict Limit)</option>
+                              <option value="select">Dropdown</option>
+                              <option value="button-group">Buttons (Accept/Decline)</option>
+                              <option value="checkbox-group">Checkboxes (Multiple Ticks)</option>
+                              <option value="tel">Phone Number</option>
+                            </select>
+                          </FieldGroup>
+                          
+                          <FieldGroup label="Placeholder Text">
+                            <input 
+                              type="text" 
+                              className={inputCls} 
+                              value={field.placeholder || ''} 
+                              placeholder="e.g., Enter answer..."
+                              onChange={e => {
+                                const updated = [...currentFields];
+                                updated[idx] = { ...updated[idx], placeholder: e.target.value };
+                                setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, updated);
+                              }} 
+                            />
+                          </FieldGroup>
+
+                          <div className="flex items-center gap-2 h-full mt-4 sm:mt-0">
+                            <input 
+                              type="checkbox" 
+                              id={`req-${idx}`}
+                              checked={field.required || false}
+                              onChange={e => {
+                                const updated = [...currentFields];
+                                updated[idx] = { ...updated[idx], required: e.target.checked };
+                                setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, updated);
+                              }}
+                              className="w-4 h-4 rounded text-[#C9956A] focus:ring-[#C9956A]"
+                            />
+                            <label htmlFor={`req-${idx}`} className="text-xs font-bold text-slate-600 uppercase cursor-pointer">Required</label>
+                          </div>
+                        </div>
+
+                        {['select', 'button-group', 'checkbox-group'].includes(field.type) && (
+                          <div className="w-full mt-2 p-3 bg-white border border-slate-200 rounded-lg">
+                            <FieldGroup label="Dropdown Options (Separate by commas)" hint="e.g. Chicken, Fish, Vegetarian">
+                              <input 
+                                type="text" 
+                                className={inputCls} 
+                                value={field.options || ''} 
+                                placeholder="Option 1, Option 2, Option 3"
+                                onChange={e => {
+                                  const updated = [...currentFields];
+                                  updated[idx] = { ...updated[idx], options: e.target.value };
+                                  setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, updated);
+                                }} 
+                              />
+                            </FieldGroup>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                  
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      const currentFields = config?.layoutSettings?.[`layout_${config?.heroLayout || 1}`]?.rsvpFields || defaultRsvpFields;
+                      setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, [...currentFields, { id: `field_${Date.now()}`, type: 'text', label: 'New Question', required: false, placeholder: '' }]);
+                    }}
+                    className="mt-4 px-5 py-2.5 bg-[#C9956A]/10 text-[#C9956A] rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-[#C9956A]/20 transition-colors inline-flex items-center gap-2"
+                  >
+                    + Add New Form Field
+                  </button>
+                </div>
               </SectionCard>
 
               <SectionCard title="Opening Animation" icon={<Sparkles size={18} className="text-purple-400" />}>
@@ -2295,64 +2451,77 @@ function AdminDashboard({ slug, onBack, showToast }) {
           )}
 
           {activeTab === 'timeline' && (
-            <SectionCard title="Wedding Timeline" icon={<Calendar size={18} className="text-amber-500" />}>
-              <div className="col-span-2 flex flex-col gap-4">
-                {config.timeline?.map((item, idx) => (
-                  <div key={idx} className="p-4 rounded-xl border border-slate-100 bg-slate-50 relative group">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const updated = [...config.timeline];
-                        updated.splice(idx, 1);
-                        setPath('timeline', updated);
-                      }}
-                      className="absolute -top-2 -right-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X size={12} />
-                    </button>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <FieldGroup label="Time">
-                        <input type="text" className={inputCls} value={item.time} onChange={e => {
+            <div className="flex flex-col gap-5">
+              <SectionCard title="Layout-Specific Text" icon={<Sparkles size={18} className="text-amber-500" />}>
+                <FieldGroup label="Extra Text Below Countdown" hint={`Text specific to Layout ${config?.heroLayout || 1} (e.g., Dress code)`}>
+                  <input
+                    type="text"
+                    className={inputCls}
+                    placeholder="e.g., We can't wait to celebrate with you!"
+                    value={config?.layoutSettings?.[`layout_${config?.heroLayout || 1}`]?.countdownExtraText || ''}
+                    onChange={e => setPath(`layoutSettings.layout_${config?.heroLayout || 1}.countdownExtraText`, e.target.value)}
+                  />
+                </FieldGroup>
+              </SectionCard>
+              <SectionCard title="Wedding Timeline" icon={<Calendar size={18} className="text-amber-500" />}>
+                <div className="col-span-2 flex flex-col gap-4">
+                  {config.timeline?.map((item, idx) => (
+                    <div key={idx} className="p-4 rounded-xl border border-slate-100 bg-slate-50 relative group">
+                      <button
+                        type="button"
+                        onClick={() => {
                           const updated = [...config.timeline];
-                          updated[idx].time = e.target.value;
+                          updated.splice(idx, 1);
                           setPath('timeline', updated);
-                        }} />
-                      </FieldGroup>
-                      <FieldGroup label="Title">
-                        <input type="text" className={inputCls} value={item.title} onChange={e => {
-                          const updated = [...config.timeline];
-                          updated[idx].title = e.target.value;
-                          setPath('timeline', updated);
-                        }} />
-                      </FieldGroup>
-                      <FieldGroup label="Icon (Emoji)">
-                        <input type="text" className={inputCls} value={item.icon} onChange={e => {
-                          const updated = [...config.timeline];
-                          updated[idx].icon = e.target.value;
-                          setPath('timeline', updated);
-                        }} />
-                      </FieldGroup>
-                      <div className="sm:col-span-3">
-                        <FieldGroup label="Description">
-                          <input type="text" className={inputCls} value={item.description} onChange={e => {
+                        }}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={12} />
+                      </button>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <FieldGroup label="Time">
+                          <input type="text" className={inputCls} value={item.time} onChange={e => {
                             const updated = [...config.timeline];
-                            updated[idx].description = e.target.value;
+                            updated[idx].time = e.target.value;
                             setPath('timeline', updated);
                           }} />
                         </FieldGroup>
+                        <FieldGroup label="Title">
+                          <input type="text" className={inputCls} value={item.title} onChange={e => {
+                            const updated = [...config.timeline];
+                            updated[idx].title = e.target.value;
+                            setPath('timeline', updated);
+                          }} />
+                        </FieldGroup>
+                        <FieldGroup label="Icon (Emoji)">
+                          <input type="text" className={inputCls} value={item.icon} onChange={e => {
+                            const updated = [...config.timeline];
+                            updated[idx].icon = e.target.value;
+                            setPath('timeline', updated);
+                          }} />
+                        </FieldGroup>
+                        <div className="sm:col-span-3">
+                          <FieldGroup label="Description">
+                            <input type="text" className={inputCls} value={item.description} onChange={e => {
+                              const updated = [...config.timeline];
+                              updated[idx].description = e.target.value;
+                              setPath('timeline', updated);
+                            }} />
+                          </FieldGroup>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setPath('timeline', [...(config.timeline || []), { time: '', title: '', description: '', icon: '✨' }])}
-                  className="self-start px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold transition-colors"
-                >
-                  + Add Timeline Event
-                </button>
-              </div>
-            </SectionCard>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setPath('timeline', [...(config.timeline || []), { time: '', title: '', description: '', icon: '✨' }])}
+                    className="self-start px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold transition-colors"
+                  >
+                    + Add Timeline Event
+                  </button>
+                </div>
+              </SectionCard>
+            </div>
           )}
 
           {activeTab === 'meta' && (

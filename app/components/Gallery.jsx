@@ -12,6 +12,13 @@ export default function Gallery({ config }) {
   const headerRef = useRef(null);
   const layout = config?.heroLayout ?? 1;
 
+  const currentLayout = config?.heroLayout || 1;
+  const layoutSettings = config?.layoutSettings?.[`layout_${currentLayout}`] || {};
+
+  // Allow empty strings to hide text. Only fallback to defaults if strictly undefined.
+  const titleText = layoutSettings.galleryTitle !== undefined ? layoutSettings.galleryTitle : "Captured Moments";
+  const subtitleText = layoutSettings.gallerySubtitle !== undefined ? layoutSettings.gallerySubtitle : "A glimpse into our beautiful journey";
+
   useEffect(() => {
     const el = headerRef.current;
     if (!el) return;
@@ -58,34 +65,34 @@ export default function Gallery({ config }) {
           <div ref={headerRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700">
             {layout === 5 && (
               <div className="text-center">
-                <h2 className="font-sans text-5xl md:text-7xl font-bold uppercase tracking-tighter text-[var(--colorTextDark)] opacity-80 leading-none mb-2">Moments</h2>
-                <p className="font-serif text-3xl italic text-[var(--colorTextDark)]/40">A visual journey of us</p>
+                {titleText && <h2 className="font-sans text-5xl md:text-7xl font-bold uppercase tracking-tighter text-[var(--colorTextDark)] opacity-80 leading-none mb-2">{titleText}</h2>}
+                {subtitleText && <p className="font-serif text-3xl italic text-[var(--colorTextDark)]/40">{subtitleText}</p>}
               </div>
             )}
             {layout === 6 && (
               <div className="relative inline-block">
                 <span className="text-4xl absolute -top-10 -right-10 opacity-30">🌸</span>
-                <h2 className="font-script text-6xl md:text-8xl text-[var(--colorPrimary)] mb-2">Beautiful Photos</h2>
-                <p className="font-sans text-[10px] tracking-[0.5em] uppercase opacity-40">Lovely Times</p>
+                {titleText && <h2 className="font-script text-6xl md:text-8xl text-[var(--colorPrimary)] mb-2">{titleText}</h2>}
+                {subtitleText && <p className="font-sans text-[10px] tracking-[0.5em] uppercase opacity-40">{subtitleText}</p>}
               </div>
             )}
             {layout === 7 && (
               <div>
-                <h2 className="font-script text-5xl text-slate-800 mb-2 underline decoration-[var(--colorPrimary)]/20 decoration-8 underline-offset-[-2px]">Our Scrapbook</h2>
-                <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-slate-400 mt-4">Flipping through the pages of our lives</p>
+                {titleText && <h2 className="font-script text-5xl text-slate-800 mb-2 underline decoration-[var(--colorPrimary)]/20 decoration-8 underline-offset-[-2px]">{titleText}</h2>}
+                {subtitleText && <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-slate-400 mt-4">{subtitleText}</p>}
               </div>
             )}
             {layout === 8 && (
               <div className="text-center">
-                <p className="font-sinhala text-xl text-[var(--colorPrimary)] mb-2">මතක සටහන්</p>
-                <h2 className="font-sinhala text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4">ඡායාරූප එකතුව</h2>
+                {subtitleText && <p className="font-sinhala text-xl text-[var(--colorPrimary)] mb-2">{subtitleText}</p>}
+                {titleText && <h2 className="font-sinhala text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4">{titleText}</h2>}
                 <div className="w-16 h-1.5 bg-[var(--colorPrimary)] mx-auto rounded-full" />
               </div>
             )}
             {layout === 9 && (
               <div className="text-center">
-                <h2 className="font-sans text-5xl md:text-7xl font-black uppercase tracking-tighter text-[var(--colorTextDark)] mb-4">Gallery</h2>
-                <p className="font-sans text-[10px] tracking-[0.6em] uppercase text-[var(--colorTextDark)]/40 font-bold">The Moments Captured In Time</p>
+                {titleText && <h2 className="font-sans text-5xl md:text-7xl font-black uppercase tracking-tighter text-[var(--colorTextDark)] mb-4">{titleText}</h2>}
+                {subtitleText && <p className="font-sans text-[10px] tracking-[0.6em] uppercase text-[var(--colorTextDark)]/40 font-bold">{subtitleText}</p>}
               </div>
             )}
           </div>

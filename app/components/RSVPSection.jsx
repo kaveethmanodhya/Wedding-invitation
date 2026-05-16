@@ -6,13 +6,28 @@ export default function RSVPSection({ config, labels = {} }) {
   const rsvp = config?.rsvp || {};
   const dietaryItems = getDietaryItems(config);
   const dietaryTitle = getDietaryTitle(config);
-  const [formData, setFormData] = useState({
-    name: '', phone: '',
-    attendance: '', guests: '1',
-    events: { ceremony: true },
-    dietary: { ...getInitialDietary(dietaryItems), other: '' },
-    message: ''
-  });
+  const currentLayout = config?.heroLayout || 1;
+
+  // Check both dynamic paths
+  const layoutSpecificFields = config?.layoutSettings?.[`layout_${currentLayout}`]?.rsvpFields;
+  const globalFields = config?.rsvp?.fields;
+
+  const defaultRsvpFields = [
+    { id: "guestName", type: "text", label: "Guest Name", placeholder: "Enter your full name", required: true },
+    { id: "attending", type: "button-group", label: "Attending?", options: "Joyfully Accept,Regretfully Decline", required: true },
+    { id: "guestCount", type: "guest-count", label: "Guest Count", placeholder: "1", required: true },
+    { id: "menu", type: "checkbox-group", label: "Menu Choice", options: "Chicken,Fish,Vegetarian", required: false },
+    { id: "message", type: "textarea", label: "Message to the Couple", placeholder: "Write your wishes here...", required: false }
+  ];
+
+  // Safely determine which fields to render
+  const fieldsToRender = (layoutSpecificFields && layoutSpecificFields.length > 0) 
+    ? layoutSpecificFields 
+    : (globalFields && globalFields.length > 0) 
+      ? globalFields 
+      : defaultRsvpFields;
+
+  const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState('idle'); // idle | loading | success | error
 
@@ -29,15 +44,25 @@ export default function RSVPSection({ config, labels = {} }) {
   }, []);
 
   const layout = config?.heroLayout ?? 1;
-  const isAttending = formData.attendance === 'Attending';
+  const isAttending = formData.attending && formData.attending.toLowerCase().includes('yes');
 
   function validate() {
     const e = {};
-    if (!formData.name.trim()) e.name = 'Please enter your name.';
-    if (!formData.attendance) e.attendance = 'Please select an option.';
+    fieldsToRender.forEach(field => {
+      if (field.required && !formData[field.id]?.toString().trim()) {
+        e[field.id] = 'This field is required.';
+      }
+    });
     setErrors(e);
     return Object.keys(e).length === 0;
   }
+
+  const handleCheckboxChange = (fieldId, option, isChecked) => {
+    let current = formData[fieldId] ? formData[fieldId].split(', ') : [];
+    if (isChecked) current.push(option);
+    else current = current.filter(o => o !== option);
+    setFormData({ ...formData, [fieldId]: current.join(', ') });
+  };
 
   async function handleSubmit(ev) {
     ev.preventDefault();
@@ -45,30 +70,18 @@ export default function RSVPSection({ config, labels = {} }) {
     setStatus('loading');
 
     try {
-      const selectedEvents = Object.entries(formData.events)
-        .filter(([_, attended]) => attended)
-        .map(([name]) => name.charAt(0).toUpperCase() + name.slice(1))
-        .join(', ');
-      
-      const dietaryList = buildDietaryString(
-        formData.dietary,
-        dietaryItems
-      ) + (formData.dietary.other ? `, ${formData.dietary.other}` : '');
+      const fieldsText = fieldsToRender.map(field => {
+        return `*${field.label}:* ${formData[field.id] || 'Not provided'}`;
+      }).join('\n');
 
-      const waMessage =
-        `${labels.rsvpMessageHeader || '💍 *Wedding Invitation Reply* 💍'}\n\n` +
-        `*Guest Name:* ${formData.name}\n` +
-        `*Phone:* ${formData.phone || 'Not provided'}\n` +
-        `*Attendance:* ${formData.attendance === 'Attending' ? '✅ Joyfully Accepts' : '❌ Regretfully Declines'}\n` +
-        `${formData.attendance === 'Attending' ? `*Guests:* ${formData.guests}\n*Events:* ${selectedEvents}\n*Dietary:* ${dietaryList}\n` : ''}` +
-        `*Message:* ${formData.message || 'No additional message'}`;
+      const waMessage = `${labels.rsvpMessageHeader || '💍 *Wedding Invitation Reply* 💍'}\n\n${fieldsText}`;
 
       // 1. WhatsApp redirect
       const encodedMessage = encodeURIComponent(waMessage);
       const cleanNumber = (rsvp?.whatsappNumber || '').replace(/[+\s-]/g, '').replace(/^0+/, '');
       const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
       window.open(whatsappUrl, '_blank');
-      
+
       setStatus('success');
     } catch (err) {
       console.error(err);
@@ -171,8 +184,8 @@ export default function RSVPSection({ config, labels = {} }) {
 
       <div className={`relative max-w-2xl mx-auto px-6 transition-all ${layout === 4 ? 'bg-white p-10 md:p-16 shadow-2xl border-t-[12px] border-[var(--colorPrimary)]'
         : layout === 3 ? 'bg-[var(--colorBg)] p-8 md:p-14 shadow-2xl border border-[var(--colorPrimary)]/30'
-            : layout === 2 ? 'bg-white/40 p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.05)] rounded-[40px] border border-white/60 backdrop-blur-md'
-              : 'bg-[var(--colorPrimary)]/5 p-6 md:p-10 border border-[var(--colorPrimary)]/20'
+          : layout === 2 ? 'bg-white/40 p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.05)] rounded-[40px] border border-white/60 backdrop-blur-md'
+            : 'bg-[var(--colorPrimary)]/5 p-6 md:p-10 border border-[var(--colorPrimary)]/20'
         }`}>
 
         {/* Header */}
@@ -213,135 +226,63 @@ export default function RSVPSection({ config, labels = {} }) {
         </div>
 
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-8 relative z-10 w-full max-w-lg mx-auto">
-          {/* ── ATTENDANCE HEARTS (Layout 4 & 9) ── */}
-          {layout === 4 || layout === 9 ? (
-            <div className="flex justify-center gap-10 md:gap-16 mb-4">
-              <button
-                type="button"
-                onClick={() => setFormData(f => ({ ...f, attendance: 'Attending' }))}
-                className="flex flex-col items-center gap-3 group transition-transform hover:scale-105"
-              >
-                <div className={`transition-colors duration-300 ${formData.attendance === 'Attending' ? 'text-[var(--colorPrimary)]' : 'text-gray-300'}`}>
-                  <HeartIcon size={80} fill={formData.attendance === 'Attending'} />
-                </div>
-                <span className="font-sans text-[10px] md:text-xs font-bold leading-tight text-center tracking-tight">I WILL BE<br />ATTENDING</span>
-              </button>
+          {fieldsToRender.map((field, idx) => (
+            <div key={field.id || idx} className="flex flex-col">
+              <label className={labelCls}>
+                {field.label} {field.required && "*"}
+              </label>
 
-              <button
-                type="button"
-                onClick={() => setFormData(f => ({ ...f, attendance: 'Not Attending' }))}
-                className="flex flex-col items-center gap-3 group transition-transform hover:scale-105"
-              >
-                <div className={`transition-colors duration-300 ${formData.attendance === 'Not Attending' ? 'text-[var(--colorPrimary)]' : 'text-gray-300'}`}>
-                  <HeartIcon size={80} fill={formData.attendance === 'Not Attending'} />
-                </div>
-                <span className="font-sans text-[10px] md:text-xs font-bold leading-tight text-center tracking-tight">I WILL NOT BE<br />ATTENDING</span>
-              </button>
-            </div>
-          ) : (
-            <div>
-              <label className={`${labelCls} text-center`}>{layout === 8 ? 'ඔබ සහභාගී වනවාද?' : 'Will you be attending? *'}</label>
-              <div className="flex gap-3 flex-wrap justify-center">
-                {[
-                  { value: 'Attending', label: layout === 8 ? 'පැමිණෙනවා 🎉' : 'Joyfully Accept 🎉' },
-                  { value: 'Not Attending', label: layout === 8 ? 'අකමැත්තෙන් වුවත් සහභාගී විය නොහැක' : 'Regretfully Decline' }
-                ].map(({ value, label }) => (
-                  <label key={value} className={optionBtnCls(formData.attendance === value)}>
-                    <input type="radio" name="attendance" value={value} className="sr-only" checked={formData.attendance === value} onChange={() => setFormData(f => ({ ...f, attendance: value }))} />
-                    {label}
-                  </label>
-                ))}
-              </div>
-              {errors.attendance && <p className="text-red-400 text-xs mt-1">{errors.attendance}</p>}
-            </div>
-          )}
-
-          {/* ── GUEST SELECTION ── */}
-          {formData.attendance === 'Attending' && (
-            <div className="flex flex-col gap-6 py-4 border-y border-gray-100">
-              <div className="flex items-center justify-center gap-4">
-                <span className="font-sans text-sm text-[var(--colorTextDark)] opacity-60">
-                  {layout === 8 ? 'පැමිණෙන අමුත්තන් සංඛ්‍යාව?' : 'How many guests will attend?'}
-                </span>
-                <select
-                  className="w-16 h-10 border rounded text-center font-sans font-bold text-sm cursor-pointer transition-colors border-gray-300 text-[var(--colorTextDark)] hover:border-[var(--colorPrimary)]"
-                  value={formData.guests}
-                  onChange={e => setFormData(f => ({ ...f, guests: e.target.value }))}
-                >
-                  {guestOptions.map(n => <option key={n} value={n}>{n}</option>)}
-                </select>
-              </div>
-
-              {/* ── DIETARY REQUIREMENTS ── */}
-              <div className="space-y-4">
-                <label className={labelCls}>{dietaryTitle}</label>
-                <div className="grid grid-cols-2 gap-3">
-                  {dietaryItems.map(option => {
+              {field.type === 'textarea' ? (
+                <textarea name={field.id} required={field.required} placeholder={field.placeholder} className={`${inputCls} resize-y min-h-[100px]`} value={formData[field.id] || ''} onChange={e => setFormData({ ...formData, [field.id]: e.target.value })} />
+              ) : field.type === 'button-group' ? (
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {field.options?.split(',').map((opt, i) => {
+                    const active = formData[field.id] === opt.trim();
                     return (
-                    <label key={option.id} className="flex items-center gap-3 cursor-pointer group">
-                      <div className={`w-5 h-5 border-2 flex items-center justify-center transition-all ${formData.dietary[option.id] ? 'bg-[var(--colorPrimary)] border-[var(--colorPrimary)]' : 'border-gray-200'}`}>
-                        {formData.dietary[option.id] && <CheckIcon size={12} color="white" />}
-                      </div>
-                      <input 
-                        type="checkbox" 
-                        className="sr-only" 
-                        checked={!!formData.dietary[option.id]} 
-                        onChange={() => setFormData(f => ({ 
-                          ...f, 
-                          dietary: { ...f.dietary, [option.id]: !f.dietary[option.id] } 
-                        }))} 
-                      />
-                      <span className="text-xs font-serif transition-colors text-[var(--colorTextDark)]/70 group-hover:text-[var(--colorTextDark)]">{option.label}</span>
-                    </label>
+                      <label key={i} className={optionBtnCls(active) + " flex-1 justify-center text-center"}>
+                        <input type="radio" name={field.id} value={opt.trim()} className="hidden" required={field.required && !formData[field.id]} onChange={e => setFormData({ ...formData, [field.id]: e.target.value })} />
+                        {opt.trim()}
+                      </label>
                     );
                   })}
                 </div>
-                <input
-                  type="text"
-                  placeholder="Other allergies or requirements..."
-                  className={`${inputCls} !py-2 !text-sm`}
-                  value={formData.dietary.other}
-                  onChange={e => setFormData(f => ({ ...f, dietary: { ...f.dietary, other: e.target.value } }))}
-                />
-              </div>
+              ) : field.type === 'checkbox-group' ? (
+                <div className="flex flex-col gap-2 mt-1">
+                  {field.options?.split(',').map((opt, i) => {
+                    const isChecked = (formData[field.id] || '').includes(opt.trim());
+                    return (
+                      <label key={i} className="flex items-center gap-3 cursor-pointer group">
+                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${isChecked ? 'bg-[var(--colorPrimary)] border-[var(--colorPrimary)] text-white' : 'bg-white border-slate-300'}`}>
+                          {isChecked && <CheckIcon size={12} />}
+                        </div>
+                        <input type="checkbox" className="hidden" value={opt.trim()} onChange={e => handleCheckboxChange(field.id, opt.trim(), e.target.checked)} />
+                        <span className="font-sans text-sm text-[var(--colorTextDark)]/80 group-hover:text-[var(--colorTextDark)]">{opt.trim()}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              ) : field.type === 'guest-count' ? (
+                <select name={field.id} required={field.required} className={`${inputCls} appearance-none cursor-pointer`} value={formData[field.id] || ''} onChange={e => setFormData({ ...formData, [field.id]: e.target.value })}>
+                  <option value="">-- Number of Guests --</option>
+                  {Array.from({ length: config?.rsvp?.maxGuests || 5 }, (_, i) => i + 1).map(num => (
+                    <option key={num} value={num}>{num} {num === 1 ? 'Guest' : 'Guests'}</option>
+                  ))}
+                </select>
+              ) : field.type === 'select' ? (
+                <div className="relative">
+                  <select name={field.id} required={field.required} className={`${inputCls} appearance-none cursor-pointer`} value={formData[field.id] || ''} onChange={e => setFormData({ ...formData, [field.id]: e.target.value })}>
+                    <option value="">-- Please Select --</option>
+                    {field.options?.split(',').map((opt, i) => (
+                      <option key={i} value={opt.trim()}>{opt.trim()}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <input type={field.type} name={field.id} required={field.required} placeholder={field.placeholder} className={inputCls} value={formData[field.id] || ''} onChange={e => setFormData({ ...formData, [field.id]: e.target.value })} />
+              )}
+              {errors[field.id] && <p className="text-red-500 text-[10px] mt-1 font-bold uppercase tracking-widest">{errors[field.id]}</p>}
             </div>
-          )}
-
-          {/* ── NAME & CONTACT (Updated Layout 4) ── */}
-          <div className="flex flex-col gap-6">
-            <div className="space-y-6">
-              <div>
-                <label className={labelCls}>{layout === 8 ? 'සම්පූර්ණ නම' : 'Full Name'}</label>
-                <input
-                  type="text"
-                  className={inputCls}
-                  placeholder={layout === 8 ? 'ඔබේ නම මෙහි සටහන් කරන්න...' : "e.g. Kasun Perera"}
-                  value={formData.name}
-                  onChange={e => setFormData({ ...formData, name: e.target.value })}
-                />
-                {errors.name && <p className="text-red-500 text-[10px] mt-1 font-bold uppercase tracking-widest">{errors.name}</p>}
-              </div>
-
-              <div>
-                <label className={labelCls}>{layout === 8 ? 'දුරකථන අංකය' : 'Phone Number'}</label>
-                <input
-                  type="tel"
-                  className={inputCls}
-                  placeholder={layout === 8 ? '07x xxxxxxx' : "e.g. 071 234 5678"}
-                  value={formData.phone}
-                  onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* ── MESSAGE (Hidden in Layout 4 as per image) ── */}
-          {layout !== 4 && (
-            <div>
-              <label className={labelCls}>Message for the Couple (optional)</label>
-              <textarea rows={3} placeholder="Write your wishes here…" className={`${inputCls} resize-y min-h-[100px]`} value={formData.message} onChange={e => setFormData(f => ({ ...f, message: e.target.value }))} />
-            </div>
-          )}
+          ))}
 
           <button
             type="submit"

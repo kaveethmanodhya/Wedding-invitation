@@ -39,6 +39,7 @@ export const getDefaultConfig = (slug) => ({
   heroImage: '',
   heroVideo: '',
   heroLayout: 1,
+  layoutSettings: {}, // Allows flexible dynamic JSON by layout ID
   revealStyle: 'envelope', // 'envelope' | 'couple' | 'cover' | 'premium_envelope'
   theme: {
     colorPrimary: '#C9956A',
@@ -56,6 +57,7 @@ export const getDefaultConfig = (slug) => ({
     maxGuests: 2,
     dietaryTitle: null,   // null = use built-in default title
     dietaryItems: null,   // null = use built-in defaults; set to [{id, label}] array to customise
+    fields: undefined // Allows dynamic array of form fields
   },
   envelope: {
     title: 'A Wedding Invitation',

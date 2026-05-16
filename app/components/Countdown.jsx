@@ -65,6 +65,8 @@ export default function Countdown({ config, labels = {} }) {
     return () => { clearTimeout(t0); clearInterval(id); };
   }, [target]);
 
+  const currentLayout = config?.heroLayout || 1;
+  const dynamicSettings = config?.layoutSettings?.[`layout_${currentLayout}`] || {};
   const layout = config?.heroLayout ?? 1;
 
   // If not mounted, render the section structure with empty blocks
@@ -104,6 +106,10 @@ export default function Countdown({ config, labels = {} }) {
           <span className="font-serif text-xl sm:text-3xl mb-3 sm:mb-5 opacity-20 text-[var(--colorSecondary)]">:</span>
           <CountdownBlock value={timeLeft.seconds} unit="Seconds" />
         </div>
+      )}
+
+      {dynamicSettings.countdownExtraText && (
+        <p className="mt-8 text-center italic text-sm tracking-widest text-[var(--colorSecondary)] opacity-80">{dynamicSettings.countdownExtraText}</p>
       )}
     </section>
   );
