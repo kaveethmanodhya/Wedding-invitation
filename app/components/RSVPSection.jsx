@@ -91,12 +91,55 @@ export default function RSVPSection({ config, labels = {} }) {
 
   const guestOptions = Array.from({ length: rsvp?.maxGuests || 2 }, (_, i) => i + 1);
 
+  const optionBtnCls = (active, layoutId) => {
+    // Base classes common to all layouts
+    const base = `flex items-center justify-center gap-3 cursor-pointer text-center px-6 py-3.5 transition-all duration-300 select-none animate-fade-in`;
+
+    // Layout-specific styling definitions
+    const configs = {
+      1: { // Classic Elegant
+        nonActive: `bg-white/60 border border-[var(--colorPrimary)]/15 text-[var(--colorTextDark)]/60 rounded-full font-serif text-base italic hover:border-[var(--colorPrimary)]/30 hover:bg-white`,
+        active: `bg-[var(--colorPrimary)] border border-[var(--colorPrimary)] text-white rounded-full font-serif text-base italic shadow-[0_8px_20px_var(--colorPrimary)/30] scale-[1.03]`,
+      },
+      2: { // Modern Minimal
+        nonActive: `bg-[var(--colorBg)] border border-[var(--colorTextDark)]/10 text-[var(--colorTextDark)]/50 rounded-xl font-sans text-xs font-semibold uppercase tracking-widest hover:border-[var(--colorPrimary)]/50 hover:text-[var(--colorPrimary)]`,
+        active: `bg-white border-2 border-[var(--colorPrimary)] text-[var(--colorTextDark)] rounded-xl font-sans text-xs font-semibold uppercase tracking-widest shadow-xl scale-[1.02]`,
+      },
+      3: { // Framed/Vintage
+        nonActive: `bg-transparent border border-[var(--colorPrimary)]/30 text-[var(--colorTextDark)]/60 rounded-none font-serif text-lg hover:border-[var(--colorPrimary)] hover:bg-[var(--colorPrimary)]/5`,
+        active: `bg-[var(--colorPrimary)]/10 border-2 border-[var(--colorPrimary)] text-[var(--colorTextDark)] rounded-none font-serif text-lg font-medium shadow-inner scale-[1.01]`,
+      },
+      4: { // Typographic Bold
+        nonActive: `bg-transparent border border-slate-200 text-slate-400 rounded-none font-sans text-[10px] font-bold uppercase tracking-[0.4em] hover:border-slate-400 hover:text-slate-600`,
+        active: `bg-[var(--colorTextDark)] border border-[var(--colorTextDark)] text-white rounded-none font-sans text-[10px] font-bold uppercase tracking-[0.4em] shadow-2xl`,
+      },
+      5: { // Maximalist Block
+        nonActive: `bg-white border-2 border-[var(--colorTextDark)] text-[var(--colorTextDark)]/60 rounded-none font-sans text-xs uppercase tracking-[0.2em] hover:text-[var(--colorTextDark)] hover:bg-[var(--colorPrimary)]/5`,
+        active: `bg-[var(--colorPrimary)] border-2 border-[var(--colorTextDark)] text-[var(--colorTextDark)] rounded-none font-sans text-xs uppercase tracking-[0.2em] shadow-[8px_8px_0_var(--colorTextDark)] -translate-y-1 -translate-x-1`,
+      },
+      6: { // Soft Organic
+        nonActive: `bg-white/60 border border-[var(--colorPrimary)]/20 text-[var(--colorTextDark)]/50 rounded-[30px] font-serif text-lg italic hover:border-[var(--colorPrimary)]/40 hover:bg-white`,
+        active: `bg-[var(--colorPrimary)] border border-[var(--colorPrimary)] text-white rounded-[30px] font-serif text-lg italic shadow-lg`,
+      },
+      7: { // Script/Chic
+        nonActive: `bg-transparent border-b-2 border-slate-100 text-slate-400 rounded-none font-script text-2xl hover:border-slate-300`,
+        active: `bg-white border-b-2 border-[var(--colorPrimary)] text-[var(--colorTextDark)] rounded-sm font-script text-2xl shadow-sm`,
+      },
+      8: { // Sinhala Theme
+        nonActive: `bg-white border border-[var(--colorPrimary)]/20 text-[var(--colorTextDark)]/60 rounded-lg font-sinhala text-base hover:border-[var(--colorPrimary)]/50`,
+        active: `bg-[var(--colorPrimary)]/10 border-2 border-[var(--colorPrimary)] text-[var(--colorTextDark)] rounded-lg font-sinhala text-base shadow-md scale-[1.02]`,
+      }
+    };
+
+    const currentConfig = configs[layoutId] || configs[1]; // Fallback to Layout 1
+    return `${base} ${active ? currentConfig.active : currentConfig.nonActive}`;
+  };
+
   // Layout Styles
   let bgClass = "bg-[var(--colorBg)]";
   let inputCls = `w-full px-4 py-3 rounded-none font-serif text-base bg-white/40 text-[var(--colorTextDark)] placeholder:text-[var(--colorTextDark)]/35 placeholder:italic border border-[var(--colorPrimary)]/30 outline-none focus:border-[var(--colorPrimary)] focus:ring-1 focus:ring-[var(--colorPrimary)] transition-all duration-200`;
   let labelCls = "block font-sans text-xs font-semibold tracking-widest uppercase text-[var(--colorTextDark)] opacity-80 mb-1.5";
   let btnCls = "w-full flex items-center justify-center gap-2 py-4 bg-[var(--colorPrimary)] text-white font-sans text-xs font-bold tracking-widest uppercase shadow-[0_4px_18px_var(--colorPrimary)/40] hover:bg-transparent hover:text-[var(--colorPrimary)] border border-[var(--colorPrimary)] transition-all duration-300";
-  let optionBtnCls = (active) => `flex items-center gap-2.5 cursor-pointer font-serif text-base px-5 py-2.5 border transition-all duration-200 ${active ? 'bg-[var(--colorPrimary)]/10 border-[var(--colorPrimary)] text-[var(--colorTextDark)] shadow-sm' : 'bg-transparent border-[var(--colorPrimary)]/25 text-[var(--colorTextDark)]/70 hover:border-[var(--colorPrimary)]'}`;
 
   if (layout === 2) {
     inputCls = `w-full px-4 py-4 rounded-xl font-serif text-base bg-[var(--colorBg)]/50 border-b-2 border-[var(--colorPrimary)]/50 focus:border-[var(--colorPrimary)] outline-none transition-all duration-200 placeholder:text-[var(--colorTextDark)]/40`;
@@ -107,7 +150,6 @@ export default function RSVPSection({ config, labels = {} }) {
   } else if (layout === 4) {
     inputCls = `w-full px-6 py-4 rounded-none font-serif text-lg bg-white border border-[var(--colorTextDark)]/10 focus:border-[var(--colorPrimary)] outline-none transition-all duration-300 placeholder:opacity-30`;
     btnCls = "w-full flex items-center justify-center py-5 bg-[var(--colorTextDark)] text-white font-sans text-[10px] font-bold tracking-[0.4em] uppercase hover:bg-[var(--colorPrimary)] transition-all duration-500 shadow-2xl";
-    optionBtnCls = (active) => `flex items-center gap-3 cursor-pointer font-serif text-lg px-6 py-3 border transition-all duration-300 ${active ? 'bg-[var(--colorPrimary)] text-white border-[var(--colorPrimary)] shadow-lg scale-105' : 'bg-white border-[var(--colorTextDark)]/10 text-[var(--colorTextDark)]/60 hover:border-[var(--colorPrimary)]'}`;
   } else if (layout === 5) {
     inputCls = `w-full px-4 py-3 rounded-none border-2 border-[var(--colorTextDark)] bg-white focus:bg-[var(--colorPrimary)]/5 outline-none transition-all font-sans text-sm uppercase tracking-widest`;
     btnCls = "w-full py-4 bg-[var(--colorTextDark)] text-white font-sans text-xs font-black uppercase tracking-[0.5em] hover:bg-white hover:text-[var(--colorTextDark)] border-2 border-[var(--colorTextDark)] transition-all shadow-[8px_8px_0_var(--colorPrimary)]";
@@ -226,8 +268,16 @@ export default function RSVPSection({ config, labels = {} }) {
         </div>
 
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-8 relative z-10 w-full max-w-lg mx-auto">
-          {fieldsToRender.map((field, idx) => (
-            <div key={field.id || idx} className="flex flex-col">
+          {fieldsToRender.map((field, idx) => {
+            const isAttending = formData.attending && (formData.attending.toLowerCase().includes('accept') || formData.attending.toLowerCase().includes('yes'));
+            const isAlwaysVisible = field.id === 'guestName' || field.id === 'attending';
+            
+            if (!isAlwaysVisible && !isAttending) {
+              return null; // Hide the field
+            }
+            
+            return (
+            <div key={field.id || idx} className="flex flex-col animate-fade-in-up">
               <label className={labelCls}>
                 {field.label} {field.required && "*"}
               </label>
@@ -239,7 +289,7 @@ export default function RSVPSection({ config, labels = {} }) {
                   {field.options?.split(',').map((opt, i) => {
                     const active = formData[field.id] === opt.trim();
                     return (
-                      <label key={i} className={optionBtnCls(active) + " flex-1 justify-center text-center"}>
+                      <label key={i} className={optionBtnCls(active, layout) + " flex-1"}>
                         <input type="radio" name={field.id} value={opt.trim()} className="hidden" required={field.required && !formData[field.id]} onChange={e => setFormData({ ...formData, [field.id]: e.target.value })} />
                         {opt.trim()}
                       </label>
@@ -282,7 +332,7 @@ export default function RSVPSection({ config, labels = {} }) {
               )}
               {errors[field.id] && <p className="text-red-500 text-[10px] mt-1 font-bold uppercase tracking-widest">{errors[field.id]}</p>}
             </div>
-          ))}
+          )})}
 
           <button
             type="submit"

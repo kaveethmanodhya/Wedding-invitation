@@ -120,7 +120,7 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
               className="relative w-full h-full"
             >
               <Image
-                src={config?.heroImage || ''}
+                src={config?.heroImage || '/images/placeholder.png'}
                 fill
                 priority
                 sizes="100vw"

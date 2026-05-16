@@ -151,7 +151,7 @@ function Layout2({ config, labels = {}, birthdayData = null, generalData = null 
             position: 'relative'
           }}>
             <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden' }}>
-              <Image src={heroImage} alt="Hero" fill style={{ objectFit: 'cover', objectPosition: 'top' }} />
+              <Image src={heroImage || '/images/placeholder.png'} alt="Hero" fill style={{ objectFit: 'cover', objectPosition: 'top' }} />
             </div>
           </div>
         )}
@@ -231,7 +231,7 @@ function Layout3({ config, isOpened, birthdayData = null, generalData = null }) 
         {/* Hero Image — top 58% of card (resolves correctly with fixed height) */}
         {heroImage && (
           <div className="absolute inset-x-0 top-0 z-0" style={{ height: '58%' }}>
-            <Image src={heroImage} alt="" fill style={{ objectFit: 'cover', objectPosition: 'top center', opacity: 0.9 }} />
+            <Image src={heroImage || '/images/placeholder.png'} alt="" fill style={{ objectFit: 'cover', objectPosition: 'top center', opacity: 0.9 }} />
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 30%, var(--colorBg) 100%)' }} />
           </div>
         )}
@@ -460,7 +460,7 @@ function Layout4({ config, labels = {}, birthdayData = null, generalData = null 
     <div className="flex flex-col items-center w-full max-w-[600px] mx-auto min-h-[85vh] bg-white relative overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.15)] border-[12px] border-white">
       {/* Full Background (Liquid Layer) */}
       <div className="absolute inset-x-0 top-0 bottom-0 z-0">
-         <Image src={heroBg} alt="Hero Background" fill style={{ objectFit: 'cover', objectPosition: 'top', opacity: 0.15, filter: 'blur(10px) saturate(1.5)' }} />
+         <Image src={heroBg || '/images/placeholder.png'} alt="Hero Background" fill style={{ objectFit: 'cover', objectPosition: 'top', opacity: 0.15, filter: 'blur(10px) saturate(1.5)' }} />
       </div>
 
       {/* ── TOP DATE HEADER (Matching image layout) ── */}
@@ -584,7 +584,7 @@ function Layout5({ config, birthdayData = null, generalData = null }) {
           transition={{ delay: 0.5, duration: 1 }}
           className="mt-16 w-full max-w-xs md:max-w-sm aspect-[4/5] rounded-full overflow-hidden border border-[var(--colorPrimary)]/20 p-4 relative"
         >
-          <Image src={heroImage} alt="Hero" fill style={{ objectFit: 'cover' }} className="rounded-full grayscale hover:grayscale-0 transition-all duration-1000" />
+          <Image src={heroImage || '/images/placeholder.png'} alt="Hero" fill style={{ objectFit: 'cover' }} className="rounded-full grayscale hover:grayscale-0 transition-all duration-1000" />
         </motion.div>
       )}
     </div>
@@ -770,7 +770,7 @@ function Layout6({ config, labels = {}, birthdayData = null, generalData = null 
         >
           <div className="absolute inset-0 border border-[var(--colorPrimary)]/10 rounded-[3rem] scale-[1.02] -z-10" />
           <div className="w-full h-full rounded-[2.5rem] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.1)] border-[6px] border-white relative group">
-            <Image src={heroImage} alt="Hero" fill style={{ objectFit: 'cover' }} className="transition-transform duration-[3000ms] group-hover:scale-110" />
+            <Image src={heroImage || '/images/placeholder.png'} alt="Hero" fill style={{ objectFit: 'cover' }} className="transition-transform duration-[3000ms] group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--colorPrimary)]/20 to-transparent mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
           </div>
         </motion.div>
@@ -796,7 +796,7 @@ function Layout7({ config, labels = {}, birthdayData = null, generalData = null 
       >
         <div className="aspect-[3/4] bg-slate-100 overflow-hidden mb-6">
           {heroImage ? (
-            <Image src={heroImage} alt="Hero" fill style={{ objectFit: 'cover', objectPosition: 'center 20%' }} className="sepia-[0.3]" />
+            <Image src={heroImage || '/images/placeholder.png'} alt="Hero" fill style={{ objectFit: 'cover', objectPosition: 'center 20%' }} className="sepia-[0.3]" />
           ) : (
             <div className="w-full h-full flex items-center justify-center opacity-10 font-bold">MISSING</div>
           )}
@@ -893,7 +893,7 @@ function Layout8({ config, labels = {}, birthdayData = null, generalData = null 
           animate={{ opacity: 1 }} 
           className="w-full h-64 md:h-96 -mt-32 relative z-0"
         >
-          <Image src={heroImage} alt="Hero" fill style={{ objectFit: 'cover', maskImage: 'linear-gradient(to top, transparent, black)' }} />
+          <Image src={heroImage || '/images/placeholder.png'} alt="Hero" fill style={{ objectFit: 'cover', maskImage: 'linear-gradient(to top, transparent, black)' }} />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--colorBg)] to-transparent" />
         </motion.div>
       )}

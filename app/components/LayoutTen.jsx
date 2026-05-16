@@ -177,11 +177,11 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
                 <div className="relative w-full aspect-[3/4] z-0 overflow-hidden">
                    {/* Sharp Layer (Top) */}
                    <div className="absolute inset-0 z-0" style={{ maskImage: 'linear-gradient(to bottom, black 0%, transparent 65%)', WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 65%)' }}>
-                      <Image src={config.heroImage} fill priority sizes="(max-width: 850px) 100vw, 850px" className="object-cover object-top" alt="Hero Background Sharp" />
+                      <Image src={config.heroImage || '/images/placeholder.png'} fill priority sizes="(max-width: 850px) 100vw, 850px" className="object-cover object-top" alt="Hero Background Sharp" />
                    </div>
                    {/* Blurred Layer (Bottom) */}
                    <div className="absolute inset-0 z-[1]" style={{ maskImage: 'linear-gradient(to top, black 0%, transparent 90%)', WebkitMaskImage: 'linear-gradient(to top, black 0%, transparent 90%)' }}>
-                      <Image src={config.heroImage} fill sizes="(max-width: 850px) 100vw, 850px" className="object-cover object-top blur-[10px] scale-105" alt="Hero Background Blurred" />
+                      <Image src={config.heroImage || '/images/placeholder.png'} fill sizes="(max-width: 850px) 100vw, 850px" className="object-cover object-top blur-[10px] scale-105" alt="Hero Background Blurred" />
                    </div>
                    {/* Fade to White at bottom */}
                    <div className="absolute inset-0 z-[2] bg-gradient-to-b from-transparent via-white/10 to-white" />
@@ -355,7 +355,7 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
           
           {config?.events?.ceremony?.image ? (
               <div className="w-full h-64 md:h-80 relative overflow-hidden mb-16 md:mb-24 rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] isolate">
-                <div className="absolute inset-0"><Image src={config.events.ceremony.image} fill sizes="(max-width: 1152px) 100vw, 1152px" alt="Banner" className="object-cover" /></div>
+                <div className="absolute inset-0"><Image src={config.events?.ceremony?.image || '/images/placeholder.png'} fill sizes="(max-width: 1152px) 100vw, 1152px" alt="Banner" className="object-cover" /></div>
                 <div className="absolute inset-0 bg-white/40 backdrop-blur-[1px]" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center translate-y-2">
                   <p className="font-sans text-[0.7rem] md:text-[10px] tracking-[0.4em] uppercase font-bold drop-shadow-md mb-2" style={{ color: theme.colorTextDark }}>Mark Your Calendar</p>

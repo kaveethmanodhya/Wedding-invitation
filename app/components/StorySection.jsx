@@ -257,7 +257,7 @@ function Layout7({ config, ref1, ref2, ref3, labels = {} }) {
           <div className="absolute -top-4 -left-4 w-24 h-24 bg-[var(--colorPrimary)]/10 rounded-full blur-3xl" />
           <div ref={ref1} className="opacity-0 translate-y-8 transition-all duration-700 bg-white p-4 pb-16 shadow-2xl border border-slate-100 -rotate-3 relative z-10 w-full max-w-sm ml-auto">
             <div className="aspect-square bg-slate-100 overflow-hidden mb-4 relative">
-               <Image src={config.gallery?.[2]?.src || config.heroImage} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover sepia-[0.2]" alt="" />
+               <Image src={config.gallery?.[2]?.src || config.heroImage || '/images/placeholder.png'} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover sepia-[0.2]" alt="" />
             </div>
             <p className="font-script text-3xl text-slate-700 text-center">{labels.storyCaption7 || 'Moments Together'}</p>
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-white/60 backdrop-blur-sm border border-white/20 shadow-sm" />
