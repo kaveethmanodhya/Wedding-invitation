@@ -148,7 +148,6 @@ export default function UniversalPreloader({ config, onReveal, children }) {
                         setIsVideoReady(true); // Show fallback image
                       }}
                       preload="auto"
-                      poster={config?.heroImage || config?.envelopeImage}
                     >
                       <source src={`${envelopeVideo}${envelopeVideo.includes('?') ? '&' : '?'}cb=${timestamp}`} type="video/mp4" />
                       <source src={`${envelopeVideo.replace('.mp4', '.webm')}${envelopeVideo.replace('.mp4', '.webm').includes('?') ? '&' : '?'}cb=${timestamp}`} type="video/webm" />

@@ -219,6 +219,7 @@ export default function ClientHome({ config }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: hasOpened ? 1 : 0 }}
           transition={{ duration: 1 }}
+          className={!hasOpened ? "opacity-0 pointer-events-none fixed inset-0 z-[-1]" : ""}
         >
         {mainContent}
         {/* Floating audio toggle */}
