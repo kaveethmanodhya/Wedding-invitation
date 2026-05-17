@@ -1921,6 +1921,43 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 </div>
               </SectionCard>
 
+              <SectionCard title="Universal Video Preloader" icon={<Sparkles size={18} className="text-purple-400" />}>
+                <div className="col-span-full flex flex-col gap-6 p-2">
+                  <div className="flex flex-col">
+                    <h4 className="text-[0.7rem] font-bold text-slate-800 uppercase tracking-widest">Global Preloader Video</h4>
+                    <p className="text-[0.6rem] text-slate-400 mt-0.5">Overrides any layout with a premium video opening sequence (works for all events)</p>
+                  </div>
+                  <ImageField
+                    label="Preloader Video (MP4)"
+                    hint="High-quality video loop. Leave empty to use standard layout reveals."
+                    value={config.envelopeVideo || ''}
+                    path="envelopeVideo"
+                    type="video"
+                    accept="video/*"
+                    onUpload={handleUpload}
+                    onDelete={handleDeleteImage}
+                  />
+                  <FieldGroup label="Open Mode" hint="How the video starts playing">
+                    <div className="flex gap-4 mt-1">
+                      <label className="flex items-center gap-2.5 cursor-pointer group">
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${(!config.envelopeOpenMode || config.envelopeOpenMode === 'tap' || config.envelopeOpenMode === 'onclick') ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
+                          {(!config.envelopeOpenMode || config.envelopeOpenMode === 'tap' || config.envelopeOpenMode === 'onclick') && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
+                        </div>
+                        <input type="radio" className="hidden" name="envelopeOpenMode" value="tap" checked={(!config.envelopeOpenMode || config.envelopeOpenMode === 'tap' || config.envelopeOpenMode === 'onclick')} onChange={() => setPath('envelopeOpenMode', 'tap')} />
+                        <span className={`text-sm font-medium ${(!config.envelopeOpenMode || config.envelopeOpenMode === 'tap' || config.envelopeOpenMode === 'onclick') ? 'text-slate-900' : 'text-slate-500'}`}>Tap to Open</span>
+                      </label>
+                      <label className="flex items-center gap-2.5 cursor-pointer group">
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${config.envelopeOpenMode === 'auto' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
+                          {config.envelopeOpenMode === 'auto' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
+                        </div>
+                        <input type="radio" className="hidden" name="envelopeOpenMode" value="auto" checked={config.envelopeOpenMode === 'auto'} onChange={() => setPath('envelopeOpenMode', 'auto')} />
+                        <span className={`text-sm font-medium ${config.envelopeOpenMode === 'auto' ? 'text-slate-900' : 'text-slate-500'}`}>Auto Play</span>
+                      </label>
+                    </div>
+                  </FieldGroup>
+                </div>
+              </SectionCard>
+
               <SectionCard title="Opening Animation" icon={<Sparkles size={18} className="text-purple-400" />}>
                 <FieldGroup label="Animation Style" hint="Choose how guests first see your invitation">
                   <div className="flex flex-wrap gap-x-6 gap-y-4 mt-1">
@@ -2339,40 +2376,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-6">
-                        <div className="pb-3 border-b border-slate-50">
-                          <h4 className="text-[0.7rem] font-bold text-slate-800 uppercase tracking-widest">Opening Animation</h4>
-                          <p className="text-[0.6rem] text-slate-400 mt-0.5">High-quality video loop for the envelope reveal</p>
-                        </div>
-                        <ImageField
-                          label="Envelope Opening Video"
-                          hint="Transparent background MP4 recommended"
-                          value={config.envelopeVideo}
-                          path="envelopeVideo"
-                          type="video"
-                          accept="video/*"
-                          onUpload={handleUpload}
-                          onDelete={handleDeleteImage}
-                        />
-                        <FieldGroup label="Open Mode" hint="How the envelope opens for your guests">
-                          <div className="flex gap-4 mt-1">
-                            <label className="flex items-center gap-2.5 cursor-pointer group">
-                              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${(config.envelopeOpenMode || 'onclick') === 'onclick' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
-                                {(config.envelopeOpenMode || 'onclick') === 'onclick' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
-                              </div>
-                              <input type="radio" className="hidden" name="envelopeOpenMode" value="onclick" checked={(config.envelopeOpenMode || 'onclick') === 'onclick'} onChange={() => setPath('envelopeOpenMode', 'onclick')} />
-                              <span className={`text-sm font-medium ${(config.envelopeOpenMode || 'onclick') === 'onclick' ? 'text-slate-900' : 'text-slate-500'}`}>On Click Open</span>
-                            </label>
-                            <label className="flex items-center gap-2.5 cursor-pointer group">
-                              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${config.envelopeOpenMode === 'auto' ? 'border-[#C9956A]' : 'border-slate-300 group-hover:border-slate-400'}`}>
-                                {config.envelopeOpenMode === 'auto' && <div className="w-2.5 h-2.5 rounded-full bg-[#C9956A]" />}
-                              </div>
-                              <input type="radio" className="hidden" name="envelopeOpenMode" value="auto" checked={config.envelopeOpenMode === 'auto'} onChange={() => setPath('envelopeOpenMode', 'auto')} />
-                              <span className={`text-sm font-medium ${config.envelopeOpenMode === 'auto' ? 'text-slate-900' : 'text-slate-500'}`}>Auto Open</span>
-                            </label>
-                          </div>
-                        </FieldGroup>
-                      </div>
+
                     </div>
                   </div>
                 </SectionCard>

@@ -11,6 +11,7 @@ import Countdown from './components/Countdown';
 import PremiumEnvelope from './components/PremiumEnvelope';
 import RoyalEnvelope from './components/RoyalEnvelope';
 import MintEnvelope from './components/MintEnvelope';
+import UniversalPreloader from './components/UniversalPreloader';
 
 // Lazy load heavy components that are below the fold
 const StorySection = lazy(() => import('./components/StorySection'));
@@ -193,31 +194,32 @@ export default function ClientHome({ config }) {
       {config.audioUrl && (
         <audio ref={audioRef} src={config.audioUrl} loop preload="auto" style={{ display: 'none' }} />
       )}
-      <AnimatePresence mode="wait">
-        {!hasOpened && (
-          revealStyle === 'cover' ? (
-            <CoverReveal key="cover-reveal" config={config} onOpen={handleOpen} labels={labels} birthdayData={birthdayData} generalData={generalData} />
-          ) : (revealStyle === 'couple' || revealStyle === 'couple_rose') ? (
-            <CoupleReveal key="couple-reveal" config={config} onOpen={handleOpen} labels={labels} birthdayData={birthdayData} generalData={generalData} />
-          ) : revealStyle === 'fade' ? (
-            <FadeReveal key="fade-reveal" config={config} onOpen={handleOpen} />
-          ) : revealStyle === 'premium-envelope' ? (
-            <PremiumEnvelope key="premium-envelope" config={config} onOpenInvitation={handleOpen} />
-          ) : (revealStyle === 'royal-envelope' || revealStyle === 'royal_envelope') ? (
-            <RoyalEnvelope key="royal-envelope" config={config} onOpen={handleOpen} birthdayData={birthdayData} generalData={generalData} />
-          ) : (revealStyle === 'mint-envelope' || revealStyle === 'mint_envelope') ? (
-            <MintEnvelope key="mint-envelope" config={config} onOpenInvitation={handleOpen} />
-          ) : (
-            <Envelope key="envelope-layer" config={config} onOpen={handleOpen} labels={labels} birthdayData={birthdayData} generalData={generalData} />
-          )
-        )}
-      </AnimatePresence>
+      <UniversalPreloader config={config} onReveal={handleOpen}>
+        <AnimatePresence mode="wait">
+          {!hasOpened && (
+            revealStyle === 'cover' ? (
+              <CoverReveal key="cover-reveal" config={config} onOpen={handleOpen} labels={labels} birthdayData={birthdayData} generalData={generalData} />
+            ) : (revealStyle === 'couple' || revealStyle === 'couple_rose') ? (
+              <CoupleReveal key="couple-reveal" config={config} onOpen={handleOpen} labels={labels} birthdayData={birthdayData} generalData={generalData} />
+            ) : revealStyle === 'fade' ? (
+              <FadeReveal key="fade-reveal" config={config} onOpen={handleOpen} />
+            ) : (revealStyle === 'premium-envelope' || revealStyle === 'premium_envelope') ? (
+              <div key="premium-envelope-placeholder" /> // Handled by UniversalPreloader wrapper
+            ) : (revealStyle === 'royal-envelope' || revealStyle === 'royal_envelope') ? (
+              <RoyalEnvelope key="royal-envelope" config={config} onOpen={handleOpen} birthdayData={birthdayData} generalData={generalData} />
+            ) : (revealStyle === 'mint-envelope' || revealStyle === 'mint_envelope') ? (
+              <MintEnvelope key="mint-envelope" config={config} onOpenInvitation={handleOpen} />
+            ) : (
+              <Envelope key="envelope-layer" config={config} onOpen={handleOpen} labels={labels} birthdayData={birthdayData} generalData={generalData} />
+            )
+          )}
+        </AnimatePresence>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: hasOpened ? 1 : 0 }}
-        transition={{ duration: 1 }}
-      >
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: hasOpened ? 1 : 0 }}
+          transition={{ duration: 1 }}
+        >
         {mainContent}
         {/* Floating audio toggle */}
         {config.audioUrl && (
@@ -238,6 +240,7 @@ export default function ClientHome({ config }) {
           </button>
         )}
       </motion.div>
+      </UniversalPreloader>
       
       {/* Falling petals - separated from motion.div to prevent animation conflicts */}
       {config.fallingPetals && hasOpened && (

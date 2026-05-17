@@ -1,7 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
 
 export default function PremiumEnvelope({ config, onOpenInvitation }) {
   const [isAnimating, setIsAnimating] = useState(false);
@@ -10,16 +9,19 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
   const [videoError, setVideoError] = useState(false);
   const videoRef = useRef(null);
 
-  const envelopeVideo = config?.envelopeVideo;
-  const isAutoOpen = config?.envelopeOpenMode === 'auto';
+  const envelopeVideo = config?.envelopeVideo || '/videos/envelope-open.mp4';
+  const openMode = config?.envelopeOpenMode || 'auto';
+  const isAutoOpen = openMode === 'auto';
+  const [timestamp] = useState(() => Date.now());
+  const [waitingForTap, setWaitingForTap] = useState(false);
+
+  const forceSkipAnimation = () => {
+    setMediaReady(true);
+    onOpenInvitation();
+  };
 
   useEffect(() => {
-    // 1. Force remove loading screen after 2.5s no matter what
-    const failsafe = setTimeout(() => {
-      setMediaReady(true);
-    }, 2500);
-
-    // 2. Clear old aggressive Service Workers
+    // Clear old aggressive Service Workers
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(registrations) {
         for(let registration of registrations) {
@@ -31,42 +33,41 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
       });
     }
 
-    return () => clearTimeout(failsafe);
-  }, []);
+    if (openMode === 'tap') {
+      // Instantly show the first frame and the Tap button. NO loading spinner.
+      setMediaReady(true);
+      setWaitingForTap(true);
+    } else {
+      // 1. If the video hasn't successfully loaded and completed within 2.5s, skip EVERYTHING.
+      const failsafe = setTimeout(() => {
+        forceSkipAnimation();
+      }, 2500);
+      return () => clearTimeout(failsafe);
+    }
+  }, [openMode]);
 
   const handleOpen = () => {
     if (isAnimating) return;
     setIsAnimating(true);
+    setWaitingForTap(false); // Hide the overlay
     
-    // If video failed or doesn't exist, use image fallback
-    if (videoError || !envelopeVideo || !videoRef.current) {
-      setTimeout(() => {
-        setHasEnded(true);
-        setTimeout(onOpenInvitation, 500);
-      }, 800);
-      return;
-    }
-    
-    // Try to play video
     if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(err => {
-        // AbortError is not critical - just means browser paused for power saving
-        // User can tap again to play
-        if (err.name === 'AbortError') {
-          console.log('Video paused by browser (power saving), waiting for user interaction');
-          setIsAnimating(false); // Allow retry
-          return;
-        }
-        
-        console.error("Video play failed:", err);
-        setVideoError(true);
-        // Fallback: immediate transition
-        setTimeout(() => {
-          setHasEnded(true);
-          setTimeout(onOpenInvitation, 500);
-        }, 800);
-      });
+      // Fast-start optimization: Ensure we are at the start and play immediately
+      videoRef.current.currentTime = 0.1;
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error("Video play failed:", error);
+          // If play fails (e.g., policy or network), skip directly to invitation
+          forceSkipAnimation();
+        });
+      }
+      
+      // Ensure the transition happens when the video finishes
+      videoRef.current.onended = handleVideoEnd;
+    } else {
+      // Fallback if video ref is missing
+      forceSkipAnimation();
     }
   };
 
@@ -113,27 +114,25 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
                 className="h-full w-auto max-w-none absolute left-1/2 -translate-x-1/2 object-contain sm:relative sm:left-0 sm:translate-x-0 sm:w-full sm:h-full md:w-auto md:h-full md:object-contain"
                 playsInline
                 muted
+                autoPlay={openMode !== 'tap'}
                 onLoadedData={() => setMediaReady(true)}
                 onEnded={handleVideoEnd}
                 onError={(e) => {
-                  console.warn('Video failed to load, using image fallback:', e);
+                  console.warn('Video failed to load, skipping animation:', e);
                   setVideoError(true);
-                  setMediaReady(true);
+                  forceSkipAnimation();
                 }}
-                preload="metadata"
+                preload="auto"
                 poster={config?.heroImage || config?.envelopeImage}
               >
-                <source src={envelopeVideo} type="video/mp4" />
-                <source src={envelopeVideo.replace('.mp4', '.webm')} type="video/webm" />
+                <source src={`${envelopeVideo}${envelopeVideo.includes('?') ? '&' : '?'}cb=${timestamp}`} type="video/mp4" />
+                <source src={`${envelopeVideo.replace('.mp4', '.webm')}${envelopeVideo.replace('.mp4', '.webm').includes('?') ? '&' : '?'}cb=${timestamp}`} type="video/webm" />
               </video>
             ) : (
-              <Image
+              <img
                 src={config?.heroImage || config?.envelopeImage || '/images/placeholder.png'}
                 alt="Envelope"
-                fill
-                priority
-                sizes="100vw"
-                className="object-contain"
+                className="h-full w-auto max-w-none absolute left-1/2 -translate-x-1/2 object-contain sm:relative sm:left-0 sm:translate-x-0 sm:w-full sm:h-full md:w-auto md:h-full md:object-contain"
                 onLoad={() => setMediaReady(true)}
                 onError={() => setMediaReady(true)}
               />
