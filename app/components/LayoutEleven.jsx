@@ -118,13 +118,20 @@ export default function LayoutEleven({ config, labels = {}, birthdayData = null,
         <div className="absolute inset-0 z-0">
           {config?.heroVideo ? (
             <video
-              src={config.heroVideo}
               autoPlay
               loop
               muted
               playsInline
               className="absolute inset-0 w-full h-full object-cover"
-            />
+              preload="metadata"
+              onError={(e) => {
+                console.warn('Hero video failed to load:', e);
+                e.target.style.display = 'none';
+              }}
+            >
+              <source src={config.heroVideo} type="video/mp4" />
+              <source src={config.heroVideo.replace('.mp4', '.webm')} type="video/webm" />
+            </video>
           ) : (
             <motion.div
               animate={{

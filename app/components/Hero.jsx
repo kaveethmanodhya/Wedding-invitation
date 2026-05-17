@@ -350,8 +350,14 @@ export default function Hero({ config, isOpened, labels = {}, birthdayData = nul
             muted
             playsInline
             className="w-full h-full object-cover opacity-80"
+            preload="metadata"
+            onError={(e) => {
+              console.warn('Hero video failed to load:', e);
+              e.target.style.display = 'none';
+            }}
           >
             <source src={config.heroVideo} type="video/mp4" />
+            <source src={config.heroVideo.replace('.mp4', '.webm')} type="video/webm" />
           </video>
           {/* Subtle Video Overlay */}
           <div 

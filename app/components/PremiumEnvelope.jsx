@@ -82,17 +82,35 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
           {/* Inner Video Wrapper: Centered horizontally on mobile, constrained & styled on desktop */}
           <div className="absolute inset-0 w-full h-full md:relative md:inset-auto md:h-full md:w-auto flex items-center justify-center md:rounded-2xl md:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)] md:border md:border-white/10 overflow-hidden">
             
-            {/* Layer 2 - The Video (Acts as both static cover and animation) */}
-            <video 
-              ref={videoRef}
-              src={`${envelopeVideo}#t=0.1`}
-              className="h-full w-auto max-w-none absolute left-1/2 -translate-x-1/2 object-contain sm:relative sm:left-0 sm:translate-x-0 sm:w-full sm:h-full md:w-auto md:h-full md:object-contain"
-              playsInline
-              muted
-              onLoadedData={() => setMediaReady(true)}
-              onEnded={handleVideoEnd}
-              preload="auto"
-            />
+            {/* Layer 2 - The Video or Fallback Image */}
+            {envelopeVideo && !videoError ? (
+              <video 
+                ref={videoRef}
+                className="h-full w-auto max-w-none absolute left-1/2 -translate-x-1/2 object-contain sm:relative sm:left-0 sm:translate-x-0 sm:w-full sm:h-full md:w-auto md:h-full md:object-contain"
+                playsInline
+                muted
+                onLoadedData={() => setMediaReady(true)}
+                onEnded={handleVideoEnd}
+                onError={(e) => {
+                  console.warn('Video failed to load, using image fallback:', e);
+                  setVideoError(true);
+                  setMediaReady(true);
+                }}
+                preload="metadata"
+                poster={config?.heroImage || config?.envelopeImage}
+              >
+                <source src={envelopeVideo} type="video/mp4" />
+                <source src={envelopeVideo.replace('.mp4', '.webm')} type="video/webm" />
+              </video>
+            ) : (
+              <img
+                src={config?.heroImage || config?.envelopeImage || '/images/placeholder.png'}
+                alt="Envelope"
+                className="h-full w-auto max-w-none absolute left-1/2 -translate-x-1/2 object-contain sm:relative sm:left-0 sm:translate-x-0 sm:w-full sm:h-full md:w-auto md:h-full md:object-contain"
+                onLoad={() => setMediaReady(true)}
+                onError={() => setMediaReady(true)}
+              />
+            )}
           </div>
         </div>
       </motion.div>
