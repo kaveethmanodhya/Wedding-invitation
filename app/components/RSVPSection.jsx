@@ -143,9 +143,9 @@ export default function RSVPSection({ config, labels = {} }) {
         nonActive: `bg-transparent border-b-2 border-slate-100 text-slate-400 rounded-none font-script text-2xl hover:border-slate-300`,
         active: `bg-white border-b-2 border-[var(--colorPrimary)] text-[var(--colorTextDark)] rounded-sm font-script text-2xl shadow-sm`,
       },
-      8: { // Sinhala Theme
-        nonActive: `bg-white border border-[var(--colorPrimary)]/20 text-[var(--colorTextDark)]/60 rounded-lg font-sinhala text-base hover:border-[var(--colorPrimary)]/50`,
-        active: `bg-[var(--colorPrimary)]/10 border-2 border-[var(--colorPrimary)] text-[var(--colorTextDark)] rounded-lg font-sinhala text-base shadow-md scale-[1.02]`,
+      8: { // Universal Layout 8
+        nonActive: `bg-white border border-[var(--colorPrimary)]/20 text-[var(--colorTextDark)]/60 rounded-lg font-serif text-base hover:border-[var(--colorPrimary)]/50`,
+        active: `bg-[var(--colorPrimary)]/10 border-2 border-[var(--colorPrimary)] text-[var(--colorTextDark)] rounded-lg font-serif text-base shadow-md scale-[1.02]`,
       }
     };
 
@@ -276,15 +276,13 @@ export default function RSVPSection({ config, labels = {} }) {
             </>
           ) : (
             <>
-              <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">{(layout === 8 || layout === 11) ? 'අපි ඔබ එනතුරු බලා සිටිමු' : 'We Hope to See You'}</p>
-              <h2 className={(layout === 8 || layout === 11) ? 'font-sinhala text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3' : 'font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3'}>
-                {(layout === 8 || layout === 11) ? 'ඔබේ සහභාගීත්වය තහවුරු කරන්න' : 'Please Confirm'}
+              <p className="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-[var(--colorPrimary)] mb-3">We Hope to See You</p>
+              <h2 className="font-serif text-4xl md:text-5xl font-normal text-[var(--colorTextDark)] mb-3">
+                Please Confirm
               </h2>
               <span className="text-[var(--colorPrimary)]/60 text-2xl">❧</span>
               <p className="font-sans text-sm text-[var(--colorTextDark)]/55 mt-3">
-                {(layout === 8 || layout === 11) ? 'කරුණාකර ' : 'Kindly respond by '}
-                <strong className="text-[var(--colorPrimary)]">{rsvp?.deadline || ''}</strong>
-                {(layout === 8 || layout === 11) ? ' දිනට පෙර දන්වන්න' : ''}
+                Kindly respond by <strong className="text-[var(--colorPrimary)]">{rsvp?.deadline || ''}</strong>
               </p>
             </>
           )}
@@ -363,9 +361,9 @@ export default function RSVPSection({ config, labels = {} }) {
             {status === 'loading' ? (
               <span className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
             ) : status === 'success' ? (
-              <>{(layout === 8 || layout === 11) ? 'සාර්ථකයි ✨' : 'Sent ✨'}</>
+              <>Sent ✨</>
             ) : (
-              <>{(layout === 8 || layout === 11) ? 'සහභාගීත්වය දන්වන්න (WhatsApp)' : 'Confirm via WhatsApp'}</>
+              <>Confirm via WhatsApp</>
             )}
           </button>
 

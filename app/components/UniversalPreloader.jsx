@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 export default function UniversalPreloader({ config, onReveal, children }) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [mediaReady, setMediaReady] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false); // Track when first frame is loaded
   const [hasEnded, setHasEnded] = useState(false);
   const [videoError, setVideoError] = useState(false);
   const videoRef = useRef(null);
@@ -56,6 +57,22 @@ export default function UniversalPreloader({ config, onReveal, children }) {
     };
   }, [openMode, envelopeVideo]);
 
+  // iOS Low Power Mode autoplay rejection handler
+  useEffect(() => {
+    if (openMode !== 'tap' && videoRef.current && envelopeVideo && isVideoReady) {
+      const playPromise = videoRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          // The OS blocked autoplay (e.g., iOS Low Power Mode)
+          console.warn("Autoplay blocked by OS. Falling back to Tap-to-Open UI:", error.name);
+          // Instantly switch to our beautiful custom Tap to Open overlay
+          setWaitingForTap(true);
+        });
+      }
+    }
+  }, [openMode, envelopeVideo, isVideoReady]);
+
   const handleOpen = () => {
     if (isAnimatingRef.current) return;
     isAnimatingRef.current = true;
@@ -90,8 +107,8 @@ export default function UniversalPreloader({ config, onReveal, children }) {
           <motion.div 
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8 }}
-            className={`z-[9999] flex items-center justify-center bg-gray-900/60 transition-all duration-500 ${!isAnimating && !isAutoOpen ? 'cursor-pointer' : ''} ${isAnimating ? 'pointer-events-none' : ''} fixed inset-0 w-screen h-screen overflow-hidden`}
-            onClick={!isAutoOpen ? handleOpen : undefined}
+            className={`z-[9999] flex items-center justify-center bg-gray-900/60 transition-all duration-500 ${!isAnimating && (!isAutoOpen || waitingForTap) ? 'cursor-pointer' : ''} ${isAnimating ? 'pointer-events-none' : ''} fixed inset-0 w-screen h-screen overflow-hidden`}
+            onClick={!isAnimating && (!isAutoOpen || waitingForTap) ? handleOpen : undefined}
           >
             <div className="absolute inset-0 bg-black/20 pointer-events-none" />
             
@@ -106,12 +123,15 @@ export default function UniversalPreloader({ config, onReveal, children }) {
                   {!videoError ? (
                     <video 
                       ref={videoRef}
-                      className="h-full w-auto max-w-none absolute left-1/2 -translate-x-1/2 object-contain sm:relative sm:left-0 sm:translate-x-0 sm:w-full sm:h-full md:w-auto md:h-full md:object-contain"
+                      className={`h-full w-auto max-w-none absolute left-1/2 -translate-x-1/2 object-contain sm:relative sm:left-0 sm:translate-x-0 sm:w-full sm:h-full md:w-auto md:h-full md:object-contain transition-opacity duration-500 ${isVideoReady ? 'opacity-100' : 'opacity-0'}`}
                       playsInline={true}
                       webkit-playsinline="true"
                       muted={true}
                       autoPlay={openMode !== 'tap'}
-                      onLoadedData={() => setMediaReady(true)}
+                      onLoadedData={() => {
+                        setIsVideoReady(true); // First frame is ready
+                        setMediaReady(true);
+                      }}
                       onPlay={() => {
                         // The moment the video starts playing successfully, kill the failsafe timer!
                         if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -124,6 +144,8 @@ export default function UniversalPreloader({ config, onReveal, children }) {
                       }}
                       onError={(e) => {
                         console.warn("Video streaming interrupted/buffered:", e);
+                        setVideoError(true);
+                        setIsVideoReady(true); // Show fallback image
                       }}
                       preload="auto"
                       poster={config?.heroImage || config?.envelopeImage}
@@ -136,16 +158,33 @@ export default function UniversalPreloader({ config, onReveal, children }) {
                       src={config?.heroImage || config?.envelopeImage || '/images/placeholder.png'}
                       alt="Envelope fallback"
                       className="h-full w-auto max-w-none absolute left-1/2 -translate-x-1/2 object-contain sm:relative sm:left-0 sm:translate-x-0 sm:w-full sm:h-full md:w-auto md:h-full md:object-contain"
-                      onLoad={() => setMediaReady(true)}
-                      onError={() => setMediaReady(true)}
+                      onLoad={() => {
+                        setIsVideoReady(true);
+                        setMediaReady(true);
+                      }}
+                      onError={() => {
+                        setIsVideoReady(true);
+                        setMediaReady(true);
+                      }}
                     />
                   )}
                 </div>
               </div>
             </motion.div>
 
-            {!isAnimating && !isAutoOpen && (
-               <div className={`absolute bottom-10 md:bottom-20 left-1/2 -translate-x-1/2 pointer-events-none transition-opacity duration-1000 z-[100] ${mediaReady ? 'opacity-100' : 'opacity-100'}`}>
+            {/* Loading Spinner - Shows before video first frame is ready */}
+            {!isVideoReady && !videoError && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center z-[150]" style={{ backgroundColor: 'var(--colorBg, #FBF8F4)' }}>
+                <div className="w-10 h-10 border-4 border-slate-200 border-t-[var(--colorPrimary)] rounded-full animate-spin"></div>
+                <p className="mt-4 text-sm font-serif tracking-widest uppercase animate-pulse" style={{ color: 'var(--colorTextLight, #8B7355)' }}>
+                  Loading...
+                </p>
+              </div>
+            )}
+
+            {/* Tap to Open Button - Only show when video is ready AND waiting for tap */}
+            {isVideoReady && !isAnimating && (!isAutoOpen || waitingForTap) && (
+               <div className="absolute bottom-10 md:bottom-20 left-1/2 -translate-x-1/2 pointer-events-none transition-opacity duration-1000 z-[100]">
                  <span className="font-sans text-xs md:text-sm uppercase tracking-[0.4em] text-white bg-black/30 backdrop-blur-sm px-5 py-2.5 rounded-full whitespace-nowrap border border-white/10">
                    Tap Anywhere to Open
                  </span>

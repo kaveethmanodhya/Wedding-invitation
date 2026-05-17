@@ -7,7 +7,7 @@ import {
   ArrowRight, Mail, Navigation, Info, Users
 } from 'lucide-react';
 import { PRESET_THEMES } from '../../lib/themes';
-import { getDietaryTitle, getDietaryItems, getInitialDietary, buildDietaryString } from '../../lib/dietary';
+import RSVPSection from './RSVPSection';
 
 // ── Elaborate SVG Mandalas ──
 const TopMandala = ({ className = "" }) => (
@@ -77,40 +77,6 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
   // Use admin panel theme setting
   const themeId = config.themeId || config.theme || 'gold';
   const theme = PRESET_THEMES.find(t => t.id === themeId)?.colors || config.theme || PRESET_THEMES[0].colors;
-
-  const dietaryItems = getDietaryItems(config);
-  const dietaryTitle = getDietaryTitle(config);
-
-  const [formData, setFormData] = useState({
-    name: '', phone: '', attendance: '', guests: '1',
-    dietary: getInitialDietary(dietaryItems),
-    message: ''
-  });
-  const [rsvpStatus, setRsvpStatus] = useState('idle');
-  const [errors, setErrors] = useState({});
-
-  const handleRsvpSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.name.trim() || !formData.attendance) {
-      setErrors({
-        name: !formData.name.trim() ? 'Name required' : '',
-        attendance: !formData.attendance ? 'Attendance required' : ''
-      });
-      return;
-    }
-    setRsvpStatus('loading');
-
-    let dietaryNotes = buildDietaryString(formData.dietary, dietaryItems);
-
-    const selectedEvents = formData.attendance === 'Accept' ? 'Yes' : 'No';
-
-    const waMessage = `${labels.rsvpMessageHeaderAlt || '💍 *Wedding RSVP* 💍'}\n\n*Name:* ${formData.name}\n*Phone:* ${formData.phone || 'N/A'}\n*Attendance:* ${formData.attendance === 'Accept' ? 'Joyfully Accept' : 'Regret Decline'}\n${formData.attendance === 'Accept' ? `*Guests:* ${formData.guests}\n*Dietary:* ${dietaryNotes || 'None'}\n` : ''}*Message:* ${formData.message || 'N/A'}`;
-    const cleanNumber = config?.rsvp?.whatsappNumber?.replace(/[+\s-]/g, '') || '';
-    if (cleanNumber) {
-      window.open(`https://wa.me/${cleanNumber}?text=${encodeURIComponent(waMessage)}`, '_blank');
-    }
-    setRsvpStatus('success');
-  };
 
   let hDay = '', hMonth = '', hDate = '', hYear = '', hTime = '';
   if (config?.wedding?.dateTimeISO) {
@@ -538,119 +504,8 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
         </section>
       )}
 
-      <section 
-        className="py-20 px-6 relative overflow-visible" 
-        style={{ backgroundColor: 'transparent' }}
-      >
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 md:w-96 z-40 opacity-40 pointer-events-none" style={{ color: theme.colorPrimary }}>
-           <TopMandala className="w-full" />
-        </div>
-        <SectionBackground image={config.sectionBackgrounds?.rsvp || config.rsvp?.bgImage} opacity={0.4} />
-        <div className="max-w-2xl mx-auto p-10 md:p-16 shadow-[0_40px_80px_rgba(0,0,0,0.15)] rounded-[3rem]" style={{ backgroundColor: theme.colorSurface }}>
-          <div className="text-center mb-12 relative z-10">
-            <Mail className="mx-auto mb-8 drop-shadow-md" size={36} strokeWidth={1} style={{ color: theme.colorPrimary }} />
-            <h2 className="text-4xl md:text-5xl italic mb-4 drop-shadow-sm" style={{ color: theme.colorPrimary }}>Be Our Guest</h2>
-            <p className="font-sans text-[10px] uppercase tracking-widest opacity-80" style={{ color: theme.colorTextLight }}>Kindly respond by {config?.rsvp?.deadline || 'May 1st'}</p>
-          </div>
-
-          <form onSubmit={handleRsvpSubmit} className="space-y-6 relative z-10 text-left">
-            {!formData.name.trim() && errors.name && <p className="text-red-500 text-[10px] uppercase text-center font-bold">{errors.name}</p>}
-            {!formData.attendance && errors.attendance && <p className="text-red-500 text-[10px] uppercase text-center font-bold">{errors.attendance}</p>}
-            
-            <div className="space-y-6">
-              <input
-                type="text"
-                placeholder="Full Name *"
-                className="w-full border-b-2 px-4 py-4 text-lg font-serif outline-none transition-shadow focus:border-b-4 bg-transparent"
-                style={{ borderColor: theme.colorPrimary, color: theme.colorTextDark }}
-                value={formData.name}
-                onChange={e => setFormData({ ...formData, name: e.target.value })}
-              />
-              <input
-                type="tel"
-                placeholder="Phone Number (e.g. 071 234 5678)"
-                className="w-full border-b-2 px-4 py-4 text-lg font-serif outline-none transition-shadow focus:border-b-4 bg-transparent"
-                style={{ borderColor: theme.colorPrimary, color: theme.colorTextDark }}
-                value={formData.phone}
-                onChange={e => setFormData({ ...formData, phone: e.target.value })}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 pt-4">
-              {['Accept', 'Decline'].map(status => (
-                <button
-                  key={status}
-                  type="button"
-                  onClick={() => setFormData({ ...formData, attendance: status, guests: status === 'Decline' ? '0' : '1' })}
-                  className="py-5 font-sans text-[9px] font-bold uppercase tracking-[0.2em] border transition-all rounded-full shadow-md hover:scale-[1.02]"
-                  style={{
-                    backgroundColor: formData.attendance === status ? theme.colorPrimary : theme.colorBg,
-                    color: formData.attendance === status ? theme.colorSurface : theme.colorTextDark,
-                    borderColor: theme.colorPrimary
-                  }}
-                >
-                  {status === 'Accept' ? 'Joyfully Accept' : 'Regret Decline'}
-                </button>
-              ))}
-            </div>
-
-            {formData.attendance === 'Accept' && (
-               <div className="bg-white/40 p-8 rounded-3xl mt-6 border border-black/5 space-y-8 backdrop-blur-sm">
-                 <div className="flex items-center justify-between gap-4">
-                    <span className="font-sans text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: theme.colorTextDark }}>Guests Attending</span>
-                    <select
-                      className="w-20 h-10 border rounded-full text-center font-sans font-bold text-[10px] bg-white cursor-pointer shadow-inner"
-                      style={{ color: theme.colorTextDark, borderColor: theme.colorPrimary }}
-                      value={formData.guests}
-                      onChange={e => setFormData(f => ({ ...f, guests: e.target.value }))}
-                    >
-                      {Array.from({ length: config?.rsvp?.maxGuests || 2 }, (_, i) => i + 1).map(n => <option key={n} value={n}>{n}</option>)}
-                    </select>
-                 </div>
-
-                 <div className="space-y-5">
-                   <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: theme.colorTextDark }}>{dietaryTitle}</p>
-                   <div className="grid grid-cols-2 gap-y-4 gap-x-2">
-                     {dietaryItems.map(opt => (
-                        <label key={opt.id} className="flex items-center gap-3 cursor-pointer group">
-                          <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${formData.dietary[opt.id] ? '' : 'bg-transparent'}`} style={{ backgroundColor: formData.dietary[opt.id] ? theme.colorPrimary : 'transparent', borderColor: theme.colorPrimary }}>
-                             {formData.dietary[opt.id] && <Check size={12} color="white" />}
-                          </div>
-                          <input type="checkbox" className="sr-only" checked={!!formData.dietary[opt.id]} onChange={() => setFormData(f => ({ ...f, dietary: { ...f.dietary, [opt.id]: !f.dietary[opt.id] } }))} />
-                          <span className="font-serif text-[14px] opacity-80 transition-colors group-hover:opacity-100" style={{ color: theme.colorTextDark }}>{opt.label}</span>
-                        </label>
-                     ))}
-                   </div>
-                 </div>
-               </div>
-            )}
-
-            <div className="pt-4">
-              <textarea
-                rows={3}
-                placeholder="Message to wish..."
-                className="w-full border-b-2 px-4 py-4 text-lg font-serif outline-none transition-shadow focus:border-b-4 bg-transparent resize-y"
-                style={{ borderColor: theme.colorPrimary, color: theme.colorTextDark }}
-                value={formData.message}
-                onChange={e => setFormData({ ...formData, message: e.target.value })}
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={rsvpStatus === 'loading'}
-              className="w-full py-6 mt-4 font-sans text-[10px] uppercase tracking-[0.4em] font-bold transition-all rounded-full border shadow-[0_15px_30px_rgba(0,0,0,0.1)] hover:shadow-[0_25px_50px_rgba(0,0,0,0.2)] hover:-translate-y-1"
-              style={{ 
-                  backgroundColor: rsvpStatus === 'success' ? theme.colorBg : theme.colorPrimary, 
-                  color: rsvpStatus === 'success' ? theme.colorPrimary : theme.colorSurface,
-                  borderColor: theme.colorPrimary
-              }}
-            >
-              {rsvpStatus === 'loading' ? 'Loading...' : rsvpStatus === 'success' ? 'Sent ✨' : 'Confirm via WhatsApp'}
-            </button>
-          </form>
-        </div>
-      </section>
+      {/* ── UNIVERSAL RSVP SECTION ── */}
+      <RSVPSection config={config} labels={labels} />
 
       <section 
         className="pt-16 pb-16 text-center relative overflow-visible" 

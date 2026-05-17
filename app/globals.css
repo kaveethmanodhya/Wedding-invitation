@@ -13,9 +13,7 @@
   }
 }
 
-:root {
-  /* Dynamic variables are injected in layout.jsx */
-}
+
 
 body {
   background: var(--background);
@@ -116,10 +114,21 @@ html {
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
   will-change: transform;
+  transform: translateZ(0); /* Force GPU acceleration */
 }
 
-/* Hide the native iOS big play button in Low Power Mode */
+/* ── Hide native iOS video play button (Low Power Mode) ── */
 video::-webkit-media-controls-start-playback-button {
   display: none !important;
   -webkit-appearance: none;
+}
+
+/* Additional iOS video controls suppression for cleaner presentation */
+video::-webkit-media-controls {
+  opacity: 0;
+  pointer-events: none;
+}
+
+video::-webkit-media-controls-enclosure {
+  display: none !important;
 }
