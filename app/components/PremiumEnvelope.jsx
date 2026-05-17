@@ -1,6 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function PremiumEnvelope({ config, onOpenInvitation }) {
   const [isAnimating, setIsAnimating] = useState(false);
@@ -50,6 +51,14 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
     if (videoRef.current) {
       videoRef.current.currentTime = 0;
       videoRef.current.play().catch(err => {
+        // AbortError is not critical - just means browser paused for power saving
+        // User can tap again to play
+        if (err.name === 'AbortError') {
+          console.log('Video paused by browser (power saving), waiting for user interaction');
+          setIsAnimating(false); // Allow retry
+          return;
+        }
+        
         console.error("Video play failed:", err);
         setVideoError(true);
         // Fallback: immediate transition
@@ -118,10 +127,13 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
                 <source src={envelopeVideo.replace('.mp4', '.webm')} type="video/webm" />
               </video>
             ) : (
-              <img
+              <Image
                 src={config?.heroImage || config?.envelopeImage || '/images/placeholder.png'}
                 alt="Envelope"
-                className="h-full w-auto max-w-none absolute left-1/2 -translate-x-1/2 object-contain sm:relative sm:left-0 sm:translate-x-0 sm:w-full sm:h-full md:w-auto md:h-full md:object-contain"
+                fill
+                priority
+                sizes="100vw"
+                className="object-contain"
                 onLoad={() => setMediaReady(true)}
                 onError={() => setMediaReady(true)}
               />
