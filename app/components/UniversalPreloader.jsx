@@ -44,12 +44,12 @@ export default function UniversalPreloader({ config, onReveal, children }) {
     }
     
     timeoutRef.current = setTimeout(() => {
-      // Only skip if after 6 seconds the video hasn't even started
-      // This protects against totally dead networks, without falsely triggering on slow mobile 3G.
-      if (videoRef.current && videoRef.current.readyState === 0) {
+      // A balanced 8-second failsafe. 
+      // Gives slow connections time to buffer, but skips if the network is truly dead.
+      if (openMode === 'auto' && videoRef.current && videoRef.current.readyState === 0) {
         forceSkipAnimation();
       }
-    }, 6000);
+    }, 8000);
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -123,7 +123,7 @@ export default function UniversalPreloader({ config, onReveal, children }) {
                         }, 500);
                       }}
                       onError={(e) => {
-                        console.warn("Video non-fatal error on mobile:", e);
+                        console.warn("Video streaming interrupted/buffered:", e);
                       }}
                       preload="auto"
                       poster={config?.heroImage || config?.envelopeImage}

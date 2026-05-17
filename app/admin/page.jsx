@@ -1922,7 +1922,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                                       setPath(`layoutSettings.layout_${currentLayout}.rsvpFields`, updated);
                                     }} 
                                   />
-                                </Field.Group>
+                                </FieldGroup>
                               </div>
                             )}
                           </div>

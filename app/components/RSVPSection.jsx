@@ -9,8 +9,26 @@ export default function RSVPSection({ config, labels = {} }) {
   const currentLayout = config?.heroLayout || 1;
 
   const layoutSpecificFields = config?.layoutSettings?.[`layout_${currentLayout}`]?.rsvpFields;
-  // Note: We do NOT use defaults anymore if it's undefined for a new layout. We respect the empty state.
-  const fieldsToRender = layoutSpecificFields || [];
+
+  const defaultRsvpFields = [
+    { id: "guestName", type: "text", label: "Guest Name", placeholder: "Enter your full name", required: true },
+    { id: "attending", type: "button-group", label: "Attending?", options: "Joyfully Accept,Regretfully Decline", required: true },
+    { id: "guestCount", type: "guest-count", label: "Guest Count", placeholder: "1", required: true },
+    { id: "menu", type: "checkbox-group", label: "Menu Choice", options: "Chicken,Fish,Vegetarian", required: false },
+    { id: "message", type: "textarea", label: "Message to the Couple", placeholder: "Write your wishes here...", required: false }
+  ];
+
+  // BACKWARD COMPATIBILITY LOGIC:
+  let fieldsToRender;
+
+  if (layoutSpecificFields === undefined) {
+    // LEGACY INVITATION: The config doesn't have the new array structure.
+    // Fallback to the old global config or default static fields so old users don't lose their RSVP form!
+    fieldsToRender = config?.rsvp?.fields || defaultRsvpFields; 
+  } else {
+    // NEW INVITATION: Admin has saved the new builder state (either populated or explicitly [] empty).
+    fieldsToRender = layoutSpecificFields;
+  }
 
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
