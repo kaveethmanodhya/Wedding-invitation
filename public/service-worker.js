@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wedding-image-cache-v3';
+const CACHE_NAME = 'wedding-image-cache-v4';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting(); // Force new SW to activate immediately
@@ -21,14 +21,16 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // 🔴 STRICT BYPASS: Let browser handle Navigation, Next.js chunks, and APIs
+  // 🔴 STRICT BYPASS: Let browser handle Navigation, Next.js chunks, APIs, AND VIDEOS
   if (
     event.request.mode === 'navigate' || 
     url.pathname.startsWith('/_next/') || 
     url.pathname.startsWith('/api/') || 
-    event.request.method !== 'GET'
+    event.request.method !== 'GET' ||
+    event.request.destination === 'video' || // Explicitly ignore video requests
+    url.pathname.match(/\.(mp4|webm|ogg)$/i) // Ignore video extensions
   ) {
-    return;
+    return; // Bypassing SW cache for video stream support (HTTP 206)
   }
 
   // ✅ ONLY CACHE IMAGES
