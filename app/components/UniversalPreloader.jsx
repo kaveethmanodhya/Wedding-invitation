@@ -17,7 +17,6 @@ export default function UniversalPreloader({ config, onReveal, children }) {
   const rawOpenMode = config?.envelopeOpenMode || 'tap';
   const openMode = (rawOpenMode === 'tap' || rawOpenMode === 'onclick') ? 'tap' : 'auto';
   const isAutoOpen = openMode === 'auto';
-  const [timestamp] = useState(() => Date.now());
   const [waitingForTap, setWaitingForTap] = useState(false);
 
   const forceSkipAnimation = () => {
@@ -118,12 +117,13 @@ export default function UniversalPreloader({ config, onReveal, children }) {
               className="w-full h-full flex items-center justify-center"
             >
               <div className="relative w-full h-full sm:h-auto md:h-[85vh] sm:max-w-4xl lg:max-w-5xl md:max-w-none md:w-auto aspect-auto sm:aspect-[3/2] md:aspect-auto flex items-center justify-center sm:-translate-y-[10%] bg-transparent sm:overflow-visible">
-                <div className="absolute inset-0 w-full h-full md:relative md:inset-auto md:h-full md:w-auto flex items-center justify-center md:rounded-2xl md:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)] md:border md:border-white/10 overflow-hidden">
+                <div className="absolute inset-0 w-full h-full md:relative md:inset-auto md:h-full md:w-auto flex items-center justify-center md:rounded-2xl md:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)] md:border md:border-white/10 overflow-hidden bg-black">
                   
                   {!videoError ? (
                     <video 
+                      key={envelopeVideo}
                       ref={videoRef}
-                      className={`h-full w-auto max-w-none absolute left-1/2 -translate-x-1/2 object-contain sm:relative sm:left-0 sm:translate-x-0 sm:w-full sm:h-full md:w-auto md:h-full md:object-contain transition-opacity duration-500 ${isVideoReady ? 'opacity-100' : 'opacity-0'}`}
+                      className={`h-full w-auto max-w-none absolute left-1/2 -translate-x-1/2 object-contain sm:relative sm:left-0 sm:translate-x-0 sm:w-full sm:h-full md:w-auto md:h-full md:object-contain bg-black transition-opacity duration-500 ${isVideoReady ? 'opacity-100' : 'opacity-0'}`}
                       playsInline={true}
                       webkit-playsinline="true"
                       muted={true}
@@ -143,14 +143,12 @@ export default function UniversalPreloader({ config, onReveal, children }) {
                         }, 500);
                       }}
                       onError={(e) => {
-                        console.warn("Video streaming interrupted/buffered:", e);
-                        setVideoError(true);
-                        setIsVideoReady(true); // Show fallback image
+                        console.warn("Video load error:", e);
                       }}
-                      preload="auto"
+                      preload="metadata"
                     >
-                      <source src={`${envelopeVideo}${envelopeVideo.includes('?') ? '&' : '?'}cb=${timestamp}`} type="video/mp4" />
-                      <source src={`${envelopeVideo.replace('.mp4', '.webm')}${envelopeVideo.replace('.mp4', '.webm').includes('?') ? '&' : '?'}cb=${timestamp}`} type="video/webm" />
+                      <source src={`${envelopeVideo}#t=0.001`} type="video/mp4" />
+                      <source src={`${envelopeVideo.replace('.mp4', '.webm')}#t=0.001`} type="video/webm" />
                     </video>
                   ) : (
                     <img
