@@ -6,9 +6,10 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [mediaReady, setMediaReady] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
+  const [videoError, setVideoError] = useState(false);
   const videoRef = useRef(null);
 
-  const envelopeVideo = config?.envelopeVideo || '/videos/envelope-open.mp4';
+  const envelopeVideo = config?.envelopeVideo;
   const isAutoOpen = config?.envelopeOpenMode === 'auto';
 
   useEffect(() => {
@@ -35,13 +36,27 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
   const handleOpen = () => {
     if (isAnimating) return;
     setIsAnimating(true);
+    
+    // If video failed or doesn't exist, use image fallback
+    if (videoError || !envelopeVideo || !videoRef.current) {
+      setTimeout(() => {
+        setHasEnded(true);
+        setTimeout(onOpenInvitation, 500);
+      }, 800);
+      return;
+    }
+    
+    // Try to play video
     if (videoRef.current) {
-      // Fast-start optimization: Ensure we are at the start and play immediately
-      videoRef.current.currentTime = 0.1;
+      videoRef.current.currentTime = 0;
       videoRef.current.play().catch(err => {
         console.error("Video play failed:", err);
-        // Fallback: If video fails, try to proceed anyway
-        setTimeout(onOpenInvitation, 1000);
+        setVideoError(true);
+        // Fallback: immediate transition
+        setTimeout(() => {
+          setHasEnded(true);
+          setTimeout(onOpenInvitation, 500);
+        }, 800);
       });
     }
   };
