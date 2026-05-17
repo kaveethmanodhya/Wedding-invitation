@@ -8,26 +8,9 @@ export default function RSVPSection({ config, labels = {} }) {
   const dietaryTitle = getDietaryTitle(config);
   const currentLayout = config?.heroLayout || 1;
 
-  // Check both dynamic paths
   const layoutSpecificFields = config?.layoutSettings?.[`layout_${currentLayout}`]?.rsvpFields;
-  const globalFields = config?.rsvp?.fields;
-
-  const defaultRsvpFields = [
-    { id: "guestName", type: "text", label: "Guest Name", placeholder: "Enter your full name", required: true },
-    { id: "attending", type: "button-group", label: "Attending?", options: "Joyfully Accept,Regretfully Decline", required: true },
-    { id: "guestCount", type: "guest-count", label: "Guest Count", placeholder: "1", required: true },
-    { id: "menu", type: "checkbox-group", label: "Menu Choice", options: "Chicken,Fish,Vegetarian", required: false },
-    { id: "message", type: "textarea", label: "Message to the Couple", placeholder: "Write your wishes here...", required: false }
-  ];
-
-  // Distinguish between "undefined" (use default) and "explicitly empty" (hide section)
-  // ONLY use default if the config property is entirely missing/undefined.
-  // If it exists but is length 0, it means the admin deleted them all!
-  const fieldsToRender = layoutSpecificFields !== undefined 
-    ? layoutSpecificFields 
-    : (globalFields !== undefined 
-        ? globalFields 
-        : defaultRsvpFields);
+  // Note: We do NOT use defaults anymore if it's undefined for a new layout. We respect the empty state.
+  const fieldsToRender = layoutSpecificFields || [];
 
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
@@ -46,7 +29,15 @@ export default function RSVPSection({ config, labels = {} }) {
   }, []);
 
   const layout = config?.heroLayout ?? 1;
-  const isAttending = formData.attending && formData.attending.toLowerCase().includes('yes');
+
+  // We need to know if the user accepted to show extra fields.
+  // Find the specific 'attending' field configuration to know what the 'accept' option is.
+  const attendingField = fieldsToRender.find(f => f.id === 'attending');
+  const acceptOption = attendingField?.options?.split(',')[0]?.trim()?.toLowerCase() || 'accept';
+
+  const userAttendingStatus = formData['attending']?.toLowerCase() || '';
+  // Check if user's selection includes the first option (which is usually the "Yes/Accept" option)
+  const isAttending = userAttendingStatus.includes(acceptOption) || userAttendingStatus.includes('yes');
 
   function validate() {
     const e = {};
@@ -72,8 +63,15 @@ export default function RSVPSection({ config, labels = {} }) {
     setStatus('loading');
 
     try {
-      const fieldsText = fieldsToRender.map(field => {
-        return `*${field.label}:* ${formData[field.id] || 'Not provided'}`;
+      // ONLY include fields that were visible to the user
+      const visibleFields = fieldsToRender.filter(field => {
+        if (field.id === 'guestName' || field.id === 'attending') return true;
+        return isAttending; // Extra fields only matter if attending
+      });
+
+      const fieldsText = visibleFields.map(field => {
+        const val = formData[field.id];
+        return `*${field.label}:* ${val ? val : 'Not provided'}`;
       }).join('\n');
 
       const waMessage = `${labels.rsvpMessageHeader || '💍 *Wedding Invitation Reply* 💍'}\n\n${fieldsText}`;
@@ -276,13 +274,11 @@ export default function RSVPSection({ config, labels = {} }) {
 
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-8 relative z-10 w-full max-w-lg mx-auto">
           {fieldsToRender.map((field, idx) => {
-            const isAttending = formData.attending && (formData.attending.toLowerCase().includes('accept') || formData.attending.toLowerCase().includes('yes'));
-            const isAlwaysVisible = field.id === 'guestName' || field.id === 'attending';
+            const isCore = field.id === 'guestName' || field.id === 'attending';
             
-            if (!isAlwaysVisible && !isAttending) {
-              return null; // Hide the field
-            }
-            
+            // Hide extra fields if user hasn't accepted yet
+            if (!isCore && !isAttending) return null;
+
             return (
             <div key={field.id || idx} className="flex flex-col animate-fade-in-up">
               <label className={labelCls}>
