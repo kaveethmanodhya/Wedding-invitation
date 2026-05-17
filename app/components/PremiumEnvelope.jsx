@@ -11,14 +11,29 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
 
   const envelopeVideo = config?.envelopeVideo || '/videos/envelope-open.mp4';
   const openMode = config?.envelopeOpenMode || 'auto';
-  const isAutoOpen = openMode === 'auto';
   const [timestamp] = useState(() => Date.now());
   const [waitingForTap, setWaitingForTap] = useState(false);
+  const isAutoOpen = openMode === 'auto' && !waitingForTap;
 
   const forceSkipAnimation = () => {
     setMediaReady(true);
     onOpenInvitation();
   };
+
+  useEffect(() => {
+    if (openMode !== 'tap' && videoRef.current) {
+      const playPromise = videoRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          // The OS blocked autoplay (e.g., iOS Low Power Mode).
+          console.warn("Autoplay blocked by OS. Falling back to Tap-to-Open UI.");
+          // Instantly switch to our beautiful custom Tap to Open overlay
+          setWaitingForTap(true); 
+        });
+      }
+    }
+  }, [openMode]); // Agent: ensure this runs when the video mounts
 
   useEffect(() => {
     // Clear old aggressive Service Workers
@@ -33,10 +48,10 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
       });
     }
 
-    if (openMode === 'tap') {
+    if (openMode === 'tap' || waitingForTap) {
       // Instantly show the first frame and the Tap button. NO loading spinner.
       setMediaReady(true);
-      setWaitingForTap(true);
+      if (openMode === 'tap') setWaitingForTap(true);
     } else {
       // 1. If the video hasn't successfully loaded and completed within 2.5s, skip EVERYTHING.
       const failsafe = setTimeout(() => {
@@ -44,7 +59,7 @@ export default function PremiumEnvelope({ config, onOpenInvitation }) {
       }, 2500);
       return () => clearTimeout(failsafe);
     }
-  }, [openMode]);
+  }, [openMode, waitingForTap]);
 
   const handleOpen = () => {
     if (isAnimating) return;
