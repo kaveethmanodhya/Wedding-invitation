@@ -41,11 +41,16 @@ export default function UniversalPreloader({ config, onReveal, children }) {
     if (openMode === 'tap') {
       setMediaReady(true);
       setWaitingForTap(true);
-    } else {
-      timeoutRef.current = setTimeout(() => {
-        forceSkipAnimation();
-      }, 2500);
     }
+    
+    timeoutRef.current = setTimeout(() => {
+      // Only skip if after 6 seconds the video hasn't even started
+      // This protects against totally dead networks, without falsely triggering on slow mobile 3G.
+      if (videoRef.current && videoRef.current.readyState === 0) {
+        forceSkipAnimation();
+      }
+    }, 6000);
+
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
@@ -54,28 +59,20 @@ export default function UniversalPreloader({ config, onReveal, children }) {
   const handleOpen = () => {
     if (isAnimatingRef.current) return;
     isAnimatingRef.current = true;
-    setIsAnimating(true);
-    setWaitingForTap(false); 
     
     if (videoRef.current) {
-      // Removed currentTime = 0.1 to prevent seek stalls on mobile
-      
-      // Add a new short failsafe in case the play() promise hangs
-      timeoutRef.current = setTimeout(() => forceSkipAnimation(), 2000);
-      
+      // 1. Play the video FIRST, directly attached to the physical click event
       const playPromise = videoRef.current.play();
+      
+      // Optional: silence the promise rejection warning if OS strictly blocks it
       if (playPromise !== undefined) {
-        playPromise.then(() => {
-          // Play started successfully, kill the failsafe, let onEnded handle the rest
-          if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        }).catch(error => {
-          console.error("Video play failed:", error);
-          forceSkipAnimation();
-        });
+        playPromise.catch(err => console.warn("Mobile play delayed:", err));
       }
-    } else {
-      forceSkipAnimation();
     }
+    
+    // 2. Hide the button ONLY AFTER the play command is sent
+    setIsAnimating(true);
+    setWaitingForTap(false); 
   };
 
   if (!envelopeVideo) {
@@ -110,8 +107,9 @@ export default function UniversalPreloader({ config, onReveal, children }) {
                     <video 
                       ref={videoRef}
                       className="h-full w-auto max-w-none absolute left-1/2 -translate-x-1/2 object-contain sm:relative sm:left-0 sm:translate-x-0 sm:w-full sm:h-full md:w-auto md:h-full md:object-contain"
-                      playsInline
-                      muted
+                      playsInline={true}
+                      webkit-playsinline="true"
+                      muted={true}
                       autoPlay={openMode !== 'tap'}
                       onLoadedData={() => setMediaReady(true)}
                       onPlay={() => {
@@ -125,9 +123,7 @@ export default function UniversalPreloader({ config, onReveal, children }) {
                         }, 500);
                       }}
                       onError={(e) => {
-                        console.warn('Video failed to load, skipping animation:', e);
-                        setVideoError(true);
-                        forceSkipAnimation();
+                        console.warn("Video non-fatal error on mobile:", e);
                       }}
                       preload="auto"
                       poster={config?.heroImage || config?.envelopeImage}
