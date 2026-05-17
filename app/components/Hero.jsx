@@ -68,7 +68,7 @@ function Layout1({ config, labels = {}, birthdayData = null, generalData = null 
 
         {/* Hero BG Image Area - Top Half */}
         <div style={{ position: 'absolute', top: '24px', left: '24px', right: '24px', height: '45%' }}>
-          {heroImage && <Image src={heroImage} alt="Hero Background" fill style={{ objectFit: 'cover', objectPosition: 'top', opacity: 0.8 }} />}
+          {heroImage && <Image src={heroImage} alt="Hero Background" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'top', opacity: 0.8 }} />}
           {!heroImage && <div className="w-full h-full bg-slate-100 flex items-center justify-center opacity-20">No Image</div>}
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, var(--colorBg) 95%)' }} />
         </div>
@@ -151,7 +151,7 @@ function Layout2({ config, labels = {}, birthdayData = null, generalData = null 
             position: 'relative'
           }}>
             <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden' }}>
-              <Image src={heroImage || '/images/placeholder.png'} alt="Hero" fill style={{ objectFit: 'cover', objectPosition: 'top' }} />
+              <Image src={heroImage || '/images/placeholder.png'} alt="Hero" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'top' }} />
             </div>
           </div>
         )}
@@ -231,7 +231,7 @@ function Layout3({ config, isOpened, birthdayData = null, generalData = null }) 
         {/* Hero Image — top 58% of card (resolves correctly with fixed height) */}
         {heroImage && (
           <div className="absolute inset-x-0 top-0 z-0" style={{ height: '58%' }}>
-            <Image src={heroImage || '/images/placeholder.png'} alt="" fill style={{ objectFit: 'cover', objectPosition: 'top center', opacity: 0.9 }} />
+            <Image src={heroImage || '/images/placeholder.png'} alt="" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'top center', opacity: 0.9 }} />
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 30%, var(--colorBg) 100%)' }} />
           </div>
         )}

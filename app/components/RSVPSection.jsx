@@ -20,12 +20,14 @@ export default function RSVPSection({ config, labels = {} }) {
     { id: "message", type: "textarea", label: "Message to the Couple", placeholder: "Write your wishes here...", required: false }
   ];
 
-  // Safely determine which fields to render
-  const fieldsToRender = (layoutSpecificFields && layoutSpecificFields.length > 0) 
+  // Distinguish between "undefined" (use default) and "explicitly empty" (hide section)
+  // ONLY use default if the config property is entirely missing/undefined.
+  // If it exists but is length 0, it means the admin deleted them all!
+  const fieldsToRender = layoutSpecificFields !== undefined 
     ? layoutSpecificFields 
-    : (globalFields && globalFields.length > 0) 
-      ? globalFields 
-      : defaultRsvpFields;
+    : (globalFields !== undefined 
+        ? globalFields 
+        : defaultRsvpFields);
 
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
@@ -162,6 +164,11 @@ export default function RSVPSection({ config, labels = {} }) {
   } else if (layout === 8 || layout === 11) {
     inputCls = `w-full px-4 py-3 rounded-lg border-2 border-[var(--colorPrimary)]/30 bg-white focus:border-[var(--colorPrimary)] outline-none transition-all font-sinhala text-base`;
     btnCls = "w-full py-4 rounded-xl bg-[var(--colorPrimary)] text-white font-sinhala text-lg hover:bg-[var(--colorTextDark)] transition-all shadow-[0_10px_30px_rgba(0,0,0,0.1)]";
+  }
+
+  // If the admin has removed ALL fields, completely hide the RSVP section
+  if (!fieldsToRender || fieldsToRender.length === 0) {
+    return null;
   }
 
   if (status === 'success') {

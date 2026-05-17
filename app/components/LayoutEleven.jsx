@@ -433,7 +433,7 @@ export default function LayoutEleven({ config, labels = {}, birthdayData = null,
                 {galleryTitle}
               </h2>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4 w-full px-2">
+            <div className="flex flex-wrap justify-center gap-2 md:gap-4 w-full px-2">
               {config.gallery.map((photo, idx) => (
                 <motion.div
                   key={idx}
@@ -441,14 +441,15 @@ export default function LayoutEleven({ config, labels = {}, birthdayData = null,
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-50px' }}
                   transition={{ duration: 0.8, delay: (idx % 5) * 0.1 }}
-                  className="group relative overflow-hidden rounded-xl md:rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] transition-all duration-700 border-2 md:border-4 border-white cursor-default aspect-square"
+                  className="group relative overflow-hidden rounded-xl md:rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] transition-all duration-700 border-2 md:border-4 border-white cursor-default w-[calc(50%-4px)] md:w-[calc(20%-13px)]"
+                  style={{ aspectRatio: '1/1' }}
                 >
                   <Image
                     src={photo.src}
                     fill
                     sizes="(max-width: 768px) 50vw, 20vw"
                     alt={photo.alt || 'Gallery photo'}
-                    className="object-cover transition-transform duration-1000 group-hover:scale-[1.05]"
+                    className="object-cover object-center transition-transform duration-1000 group-hover:scale-[1.05]"
                   />
                 </motion.div>
               ))}

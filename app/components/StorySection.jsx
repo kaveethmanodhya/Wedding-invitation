@@ -54,7 +54,7 @@ function Layout1({ config, ref1, ref2, ref3 }) {
         <div className="grid grid-cols-2 gap-6 relative">
           {config.gallery?.slice(0, 2).map((img, i) => (
             <div key={i} className={`relative rounded-[2rem] overflow-hidden shadow-2xl aspect-[3/4] border-4 border-white/40 backdrop-blur-md ${i === 1 ? 'mt-16 -ml-4' : 'mb-16'}`}>
-              <Image src={img.src} alt={img.alt || 'Story Image'} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover hover:scale-105 transition-transform duration-700 hover:saturate-100 opacity-90" />
+              <Image src={img.src} alt={img.alt || 'Story Image'} fill sizes="(max-width: 768px) 100vw, 50vw" loading="lazy" className="object-cover hover:scale-105 transition-transform duration-700 hover:saturate-100 opacity-90" />
             </div>
           ))}
         </div>
@@ -132,7 +132,7 @@ function Layout3({ config, ref1, ref2, ref3, ref4 }) {
         <div ref={ref4} className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-5xl mx-auto opacity-0 translate-y-8 transition-all duration-700 delay-300 mt-8 mb-16">
            {config.gallery?.slice(0, 4).map((img, i) => (
               <div key={i} className="w-full aspect-square rounded-lg overflow-hidden shadow-lg border-2 border-[var(--colorBg)] transition-transform duration-500 hover:scale-105 relative">
-                 <Image src={img.src} alt={`Journey ${i}`} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
+                 <Image src={img.src} alt={`Journey ${i}`} fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" className="object-cover" />
               </div>
            ))}
         </div>
@@ -257,7 +257,7 @@ function Layout7({ config, ref1, ref2, ref3, labels = {} }) {
           <div className="absolute -top-4 -left-4 w-24 h-24 bg-[var(--colorPrimary)]/10 rounded-full blur-3xl" />
           <div ref={ref1} className="opacity-0 translate-y-8 transition-all duration-700 bg-white p-4 pb-16 shadow-2xl border border-slate-100 -rotate-3 relative z-10 w-full max-w-sm ml-auto">
             <div className="aspect-square bg-slate-100 overflow-hidden mb-4 relative">
-               <Image src={config.gallery?.[2]?.src || config.heroImage || '/images/placeholder.png'} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover sepia-[0.2]" alt="" />
+               <Image src={config.gallery?.[2]?.src || config.heroImage || '/images/placeholder.png'} fill sizes="(max-width: 768px) 100vw, 33vw" loading="lazy" className="object-cover sepia-[0.2]" alt="" />
             </div>
             <p className="font-script text-3xl text-slate-700 text-center">{labels.storyCaption7 || 'Moments Together'}</p>
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-white/60 backdrop-blur-sm border border-white/20 shadow-sm" />

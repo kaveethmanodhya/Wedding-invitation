@@ -91,8 +91,8 @@ html {
 /* ── Optimized GPU-Accelerated Petal Animations ── */
 @keyframes pureFall {
   0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
-  10% { opacity: 0.8; }
-  90% { opacity: 0.8; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
   100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
 }
 
@@ -106,10 +106,15 @@ html {
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   animation-fill-mode: both;
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Force GPU acceleration */
+  backface-visibility: hidden;
 }
 
 .css-petal-sway {
   animation-name: pureSway;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
+  will-change: transform;
+  transform: translateZ(0); /* Force GPU acceleration */
 }

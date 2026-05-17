@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
+import { useState, useEffect, useRef, useSyncExternalStore, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Envelope from './components/Envelope';
 import CoupleReveal from './components/CoupleReveal';
@@ -8,19 +8,21 @@ import FadeReveal from './components/FadeReveal';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Countdown from './components/Countdown';
-import StorySection from './components/StorySection';
-import Gallery from './components/Gallery';
-import EventDetails from './components/EventDetails';
-import RSVPSection from './components/RSVPSection';
-import Timeline from './components/Timeline';
-import Footer from './components/Footer';
 import PremiumEnvelope from './components/PremiumEnvelope';
-import LayoutEight from './components/LayoutEight';
-import LayoutTen from './components/LayoutTen';
-import LayoutEleven from './components/LayoutEleven';
 import RoyalEnvelope from './components/RoyalEnvelope';
 import MintEnvelope from './components/MintEnvelope';
-import FallingPetals from './components/FallingPetals';
+
+// Lazy load heavy components that are below the fold
+const StorySection = lazy(() => import('./components/StorySection'));
+const Gallery = lazy(() => import('./components/Gallery'));
+const EventDetails = lazy(() => import('./components/EventDetails'));
+const RSVPSection = lazy(() => import('./components/RSVPSection'));
+const Timeline = lazy(() => import('./components/Timeline'));
+const Footer = lazy(() => import('./components/Footer'));
+const LayoutEight = lazy(() => import('./components/LayoutEight'));
+const LayoutTen = lazy(() => import('./components/LayoutTen'));
+const LayoutEleven = lazy(() => import('./components/LayoutEleven'));
+const FallingPetals = lazy(() => import('./components/FallingPetals'));
 
 import { PRESET_THEMES } from '../lib/themes';
 import { getLabels } from '../lib/eventLabels';
@@ -134,25 +136,52 @@ export default function ClientHome({ config }) {
     }
   `;
 
+  // Loading fallback for lazy components
+  const LoadingFallback = () => (
+    <div className="w-full h-32 flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-[var(--colorPrimary)] border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+
   const mainContent = (
     <main className={`min-h-screen theme-${themeId} ${!hasOpened ? 'h-screen overflow-hidden' : 'bg-[var(--colorBg)] text-[var(--colorTextDark)]'}`}>
       {config.heroLayout === 8 ? (
-        <LayoutEight config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} />
+        <Suspense fallback={<LoadingFallback />}>
+          <LayoutEight config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} />
+        </Suspense>
       ) : config.heroLayout === 10 ? (
-        <LayoutTen config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} />
+        <Suspense fallback={<LoadingFallback />}>
+          <LayoutTen config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} />
+        </Suspense>
       ) : config.heroLayout === 11 ? (
-        <LayoutEleven config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} />
+        <Suspense fallback={<LoadingFallback />}>
+          <LayoutEleven config={config} labels={labels} birthdayData={birthdayData} generalData={generalData} />
+        </Suspense>
       ) : (
         <>
           <Navbar config={config} birthdayData={birthdayData} generalData={generalData} />
           <Hero config={config} isOpened={hasOpened} labels={labels} birthdayData={birthdayData} generalData={generalData} />
           <Countdown config={config} labels={labels} />
-          <StorySection config={config} labels={labels} />
-          {config?.gallery && config.gallery.length > 0 && <Gallery config={config} />}
-          <Timeline config={config} labels={labels} />
-          <EventDetails config={config} labels={labels} />
-          <RSVPSection config={config} labels={labels} />
-          <Footer config={config} birthdayData={birthdayData} generalData={generalData} />
+          <Suspense fallback={<LoadingFallback />}>
+            <StorySection config={config} labels={labels} />
+          </Suspense>
+          {config?.gallery && config.gallery.length > 0 && (
+            <Suspense fallback={<LoadingFallback />}>
+              <Gallery config={config} />
+            </Suspense>
+          )}
+          <Suspense fallback={<LoadingFallback />}>
+            <Timeline config={config} labels={labels} />
+          </Suspense>
+          <Suspense fallback={<LoadingFallback />}>
+            <EventDetails config={config} labels={labels} />
+          </Suspense>
+          <Suspense fallback={<LoadingFallback />}>
+            <RSVPSection config={config} labels={labels} />
+          </Suspense>
+          <Suspense fallback={<LoadingFallback />}>
+            <Footer config={config} birthdayData={birthdayData} generalData={generalData} />
+          </Suspense>
         </>
       )}
     </main>
@@ -208,8 +237,14 @@ export default function ClientHome({ config }) {
             )}
           </button>
         )}
-        {config.fallingPetals && <FallingPetals color={theme.colorPrimary} />}
       </motion.div>
+      
+      {/* Falling petals - separated from motion.div to prevent animation conflicts */}
+      {config.fallingPetals && hasOpened && (
+        <Suspense fallback={null}>
+          <FallingPetals color={theme.colorPrimary} />
+        </Suspense>
+      )}
     </>
   );
 }

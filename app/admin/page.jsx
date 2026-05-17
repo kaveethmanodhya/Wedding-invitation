@@ -1787,15 +1787,31 @@ function AdminDashboard({ slug, onBack, showToast }) {
                 <div className="col-span-2 space-y-6">
                   <p className="text-xs text-slate-500 mb-2">Build and customize the exact fields shown to your guests on the RSVP form.</p>
                   
-                  {(config?.layoutSettings?.[`layout_${config?.heroLayout || 1}`]?.rsvpFields || defaultRsvpFields).map((field, idx) => {
-                    const currentFields = config?.layoutSettings?.[`layout_${config?.heroLayout || 1}`]?.rsvpFields || defaultRsvpFields;
+                  {(() => {
+                    const currentFields = config?.layoutSettings?.[`layout_${config?.heroLayout || 1}`]?.rsvpFields;
+                    const fieldsToShow = currentFields !== undefined ? currentFields : defaultRsvpFields;
+                    
+                    if (fieldsToShow.length === 0) {
+                      return (
+                        <div className="p-6 bg-amber-50 border-2 border-amber-200 rounded-xl text-center">
+                          <p className="text-sm font-bold text-amber-800 mb-1">⚠️ No RSVP Fields</p>
+                          <p className="text-xs text-amber-700">
+                            The RSVP section is currently <strong>hidden</strong> on your live invitation. 
+                            Add at least one field below to show it.
+                          </p>
+                        </div>
+                      );
+                    }
+                    
+                    return fieldsToShow.map((field, idx) => {
+                    const currentFieldsForUpdate = currentFields !== undefined ? currentFields : defaultRsvpFields;
                     
                     return (
                       <div key={field.id || idx} className="flex flex-col gap-4 p-5 bg-slate-50 border border-slate-200 rounded-xl relative group">
                         <button 
                           type="button"
                           onClick={() => {
-                            const updated = currentFields.filter((_, i) => i !== idx);
+                            const updated = currentFieldsForUpdate.filter((_, i) => i !== idx);
                             setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, updated);
                           }}
                           className="absolute top-3 right-3 px-3 py-1.5 bg-rose-100 text-rose-600 rounded-lg text-xs font-bold hover:bg-rose-200 transition-colors"
@@ -1811,7 +1827,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                               value={field.label || ''} 
                               placeholder="e.g., Guest Name"
                               onChange={e => {
-                                const updated = [...currentFields];
+                                const updated = [...currentFieldsForUpdate];
                                 updated[idx] = { ...updated[idx], label: e.target.value };
                                 setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, updated);
                               }} 
@@ -1823,7 +1839,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                               className={inputCls} 
                               value={field.type || 'text'}
                               onChange={e => {
-                                const updated = [...currentFields];
+                                const updated = [...currentFieldsForUpdate];
                                 updated[idx] = { ...updated[idx], type: e.target.value };
                                 setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, updated);
                               }}
@@ -1846,7 +1862,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                               value={field.placeholder || ''} 
                               placeholder="e.g., Enter answer..."
                               onChange={e => {
-                                const updated = [...currentFields];
+                                const updated = [...currentFieldsForUpdate];
                                 updated[idx] = { ...updated[idx], placeholder: e.target.value };
                                 setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, updated);
                               }} 
@@ -1859,7 +1875,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                               id={`req-${idx}`}
                               checked={field.required || false}
                               onChange={e => {
-                                const updated = [...currentFields];
+                                const updated = [...currentFieldsForUpdate];
                                 updated[idx] = { ...updated[idx], required: e.target.checked };
                                 setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, updated);
                               }}
@@ -1878,7 +1894,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                                 value={field.options || ''} 
                                 placeholder="Option 1, Option 2, Option 3"
                                 onChange={e => {
-                                  const updated = [...currentFields];
+                                  const updated = [...currentFieldsForUpdate];
                                   updated[idx] = { ...updated[idx], options: e.target.value };
                                   setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, updated);
                                 }} 
@@ -1888,13 +1904,15 @@ function AdminDashboard({ slug, onBack, showToast }) {
                         )}
                       </div>
                     );
-                  })}
+                    });
+                  })()}
                   
                   <button 
                     type="button"
                     onClick={() => {
-                      const currentFields = config?.layoutSettings?.[`layout_${config?.heroLayout || 1}`]?.rsvpFields || defaultRsvpFields;
-                      setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, [...currentFields, { id: `field_${Date.now()}`, type: 'text', label: 'New Question', required: false, placeholder: '' }]);
+                      const currentFields = config?.layoutSettings?.[`layout_${config?.heroLayout || 1}`]?.rsvpFields;
+                      const fieldsToUpdate = currentFields !== undefined ? currentFields : defaultRsvpFields;
+                      setPath(`layoutSettings.layout_${config?.heroLayout || 1}.rsvpFields`, [...fieldsToUpdate, { id: `field_${Date.now()}`, type: 'text', label: 'New Question', required: false, placeholder: '' }]);
                     }}
                     className="mt-4 px-5 py-2.5 bg-[#C9956A]/10 text-[#C9956A] rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-[#C9956A]/20 transition-colors inline-flex items-center gap-2"
                   >
