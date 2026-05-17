@@ -107,10 +107,12 @@ export default function UniversalPreloader({ config, onReveal, children }) {
           <motion.div 
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8 }}
-            className={`z-[9999] flex items-center justify-center bg-gray-900/60 transition-all duration-500 ${!isAnimating && (!isAutoOpen || waitingForTap) ? 'cursor-pointer' : ''} ${isAnimating ? 'pointer-events-none' : ''} fixed inset-0 w-screen h-screen overflow-hidden`}
+            className={`z-[9999] flex items-center justify-center transition-all duration-500 ${!isAnimating && (!isAutoOpen || waitingForTap) ? 'cursor-pointer' : ''} ${isAnimating ? 'pointer-events-none' : ''} fixed inset-0 w-screen h-screen overflow-hidden`}
+            style={{ 
+              backgroundColor: '#000000'
+            }}
             onClick={!isAnimating && (!isAutoOpen || waitingForTap) ? handleOpen : undefined}
           >
-            <div className="absolute inset-0 bg-black/20 pointer-events-none" />
             
             <motion.div
               animate={{ opacity: hasEnded ? 0 : 1 }}
@@ -148,7 +150,6 @@ export default function UniversalPreloader({ config, onReveal, children }) {
                         setIsVideoReady(true); // Show fallback image
                       }}
                       preload="auto"
-                      poster={config?.heroImage || config?.envelopeImage}
                     >
                       <source src={`${envelopeVideo}${envelopeVideo.includes('?') ? '&' : '?'}cb=${timestamp}`} type="video/mp4" />
                       <source src={`${envelopeVideo.replace('.mp4', '.webm')}${envelopeVideo.replace('.mp4', '.webm').includes('?') ? '&' : '?'}cb=${timestamp}`} type="video/webm" />

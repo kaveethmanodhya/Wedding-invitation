@@ -215,31 +215,33 @@ export default function ClientHome({ config }) {
           )}
         </AnimatePresence>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: hasOpened ? 1 : 0 }}
-          transition={{ duration: 1 }}
-        >
-        {mainContent}
-        {/* Floating audio toggle */}
-        {config.audioUrl && (
-          <button
-            onClick={toggleAudio}
-            className="fixed bottom-8 right-8 z-[9999] bg-white/90 backdrop-blur-md rounded-full p-4 shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 border border-[var(--colorPrimary)]/20"
-            aria-label={audioPlaying ? 'Pause background music' : 'Play background music'}
+        {hasOpened && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
           >
-            {audioPlaying ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--colorPrimary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
-              </svg>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--colorTextDark)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.6">
-                <path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6" />
-              </svg>
-            )}
-          </button>
+          {mainContent}
+          {/* Floating audio toggle */}
+          {config.audioUrl && (
+            <button
+              onClick={toggleAudio}
+              className="fixed bottom-8 right-8 z-[9999] bg-white/90 backdrop-blur-md rounded-full p-4 shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 border border-[var(--colorPrimary)]/20"
+              aria-label={audioPlaying ? 'Pause background music' : 'Play background music'}
+            >
+              {audioPlaying ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--colorPrimary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--colorTextDark)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.6">
+                  <path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6" />
+                </svg>
+              )}
+            </button>
+          )}
+          </motion.div>
         )}
-      </motion.div>
       </UniversalPreloader>
       
       {/* Falling petals - separated from motion.div to prevent animation conflicts */}
