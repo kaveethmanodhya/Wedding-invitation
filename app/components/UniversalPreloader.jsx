@@ -1,10 +1,13 @@
 "use client";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function UniversalPreloader({ config, onReveal, children }) {
   const [isAnimating, setIsAnimating] = useState(false);
-  const [mediaReady, setMediaReady] = useState(false);
+  const rawOpenMode = config?.envelopeOpenMode || 'tap';
+  const openMode = (rawOpenMode === 'tap' || rawOpenMode === 'onclick') ? 'tap' : 'auto';
+  const [mediaReady, setMediaReady] = useState(openMode === 'tap');
   const [isVideoReady, setIsVideoReady] = useState(false); // Track when first frame is loaded
   const [hasEnded, setHasEnded] = useState(false);
   const [videoError, setVideoError] = useState(false);
@@ -14,20 +17,18 @@ export default function UniversalPreloader({ config, onReveal, children }) {
 
   const isPremiumEnvelope = config?.revealStyle === 'premium-envelope' || config?.revealStyle === 'premium_envelope';
   const envelopeVideo = config?.envelopeVideo || (isPremiumEnvelope ? '/videos/envelope-open.mp4' : null);
-  const rawOpenMode = config?.envelopeOpenMode || 'tap';
-  const openMode = (rawOpenMode === 'tap' || rawOpenMode === 'onclick') ? 'tap' : 'auto';
   const isAutoOpen = openMode === 'auto';
   const [timestamp] = useState(() => Date.now());
-  const [waitingForTap, setWaitingForTap] = useState(false);
-
-  const forceSkipAnimation = () => {
-    setMediaReady(true);
-    setHasEnded(true);
-    if (onReveal) onReveal();
-  };
+  const [waitingForTap, setWaitingForTap] = useState(openMode === 'tap');
 
   useEffect(() => {
     if (!envelopeVideo) return;
+    
+    const forceSkipAnimation = () => {
+      setMediaReady(true);
+      setHasEnded(true);
+      if (onReveal) onReveal();
+    };
     
     // Clear old aggressive Service Workers
     if ('serviceWorker' in navigator) {
@@ -39,11 +40,6 @@ export default function UniversalPreloader({ config, onReveal, children }) {
       });
     }
 
-    if (openMode === 'tap') {
-      setMediaReady(true);
-      setWaitingForTap(true);
-    }
-    
     timeoutRef.current = setTimeout(() => {
       // A balanced 8-second failsafe. 
       // Gives slow connections time to buffer, but skips if the network is truly dead.
@@ -55,7 +51,7 @@ export default function UniversalPreloader({ config, onReveal, children }) {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [openMode, envelopeVideo]);
+  }, [openMode, envelopeVideo, onReveal]);
 
   // iOS Low Power Mode autoplay rejection handler
   useEffect(() => {
@@ -155,10 +151,11 @@ export default function UniversalPreloader({ config, onReveal, children }) {
                       <source src={`${envelopeVideo.replace('.mp4', '.webm')}${envelopeVideo.replace('.mp4', '.webm').includes('?') ? '&' : '?'}cb=${timestamp}`} type="video/webm" />
                     </video>
                   ) : (
-                    <img
+                    <Image
                       src={config?.heroImage || config?.envelopeImage || '/images/placeholder.png'}
                       alt="Envelope fallback"
-                      className="h-full w-auto max-w-none absolute left-1/2 -translate-x-1/2 object-contain sm:relative sm:left-0 sm:translate-x-0 sm:w-full sm:h-full md:w-auto md:h-full md:object-contain"
+                      fill
+                      className="object-contain"
                       onLoad={() => {
                         setIsVideoReady(true);
                         setMediaReady(true);
