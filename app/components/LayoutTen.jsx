@@ -133,7 +133,7 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
         className="relative min-h-screen w-full flex flex-col items-center justify-center py-12 md:py-24 px-4 overflow-hidden z-20" 
         style={{ backgroundColor: theme.colorBg }}
       >
-        <SectionBackground image={config.sectionBackgrounds?.hero} opacity={0.9} />
+        <SectionBackground image={config.sectionBackgrounds?.hero} opacity={0.3} />
         
         {/* The White Card Container */}
         <div className="relative w-full max-w-[850px] bg-white shadow-[0_30px_80px_rgba(0,0,0,0.08)] rounded-[40px] overflow-hidden flex flex-col items-center justify-start pb-20 z-10 border border-[rgba(0,0,0,0.02)]">
@@ -142,12 +142,12 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
             {config?.heroImage && (
                 <div className="relative w-full aspect-[3/4] z-0 overflow-hidden">
                    {/* Sharp Layer (Top) */}
-                   <div className="absolute inset-0 z-0" style={{ maskImage: 'linear-gradient(to bottom, black 0%, transparent 95%)', WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 95%)' }}>
+                   <div className="absolute inset-0 z-0" style={{ maskImage: 'linear-gradient(to bottom, black 0%, transparent 65%)', WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 65%)' }}>
                       <Image src={config.heroImage || '/images/placeholder.png'} fill priority sizes="(max-width: 850px) 100vw, 850px" className="object-cover object-top" alt="Hero Background Sharp" />
                    </div>
                    {/* Blurred Layer (Bottom) */}
                    <div className="absolute inset-0 z-[1]" style={{ maskImage: 'linear-gradient(to top, black 0%, transparent 90%)', WebkitMaskImage: 'linear-gradient(to top, black 0%, transparent 90%)' }}>
-                      <Image src={config.heroImage || '/images/placeholder.png'} fill sizes="(max-width: 850px) 100vw, 850px" className="object-cover object-top blur-[2px] scale-105" alt="Hero Background Blurred" />
+                      <Image src={config.heroImage || '/images/placeholder.png'} fill sizes="(max-width: 850px) 100vw, 850px" className="object-cover object-top blur-[10px] scale-105" alt="Hero Background Blurred" />
                    </div>
                    {/* Fade to White at bottom */}
                    <div className="absolute inset-0 z-[2] bg-gradient-to-b from-transparent via-white/10 to-white" />
@@ -249,7 +249,7 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 md:w-96 z-40 opacity-40 pointer-events-none" style={{ color: theme.colorPrimary }}>
            <TopMandala className="w-full" />
         </div>
-        <SectionBackground image={config.sectionBackgrounds?.story || config.story?.bgImage} opacity={0.9} />
+        <SectionBackground image={config.sectionBackgrounds?.story || config.story?.bgImage} opacity={0.4} />
         <div className="max-w-3xl mx-auto relative p-12 md:p-16 rounded-[3rem] shadow-[0_30px_60px_rgba(0,0,0,0.1)]" style={{ backgroundColor: theme.colorSurface }}>
           <span className="font-sans text-[10px] uppercase tracking-[0.5em] font-bold block mb-12" style={{ color: theme.colorPrimary }}>{labels.storySection || 'Our Story'}</span>
 
@@ -316,7 +316,7 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 md:w-96 z-40 opacity-40 pointer-events-none" style={{ color: theme.colorPrimary }}>
            <TopMandala className="w-full" />
         </div>
-        <SectionBackground image={config.sectionBackgrounds?.events || config.timelineConfig?.bgImage} opacity={0.7} />
+        <SectionBackground image={config.sectionBackgrounds?.events || config.timelineConfig?.bgImage} opacity={0.4} />
         <div className="max-w-6xl mx-auto text-center relative z-10">
           
           {config?.events?.ceremony?.image ? (
