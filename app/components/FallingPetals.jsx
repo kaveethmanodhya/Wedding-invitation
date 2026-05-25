@@ -2,28 +2,27 @@ import React, { useState } from 'react';
 
 /**
  * HIGH-PERFORMANCE FALLING PETALS
- * 
+ *
  * - Strictly CSS/GPU based animations (no JS loop).
- * - React.memo prevents unnecessary re-renders when color doesn't change.
+ * - React.memo with a constant 'true' bail-out ensures ZERO re-renders after mount.
  * - Randomization is computed once during the initial client render to prevent SSR hydration errors.
- * - Reduced petal count for better performance.
  */
 const FallingPetals = ({ color = '#C9956A' }) => {
   const [petals] = useState(() =>
-    [...Array(12)].map((_, i) => ({
+    [...Array(20)].map((_, i) => ({
       id: i,
       left: Math.random() * 100,
-      size: 10 + Math.random() * 12,
-      fallDuration: 12 + Math.random() * 10,
-      swayDuration: 4 + Math.random() * 3,
-      delay: -(Math.random() * 15), // Negative delay starts them mid-air
-      opacity: 0.3 + Math.random() * 0.4,
+      size: 10 + Math.random() * 15,
+      fallDuration: 10 + Math.random() * 15,
+      swayDuration: 4 + Math.random() * 4,
+      delay: -(Math.random() * 20), // Negative delay starts them mid-air
+      opacity: 0.4 + Math.random() * 0.4,
     }))
   );
 
   return (
-    <div 
-      className="fixed inset-0 pointer-events-none z-[40] overflow-hidden" 
+    <div
+      className="fixed inset-0 pointer-events-none z-[40] overflow-hidden"
       aria-hidden="true"
       style={{ color, zIndex: 40 }}
     >
@@ -40,9 +39,9 @@ const FallingPetals = ({ color = '#C9956A' }) => {
             willChange: 'transform',
           }}
         >
-          <div 
+          <div
             className="css-petal-sway"
-            style={{ 
+            style={{
               animationDuration: `${p.swayDuration}s`,
               opacity: p.opacity
             }}
@@ -57,5 +56,5 @@ const FallingPetals = ({ color = '#C9956A' }) => {
   );
 };
 
-// Proper memo: only re-render if color changes
-export default React.memo(FallingPetals);
+// Enforce zero-re-render policy
+export default React.memo(FallingPetals, () => true);

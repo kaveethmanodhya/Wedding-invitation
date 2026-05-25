@@ -89,8 +89,8 @@ html {
 /* ── Optimized GPU-Accelerated Petal Animations ── */
 @keyframes pureFall {
   0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
   100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
 }
 
