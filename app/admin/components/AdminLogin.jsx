@@ -6,16 +6,29 @@ export default function AdminLogin({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const cleanUser = username.trim().toLowerCase();
-    const cleanPass = password.trim();
+    setLoading(true);
+    setError('');
 
-    if (cleanUser === 'kaveeth' && cleanPass === 'kaveeth123') {
-      onLogin();
-    } else {
-      setError('Invalid username or password.');
+    try {
+      const res = await fetch('/api/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (res.ok) {
+        onLogin();
+      } else {
+        setError('Invalid username or password.');
+      }
+    } catch {
+      setError('Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,9 +73,10 @@ export default function AdminLogin({ onLogin }) {
 
           <button
             type="submit"
-            className="w-full py-4 bg-[#C9956A] text-white rounded-full font-sans text-xs font-bold uppercase tracking-widest hover:bg-[#B5845A] shadow-lg transition-all"
+            disabled={loading}
+            className="w-full py-4 bg-[#C9956A] text-white rounded-full font-sans text-xs font-bold uppercase tracking-widest hover:bg-[#B5845A] shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Enter Dashboard
+            {loading ? 'Verifying...' : 'Enter Dashboard'}
           </button>
         </form>
       </motion.div>

@@ -972,12 +972,12 @@ function AdminDashboard({ slug, onBack, showToast }) {
         if (newType === 'birthday') {
           const bRes = await fetch(`/api/birthday-data?slug=${slug}`);
           const bData = await bRes.json();
-          if (!bData.success === false) setBirthdayData(bData);
+          if (bData.success !== false) setBirthdayData(bData);
         }
         if (newType === 'general') {
           const gRes = await fetch(`/api/general-data?slug=${slug}`);
           const gData = await gRes.json();
-          if (!gData.success === false) setGeneralData(gData);
+          if (gData.success !== false) setGeneralData(gData);
         }
       } else {
         throw new Error(data.error || 'Unknown error');
