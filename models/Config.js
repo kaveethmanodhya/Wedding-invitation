@@ -57,7 +57,7 @@ export const getDefaultConfig = (slug) => ({
     maxGuests: 2,
     dietaryTitle: null,   // null = use built-in default title
     dietaryItems: null,   // null = use built-in defaults; set to [{id, label}] array to customise
-    fields: undefined // Allows dynamic array of form fields
+    fields: undefined // Dynamic RSVP item array (interactive fields + static text blocks via type: 'static-text')
   },
   envelope: {
     title: 'A Wedding Invitation',

@@ -57,9 +57,12 @@ export default function RSVPSection({ config, labels = {} }) {
   // Check if user's selection includes the first option (which is usually the "Yes/Accept" option)
   const isAttending = userAttendingStatus.includes(acceptOption) || userAttendingStatus.includes('yes');
 
+  const isStaticTextItem = (field) => field?.type === 'static-text';
+
   function validate() {
     const e = {};
     fieldsToRender.forEach(field => {
+      if (isStaticTextItem(field)) return;
       if (field.required && !formData[field.id]?.toString().trim()) {
         e[field.id] = 'This field is required.';
       }
@@ -84,10 +87,11 @@ export default function RSVPSection({ config, labels = {} }) {
       // ONLY include fields that were visible to the user
       const visibleFields = fieldsToRender.filter(field => {
         if (field.id === 'guestName' || field.id === 'attending') return true;
-        return isAttending; // Extra fields only matter if attending
+        // Extra fields and static labels only matter if attending
+        return isAttending;
       });
 
-      const fieldsText = visibleFields.map(field => {
+      const fieldsText = visibleFields.filter(field => !isStaticTextItem(field)).map(field => {
         const val = formData[field.id];
         return `*${field.label}:* ${val ? val : 'Not provided'}`;
       }).join('\n');
@@ -294,6 +298,14 @@ export default function RSVPSection({ config, labels = {} }) {
             
             // Hide extra fields if user hasn't accepted yet
             if (!isCore && !isAttending) return null;
+
+            if (isStaticTextItem(field)) {
+              return (
+                <div key={field.id || idx} className="animate-fade-in-up rounded-xl border border-[var(--colorPrimary)]/20 bg-[var(--colorPrimary)]/8 px-4 py-3">
+                  <p className="font-serif text-sm leading-relaxed text-[var(--colorTextDark)]/85">{field.label}</p>
+                </div>
+              );
+            }
 
             return (
             <div key={field.id || idx} className="flex flex-col animate-fade-in-up">
