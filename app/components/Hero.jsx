@@ -899,7 +899,7 @@ function Layout8({ config, labels = {}, birthdayData = null, generalData = null 
           animate={{ opacity: 1 }} 
           className="w-full h-64 md:h-96 -mt-32 relative z-0"
         >
-          <Image src={heroImage || '/images/placeholder.png'} alt="Hero" fill style={{ objectFit: 'cover', maskImage: 'linear-gradient(to top, transparent, black)' }} />
+          <Image src={heroImage || '/images/placeholder.png'} alt="Hero" fill style={{ objectFit: 'cover', maskImage: 'linear-gradient(to top, transparent, black)', WebkitMaskImage: 'linear-gradient(to top, transparent, black)' }} />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--colorBg)] to-transparent" />
         </motion.div>
       )}
