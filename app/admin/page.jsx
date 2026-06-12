@@ -410,6 +410,35 @@ function InvitationList({ onEdit, showToast }) {
   const [creating, setCreating] = useState(false);
   const [newSlug, setNewSlug] = useState('');
   const [confirmDeleteSlug, setConfirmDeleteSlug] = useState(null);
+  const [downloadingBackup, setDownloadingBackup] = useState(null);
+
+  const handleDownloadBackup = async (e, slug) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDownloadingBackup(slug);
+    showToast('success', 'Zipping files... Please wait. This may take a moment.');
+    try {
+      const res = await fetch(`/api/export-media/${slug}`);
+      if (!res.ok) {
+        throw new Error(`Server returned ${res.status}`);
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${slug}-media-backup.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+      showToast('success', 'Backup downloaded successfully.');
+    } catch (err) {
+      console.error('[InvitationList] Backup error:', err);
+      showToast('error', 'Failed to generate backup.');
+    } finally {
+      setDownloadingBackup(null);
+    }
+  };
 
   const fetchInvitations = async () => {
     setLoading(true);
@@ -640,6 +669,16 @@ function InvitationList({ onEdit, showToast }) {
                     >
                       Live View
                     </a>
+                    <button
+                      type="button"
+                      onClick={(e) => handleDownloadBackup(e, inv.slug)}
+                      disabled={downloadingBackup === inv.slug}
+                      className={`flex-[2] py-2.5 text-[0.65rem] font-bold uppercase tracking-widest rounded-lg transition-colors ${
+                        downloadingBackup === inv.slug ? 'bg-slate-200 text-slate-500' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                      }`}
+                    >
+                      {downloadingBackup === inv.slug ? 'Zipping...' : 'Backup ZIP'}
+                    </button>
                     <button
                       type="button"
                       onClick={(e) => {
