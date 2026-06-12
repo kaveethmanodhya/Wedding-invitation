@@ -1011,12 +1011,12 @@ function AdminDashboard({ slug, onBack, showToast }) {
         if (newType === 'birthday') {
           const bRes = await fetch(`/api/birthday-data?slug=${slug}`);
           const bData = await bRes.json();
-          if (!bData.success === false) setBirthdayData(bData);
+          if (bData.success !== false) setBirthdayData(bData);
         }
         if (newType === 'general') {
           const gRes = await fetch(`/api/general-data?slug=${slug}`);
           const gData = await gRes.json();
-          if (!gData.success === false) setGeneralData(gData);
+          if (gData.success !== false) setGeneralData(gData);
         }
       } else {
         throw new Error(data.error || 'Unknown error');
@@ -1880,6 +1880,11 @@ function AdminDashboard({ slug, onBack, showToast }) {
                                 Remove
                               </button>
                             )}
+                            {field.type === 'static-text' && (
+                              <div className="inline-flex items-center self-start px-2.5 py-1 rounded-md bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-widest">
+                                Static Text Block
+                              </div>
+                            )}
                             
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full pr-20">
                               <FieldGroup label="Field Label (Shown to Guest)">
@@ -1887,7 +1892,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                                   type="text" 
                                   className={inputCls} 
                                   value={field.label || ''} 
-                                  placeholder="e.g., Guest Name"
+                                  placeholder={field.type === 'static-text' ? 'Type your static sentence...' : 'e.g., Guest Name'}
                                   onChange={e => {
                                     const updated = [...currentFields];
                                     updated[idx] = { ...updated[idx], label: e.target.value };
@@ -1914,6 +1919,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                                   <option value="button-group">Buttons (Accept/Decline)</option>
                                   <option value="checkbox-group">Checkboxes (Multiple Ticks)</option>
                                   <option value="tel">Phone Number</option>
+                                  <option value="static-text">Static Text / Label</option>
                                 </select>
                               </FieldGroup>
                               
@@ -1923,6 +1929,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                                   className={inputCls} 
                                   value={field.placeholder || ''} 
                                   placeholder="e.g., Enter answer..."
+                                  disabled={field.type === 'static-text'}
                                   onChange={e => {
                                     const updated = [...currentFields];
                                     updated[idx] = { ...updated[idx], placeholder: e.target.value };
@@ -1936,6 +1943,7 @@ function AdminDashboard({ slug, onBack, showToast }) {
                                   type="checkbox" 
                                   id={`req-${idx}`}
                                   checked={field.required || false}
+                                  disabled={field.type === 'static-text'}
                                   onChange={e => {
                                     const updated = [...currentFields];
                                     updated[idx] = { ...updated[idx], required: e.target.checked };
@@ -1975,6 +1983,15 @@ function AdminDashboard({ slug, onBack, showToast }) {
                           className="mt-4 px-5 py-2.5 bg-slate-800 text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-slate-700 transition-colors inline-flex items-center gap-2"
                         >
                           + Add Custom Field
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            setPath(`layoutSettings.layout_${currentLayout}.rsvpFields`, [...currentFields, { id: `label_${Date.now()}`, type: 'static-text', label: 'Write your static text here', required: false }]);
+                          }}
+                          className="mt-4 ml-2 px-5 py-2.5 bg-blue-700 text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-blue-600 transition-colors inline-flex items-center gap-2"
+                        >
+                          + Add Static Text
                         </button>
                       </>
                     );

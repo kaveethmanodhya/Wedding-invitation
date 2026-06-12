@@ -41,6 +41,10 @@ export default function UniversalPreloader({ config, onReveal, children }) {
     if (openMode === 'tap') {
       setMediaReady(true);
       setWaitingForTap(true);
+      // On iOS Safari with preload="metadata", onLoadedData may never fire before
+      // user interaction. For tap mode we don't need a loaded frame to show the
+      // "Tap to Open" button, so mark the UI as ready immediately.
+      setIsVideoReady(true);
     }
     
     timeoutRef.current = setTimeout(() => {
@@ -128,8 +132,14 @@ export default function UniversalPreloader({ config, onReveal, children }) {
                       webkit-playsinline="true"
                       muted={true}
                       autoPlay={openMode !== 'tap'}
+                      onLoadedMetadata={() => {
+                        // iOS Safari fires loadedmetadata even with preload="metadata"
+                        // before it fires loadeddata, so use this as an earlier trigger.
+                        setIsVideoReady(true);
+                        setMediaReady(true);
+                      }}
                       onLoadedData={() => {
-                        setIsVideoReady(true); // First frame is ready
+                        setIsVideoReady(true);
                         setMediaReady(true);
                       }}
                       onPlay={() => {

@@ -27,6 +27,10 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
 /* ── Custom scrollbar ── */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: #FBF8F4; }
@@ -86,35 +90,38 @@ html {
   animation: pulse-slow 10s infinite ease-in-out;
 }
 
-/* ── Optimized GPU-Accelerated Petal Animations ── */
-@keyframes pureFall {
-  0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+/* ── Falling Petal Animation ── */
+@keyframes petalFall {
+  0%   { transform: translate3d(0,                   -10vh, 0) rotate(0deg);   opacity: 0; }
+  5%   { opacity: var(--p-opacity, 0.6); }
+  25%  { transform: translate3d(var(--p-sway-a, 25px), 20vh, 0) rotate(90deg);  }
+  50%  { transform: translate3d(0,                    50vh, 0) rotate(180deg); }
+  75%  { transform: translate3d(var(--p-sway-b, -25px), 80vh, 0) rotate(270deg); }
+  95%  { opacity: var(--p-opacity, 0.6); }
+  100% { transform: translate3d(0,                   110vh, 0) rotate(360deg); opacity: 0; }
 }
 
-@keyframes pureSway {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(40px); }
+@media (prefers-reduced-motion: reduce) {
+  .css-petal { display: none; }
 }
 
-.css-petal-fall {
-  animation-name: pureFall;
+.css-petal {
+  position: absolute;
+  top: 0;
+  animation-name: petalFall;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   animation-fill-mode: both;
   will-change: transform, opacity;
-  transform: translateZ(0); /* Force GPU acceleration */
   backface-visibility: hidden;
 }
 
-.css-petal-sway {
-  animation-name: pureSway;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-  will-change: transform;
-  transform: translateZ(0); /* Force GPU acceleration */
+.css-petal-shape {
+  width: 100%;
+  height: 100%;
+  background: currentColor;
+  border-radius: 0 100% 0 100%;
+  transform: rotate(45deg);
 }
 
 /* ── Hide native iOS video play button (Low Power Mode) ── */

@@ -103,7 +103,7 @@ function Layout1({ config }) {
       {(config?.layout1EventBanner || config?.gallery?.[2]) && (
         <div className="w-full h-64 md:h-80 relative overflow-hidden mb-16 rounded-[2rem] shadow-xl isolate">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={config?.layout1EventBanner || config?.gallery?.[2]?.src} alt="Banner" className="absolute inset-0 w-full h-full object-cover attachment-fixed object-[center_30%]" style={{ transform: 'scale(1.05)' }} />
+          <img src={config?.layout1EventBanner || config?.gallery?.[2]?.src} alt="Banner" loading="lazy" className="absolute inset-0 w-full h-full object-cover attachment-fixed object-[center_30%]" style={{ transform: 'scale(1.05)' }} />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--colorBg)] to-transparent opacity-80" />
           <div ref={headerRef} className="absolute inset-0 flex flex-col items-center justify-center opacity-0 translate-y-8 transition-all duration-700">
             <p className="font-sans text-[0.7rem] md:text-xs tracking-[0.3em] uppercase text-[var(--colorBg)] drop-shadow-md mb-2">Mark Your Calendar</p>
@@ -297,7 +297,7 @@ function EventCard7({ event, delay, config }) {
       <div className="aspect-square bg-slate-50 mb-4 overflow-hidden relative">
         {event.image ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={event.image} alt={event.title || 'Event venue'} className="w-full h-full object-cover" />
+          <img src={event.image} alt={event.title || 'Event venue'} loading="lazy" className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-slate-200">
             <span className="text-5xl">📍</span>
@@ -560,7 +560,7 @@ function EventCard4({ event, delay, config }) {
           <div className="w-full h-48 md:h-56 bg-slate-100 rounded-2xl overflow-hidden relative group/map mb-2 border border-slate-200 shadow-inner">
              {hasImage ? (
                // eslint-disable-next-line @next/next/no-img-element
-               <img src={event.image} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/map:scale-110" alt="Venue" />
+               <img src={event.image} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/map:scale-110" alt="Venue" />
              ) : (
                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/gray-floral.png')] opacity-20" />
              )}

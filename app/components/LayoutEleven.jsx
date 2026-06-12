@@ -50,6 +50,12 @@ export default function LayoutEleven({ config, labels = {}, birthdayData = null,
   const [errors, setErrors] = useState({});
   const [rsvpStatus, setRsvpStatus] = useState('idle');
 
+  const isStaticTextItem = (field) => field?.type === 'static-text';
+  const attendingField = fieldsToRender.find(f => f.id === 'attending');
+  const acceptOption = attendingField?.options?.split(',')[0]?.trim()?.toLowerCase() || 'accept';
+  const userAttendingStatus = formData.attending?.toLowerCase() || '';
+  const isAttending = userAttendingStatus.includes(acceptOption) || userAttendingStatus.includes('yes') || userAttendingStatus.includes('attending');
+
   // ── Countdown Logic ──
   const [timeLeft, setTimeLeft] = useState(null);
 
@@ -82,6 +88,7 @@ export default function LayoutEleven({ config, labels = {}, birthdayData = null,
     let isValid = true;
     const newErrors = {};
     fieldsToRender.forEach(field => {
+      if (isStaticTextItem(field)) return;
       if (field.required && !formData[field.id]?.toString().trim()) {
         newErrors[field.id] = 'This field is required.';
         isValid = false;
@@ -93,7 +100,12 @@ export default function LayoutEleven({ config, labels = {}, birthdayData = null,
       return;
     }
 
-    const fieldsText = fieldsToRender.map(field => {
+    const visibleFields = fieldsToRender.filter(field => {
+      if (field.id === 'guestName' || field.id === 'attending') return true;
+      return isAttending;
+    });
+
+    const fieldsText = visibleFields.filter(field => !isStaticTextItem(field)).map(field => {
       return `*${field.label}:* ${formData[field.id] || 'Not provided'}`;
     }).join('\n');
 
@@ -615,10 +627,17 @@ export default function LayoutEleven({ config, labels = {}, birthdayData = null,
             <form onSubmit={handleRsvpSubmit} className="space-y-8">
               <div className="space-y-8 text-left">
                 {fieldsToRender.map((field, idx) => {
-                  const isAttending = formData.attending && (formData.attending.toLowerCase().includes('accept') || formData.attending.toLowerCase().includes('yes') || formData.attending.toLowerCase().includes('attending'));
                   const isAlwaysVisible = field.id === 'guestName' || field.id === 'attending';
                   
                   if (!isAlwaysVisible && !isAttending) return null;
+
+                  if (isStaticTextItem(field)) {
+                    return (
+                      <div key={field.id || idx} className="rounded-2xl border px-4 py-3" style={{ borderColor: theme.colorSecondary || '#E8D5B7', backgroundColor: theme.colorBg || '#FAF7F2' }}>
+                        <p className="font-serif italic text-base" style={{ color: theme.colorTextDark || '#1e293b' }}>{field.label}</p>
+                      </div>
+                    );
+                  }
 
                   return (
                     <div key={field.id || idx} className="flex flex-col">

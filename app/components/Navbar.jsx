@@ -45,7 +45,7 @@ export default function Navbar({ config, birthdayData = null, generalData = null
         className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between
           px-6 md:px-12 transition-all duration-300
           ${scrolled
-            ? (isLayout9 ? 'py-3 bg-slate-900/95 backdrop-blur-lg shadow-xl border-b border-white/5' : 'py-3 bg-[var(--colorBg)]/95 backdrop-blur-lg shadow-sm')
+            ? (isLayout9 ? 'py-3 bg-slate-900/95 shadow-xl border-b border-white/5' : 'py-3 bg-[var(--colorBg)] shadow-sm')
             : 'py-5 bg-transparent'
           }`}
       >

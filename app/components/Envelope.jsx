@@ -72,12 +72,9 @@ export default function Envelope({ config, onOpen, labels = {}, birthdayData = n
                   position: relative;
                   overflow: hidden; 
                   background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%);
-                  backdrop-filter: blur(20px) saturate(180%) contrast(110%);
-                  -webkit-backdrop-filter: blur(20px) saturate(180%) contrast(110%);
-                  box-shadow: 
-                    inset 2px 2px 5px rgba(255, 255, 255, 0.6), 
-                    inset -2px -2px 5px rgba(0, 0, 0, 0.05), 
-                    0 25px 50px rgba(0, 0, 0, 0.15);
+                  backdrop-filter: blur(12px);
+                  -webkit-backdrop-filter: blur(12px);
+                  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
                   border: 1px solid rgba(255, 255, 255, 0.2);
                 }
 
