@@ -766,7 +766,7 @@ export default function LayoutEleven({ config, labels = {}, birthdayData = null,
             {displayName
               ? displayName
               : <>{config?.couple?.bride?.firstName || ''} & {config?.couple?.groom?.firstName || ''}</>
-            } • {config?.wedding?.date || ''}
+            }{config?.wedding?.date ? ` • ${config.wedding.date}` : ''}
           </p>
         </div>
       </section>
