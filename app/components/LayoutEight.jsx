@@ -7,6 +7,7 @@ import {
   ArrowRight, Mail, Phone, ExternalLink, Plane, Navigation, Info, Users
 } from 'lucide-react';
 import { PRESET_THEMES } from '../../lib/themes';
+import { DESIGNER_CREDIT } from '../../lib/branding';
 import RSVPSection from './RSVPSection';
 
 // ── Main Page Layout Component ──
@@ -539,15 +540,25 @@ export default function LayoutEight({ config, labels = {}, birthdayData = null, 
           >
             See you there
           </h2>
-          <p
-            className="font-sans text-[10px] font-black uppercase tracking-[0.6em]"
-            style={{ color: theme.colorTextLight || '#8A7F6A' }}
-          >
-            {displayName
-              ? displayName
-              : <>{config?.couple?.bride?.firstName || ''} & {config?.couple?.groom?.firstName || ''}</>
-            }{config?.wedding?.date ? ` • ${config.wedding.date}` : ''}
-          </p>
+          <div className="space-y-3">
+            <p
+              className="font-sans text-[10px] font-black uppercase tracking-[0.6em]"
+              style={{ color: theme.colorTextLight || '#8A7F6A' }}
+            >
+              {displayName
+                ? displayName
+                : <>{config?.couple?.bride?.firstName || ''} & {config?.couple?.groom?.firstName || ''}</>
+              }{config?.wedding?.date ? ` • ${config.wedding.date}` : ''}
+            </p>
+
+            {/* Designer credit — shown on every template */}
+            <p
+              className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] opacity-70"
+              style={{ color: theme.colorTextLight || '#8A7F6A' }}
+            >
+              {DESIGNER_CREDIT}
+            </p>
+          </div>
         </div>
       </section>
     </div>

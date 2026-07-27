@@ -411,6 +411,8 @@ function InvitationList({ onEdit, showToast }) {
   const [newSlug, setNewSlug] = useState('');
   const [confirmDeleteSlug, setConfirmDeleteSlug] = useState(null);
   const [downloadingBackup, setDownloadingBackup] = useState(null);
+  // { [slug]: true } — from the separate sample_flags collection. Missing = OFF.
+  const [sampleFlags, setSampleFlags] = useState({});
 
   const handleDownloadBackup = async (e, slug) => {
     e.preventDefault();
@@ -465,7 +467,34 @@ function InvitationList({ onEdit, showToast }) {
     }
   };
 
-  useEffect(() => { fetchInvitations(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const fetchSampleFlags = async () => {
+    try {
+      const res = await fetch('/api/sample-flag');
+      const data = await res.json();
+      if (data && data.flags) setSampleFlags(data.flags);
+    } catch (err) {
+      console.error('[InvitationList] Sample flags fetch error:', err);
+    }
+  };
+
+  useEffect(() => { fetchInvitations(); fetchSampleFlags(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const toggleSample = async (slug, current) => {
+    // Optimistic update
+    setSampleFlags(prev => ({ ...prev, [slug]: !current }));
+    try {
+      const res = await fetch(`/api/sample-flag?slug=${slug}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isSample: !current }),
+      });
+      if (!res.ok) throw new Error('Failed');
+    } catch {
+      // Revert on failure
+      setSampleFlags(prev => ({ ...prev, [slug]: current }));
+      showToast('error', 'Failed to update sample');
+    }
+  };
 
   const toggleFavourite = async (slug, current) => {
     // Optimistic update
@@ -640,6 +669,18 @@ function InvitationList({ onEdit, showToast }) {
                         }`}>
                         {inv.slug === 'global_config' ? 'Legacy' : (inv.isActive === false ? 'Inactive' : 'Active')}
                       </span>
+                      {/* Sample toggle — click to switch on/off (stored separately) */}
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); toggleSample(inv.slug, !!sampleFlags[inv.slug]); }}
+                        title={sampleFlags[inv.slug] ? 'Sample is ON — click to turn off' : 'Sample is OFF — click to turn on'}
+                        className={`text-[0.6rem] font-bold uppercase tracking-widest px-2 py-1 rounded-md border transition-colors ${sampleFlags[inv.slug]
+                            ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100'
+                            : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'
+                          }`}
+                      >
+                        {sampleFlags[inv.slug] ? 'Sample' : 'Sample Off'}
+                      </button>
                       {status && (
                         <span className={`text-[0.6rem] font-bold px-2 py-1 rounded-md transition-all ${status.cls}`}>
                           {status.label}
@@ -808,6 +849,9 @@ function AdminDashboard({ slug, onBack, showToast }) {
   const [confirmDelete, setConfirmDelete] = useState(null); // { path, url, isGallery, index }
   const [eventType, setEventType] = useState('wedding');
   const [savingEventType, setSavingEventType] = useState(false);
+  // Sample flag — stored in its own `sample_flags` collection, never in settings.
+  const [isSample, setIsSample] = useState(false);
+  const [savingSample, setSavingSample] = useState(false);
   const [birthdayData, setBirthdayData] = useState({ celebrantName: '', age: null, birthdayTheme: '', wishMessage: '' });
   const [generalData, setGeneralData] = useState({ eventTitle: '', hostName: '', customBodyText: '', eventType2: '' });
   const [labelOverrides, setLabelOverrides] = useState({});
@@ -976,6 +1020,10 @@ function AdminDashboard({ slug, onBack, showToast }) {
       const loRes = await fetch(`/api/label-overrides?slug=${slug}`);
       const loData = await loRes.json();
       if (loData && loData.success !== false) setLabelOverrides(loData);
+      // Load the sample flag (separate collection — defaults to OFF when absent)
+      const sRes = await fetch(`/api/sample-flag?slug=${slug}`);
+      const sData = await sRes.json();
+      if (sData && sData.success !== false) setIsSample(sData.isSample === true);
     } catch (err) {
       console.error('[AdminDashboard] Load error:', err);
       setFetchError(err.message);
@@ -1025,6 +1073,31 @@ function AdminDashboard({ slug, onBack, showToast }) {
       showToast('error', `Failed to update event type: ${err.message}`);
     } finally {
       setSavingEventType(false);
+    }
+  };
+
+  /**
+   * Toggles the sample flag. Saves immediately to its own collection, so it is
+   * independent of the "Save Config" form and never writes to settings.
+   */
+  const handleSampleToggle = async () => {
+    const next = !isSample;
+    setSavingSample(true);
+    setIsSample(next); // optimistic
+    try {
+      const res = await fetch(`/api/sample-flag?slug=${slug}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isSample: next }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Unknown error');
+      showToast('success', next ? 'Marked as sample' : 'Sample turned off');
+    } catch (err) {
+      setIsSample(!next); // revert
+      showToast('error', `Failed to update sample: ${err.message}`);
+    } finally {
+      setSavingSample(false);
     }
   };
 
@@ -1271,6 +1344,24 @@ function AdminDashboard({ slug, onBack, showToast }) {
             >
               <span className={`w-2 h-2 rounded-full flex-shrink-0 ${(config?.isActive ?? true) ? 'bg-emerald-500' : 'bg-slate-400'}`} />
               {(config?.isActive ?? true) ? 'Active' : 'Inactive'}
+            </button>
+            {/* Sample ON / OFF toggle — saves instantly to the sample_flags collection */}
+            <button
+              type="button"
+              onClick={handleSampleToggle}
+              disabled={savingSample}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold tracking-wide uppercase border transition-all duration-200 disabled:opacity-60 ${isSample
+                  ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
+                  : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200'
+                }`}
+              title={isSample ? 'This invitation IS a sample — click to turn sample off' : 'This invitation is NOT a sample — click to turn sample on'}
+            >
+              {savingSample ? (
+                <span className="w-2 h-2 rounded-full border-2 border-slate-300 border-t-amber-500 animate-spin flex-shrink-0" />
+              ) : (
+                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isSample ? 'bg-amber-500' : 'bg-slate-400'}`} />
+              )}
+              {isSample ? 'Sample' : 'Sample Off'}
             </button>
             <button
               form="config-form"

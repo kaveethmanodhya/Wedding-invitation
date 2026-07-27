@@ -1,4 +1,5 @@
 'use client';
+import { DESIGNER_CREDIT } from '../../lib/branding';
 
 export default function Footer({ config, birthdayData = null, generalData = null }) {
   const { couple = {}, wedding = {}, heroLayout = 1 } = config || {};
@@ -40,6 +41,11 @@ export default function Footer({ config, birthdayData = null, generalData = null
         
         <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-white/30">
           Handcrafted with Love — &copy; {wedding?.year || new Date().getFullYear()} KodeX
+        </p>
+
+        {/* Designer credit — shown on every template */}
+        <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-white/40 mt-3">
+          {DESIGNER_CREDIT}
         </p>
       </div>
     </footer>

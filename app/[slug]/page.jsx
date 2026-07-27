@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 import { notFound } from 'next/navigation';
 import ClientHome from '../ClientHome';
+import SampleWatermark from '../components/SampleWatermark';
 
 /** Load config for a specific slug from MongoDB */
 async function loadConfig(slug) {
@@ -46,6 +47,10 @@ async function loadConfig(slug) {
         const { _id: _lid, slug: _ls, ...loData } = loDoc;
         config.labelOverrides = loData;
       }
+
+      // Merge the sample flag from its own collection — no record means NOT a sample
+      const sampleDoc = await db.collection('sample_flags').findOne({ slug: config.slug });
+      config.isSample = sampleDoc?.isSample === true;
 
       return config;
     }
@@ -116,5 +121,10 @@ export default async function WeddingPage({ params }) {
     );
   }
 
-  return <ClientHome config={config} />;
+  return (
+    <>
+      <ClientHome config={config} />
+      {config.isSample && <SampleWatermark />}
+    </>
+  );
 }

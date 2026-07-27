@@ -7,6 +7,7 @@ import {
   ArrowRight, Mail, Navigation, Info, Users
 } from 'lucide-react';
 import { PRESET_THEMES } from '../../lib/themes';
+import { DESIGNER_CREDIT } from '../../lib/branding';
 import RSVPSection from './RSVPSection';
 
 // ── Elaborate SVG Mandalas ──
@@ -536,6 +537,11 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
 
           <p className="font-sans text-[9px] md:text-[10px] tracking-[0.4em] uppercase font-bold" style={{ color: theme.colorBg, opacity: 0.4 }}>
             Handcrafted with Love — &copy; {config?.wedding?.year || new Date().getFullYear()} KodeX
+          </p>
+
+          {/* Designer credit — shown on every template */}
+          <p className="font-sans text-[9px] md:text-[10px] tracking-[0.2em] uppercase font-bold mt-3" style={{ color: theme.colorBg, opacity: 0.55 }}>
+            {DESIGNER_CREDIT}
           </p>
         </div>
       </section>
