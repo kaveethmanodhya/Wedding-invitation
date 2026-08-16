@@ -4,10 +4,6 @@ import Image from 'next/image';
 
 export default function Gallery({ config }) {
   const gallery = config?.gallery || [];
-  
-  if (!gallery || gallery.length === 0) {
-    return null;
-  }
 
   const headerRef = useRef(null);
   const layout = config?.heroLayout ?? 1;
@@ -30,7 +26,9 @@ export default function Gallery({ config }) {
     return () => obs.disconnect();
   }, []);
 
-
+  if (!gallery || gallery.length === 0) {
+    return null;
+  }
 
   if (layout === 1 || layout === 3) {
     return null;
@@ -108,7 +106,7 @@ export default function Gallery({ config }) {
               key={idx}
               className="group relative cursor-default focus:outline-none overflow-hidden aspect-square border-4 border-[var(--colorPrimary)]/30 rounded-2xl shadow-lg transition-transform duration-500 hover:rotate-1 hover:scale-[1.02] w-full max-w-md"
             >
-              <Image src={photo.src} alt={photo.alt} width={800} height={800} loading="lazy" className="w-full h-full object-cover object-center transition-all duration-700 group-hover:brightness-110" />
+              <Image src={photo.src} alt={photo.alt} width={800} height={800} loading="lazy" className="w-full h-full object-cover object-center transition-all duration-700" />
             </div>
           ))}
         </div>
@@ -122,7 +120,7 @@ export default function Gallery({ config }) {
                 ${idx % 3 === 0 ? '-rotate-3 mt-4' : idx % 2 === 0 ? 'rotate-2 mb-4' : 'rotate-1'}`}
             >
               <div className="aspect-[3/4] bg-slate-50 overflow-hidden relative">
-                <Image src={photo.src} alt={photo.alt} width={600} height={800} loading="lazy" className="w-full h-full object-cover object-center sepia-[0.3] group-hover:sepia-0 transition-all duration-500" />
+                <Image src={photo.src} alt={photo.alt} width={600} height={800} loading="lazy" className="w-full h-full object-cover object-center transition-all duration-500" />
                 <div className="absolute inset-0 bg-white/10 group-hover:bg-transparent transition-colors" />
               </div>
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-white/40 backdrop-blur-sm border border-white/20 shadow-sm" />
@@ -137,7 +135,7 @@ export default function Gallery({ config }) {
               key={idx}
               className="group relative cursor-default focus:outline-none rounded-full overflow-hidden aspect-square shadow-2xl transition-all duration-700 hover:scale-105 border-4 border-white/30"
             >
-              <Image src={photo.src} alt={photo.alt} width={800} height={800} loading="lazy" className="w-full h-full object-cover object-center grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
+              <Image src={photo.src} alt={photo.alt} width={800} height={800} loading="lazy" className="w-full h-full object-cover object-center transition-all duration-700" />
               <div className="absolute inset-0 ring-inset ring-1 ring-white/40 rounded-full" />
             </div>
           ))}
@@ -150,7 +148,7 @@ export default function Gallery({ config }) {
               key={idx}
               className="group relative cursor-default focus:outline-none aspect-square lg:aspect-[3/4] lg:min-w-[300px] overflow-hidden rounded-2xl"
             >
-              <Image src={photo.src} alt={photo.alt} width={1000} height={1000} loading="lazy" className="w-full h-full object-cover object-center grayscale hover:grayscale-0 transition-all duration-1000 group-hover:scale-105" />
+              <Image src={photo.src} alt={photo.alt} width={1000} height={1000} loading="lazy" className="w-full h-full object-cover object-center transition-all duration-1000 group-hover:scale-105" />
             </div>
           ))}
         </div>
@@ -167,7 +165,7 @@ export default function Gallery({ config }) {
               }}
             >
               <div className="w-full h-full relative overflow-hidden" style={{ borderRadius: '110px 110px 0 0', aspectRatio: '3/4' }}>
-                <Image src={photo.src} alt={photo.alt} width={600} height={800} loading="lazy" className="w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-110 filter saturate-50 group-hover:saturate-100" />
+                <Image src={photo.src} alt={photo.alt} width={600} height={800} loading="lazy" className="w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-[var(--colorPrimary)]/10 transition-all duration-500 flex items-center justify-center">
                   <span className="text-white text-4xl opacity-0 group-hover:opacity-100 transition-all duration-500 drop-shadow-md scale-50 group-hover:scale-100">🌿</span>
                 </div>
@@ -185,7 +183,7 @@ export default function Gallery({ config }) {
                 ${idx % 2 === 0 ? 'aspect-square' : 'aspect-[3/4] mt-12'}`}
             >
               <div className="relative w-full h-full bg-[var(--colorBg)]">
-                <Image src={photo?.src || '/images/placeholder.png'} alt={photo?.alt || ''} width={800} height={800} loading="lazy" className="w-full h-full object-cover object-center saturate-50 opacity-80 hover:saturate-100 hover:opacity-100 transition-all duration-700 hover:scale-110" />
+                <Image src={photo?.src || '/images/placeholder.png'} alt={photo?.alt || ''} width={800} height={800} loading="lazy" className="w-full h-full object-cover object-center transition-all duration-700 hover:scale-110" />
               </div>
             </div>
           ))}

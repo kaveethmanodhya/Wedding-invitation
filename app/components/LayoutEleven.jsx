@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { PRESET_THEMES } from '../../lib/themes';
 import { getDietaryTitle, getDietaryItems, getInitialDietary, buildDietaryString } from '../../lib/dietary';
-import { DESIGNER_CREDIT } from '../../lib/branding';
+import { DESIGNER_CREDIT, DESIGNER_URL } from '../../lib/branding';
 
 // ── Main Page Layout Component ──
 // Layout 11 is identical to Layout 8 except the hero section shows
@@ -514,10 +514,14 @@ export default function LayoutEleven({ config, labels = {}, birthdayData = null,
           <div className="flex flex-wrap justify-center gap-8 w-full">
             {[...Object.values(config?.events || {}), ...(config?.extraEvents || [])].map((event, idx) => {
               const handleAddToCalendar = () => {
-                const title = encodeURIComponent(`${config?.couple?.displayNames || 'Wedding'}'s ${event?.title || 'Event'}`);
+                // Prefer the admin-defined Calendar Name / Date & Time (works for any event type).
+                const calTitle = config?.calendar?.title?.trim()
+                  ? config.calendar.title
+                  : `${config?.couple?.displayNames || 'Wedding'}'s ${event?.title || 'Event'}`;
+                const title = encodeURIComponent(calTitle);
                 const details = encodeURIComponent(`We would love to see you!\n\nVenue: ${event?.venueName || ''}\nAddress: ${event?.address || ''}`);
                 const location = encodeURIComponent(event?.address || event?.venueName || '');
-                const dateStr = config?.wedding?.dateTimeISO || '';
+                const dateStr = config?.calendar?.dateTimeISO || config?.wedding?.dateTimeISO || '';
                 const start = dateStr.replace(/[-:]/g, '').split('.')[0] || '';
                 window.open(`https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}&dates=${start}/${start}`, '_blank');
               };
@@ -776,7 +780,9 @@ export default function LayoutEleven({ config, labels = {}, birthdayData = null,
               className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] opacity-70"
               style={{ color: theme.colorTextLight || '#8A7F6A' }}
             >
-              {DESIGNER_CREDIT}
+              <a href={DESIGNER_URL} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                {DESIGNER_CREDIT}
+              </a>
             </p>
           </div>
         </div>

@@ -35,12 +35,17 @@ function getAllEvents(config) {
 
 function ActionButtons({ event, config }) {
   const handleAddToCalendar = () => {
-    const title = encodeURIComponent(`${config?.couple?.displayNames || 'Wedding'}'s ${event?.title || 'Event'}`);
+    // Prefer the admin-defined Calendar Name (works for any event type); fall back to the couple's name.
+    const calTitle = config?.calendar?.title?.trim()
+      ? config.calendar.title
+      : `${config?.couple?.displayNames || 'Wedding'}'s ${event?.title || 'Event'}`;
+    const title = encodeURIComponent(calTitle);
     const details = encodeURIComponent(`We would love to see you at our ${event?.title || 'Event'}! \n\nVenue: ${event?.venueName || ''}\nAddress: ${event?.address || ''}`);
     const location = encodeURIComponent(event?.address || event?.venueName || '');
     
     // Extract dates from config
-    const dateStr = config?.wedding?.dateTimeISO || ''; // e.g. 2026-12-19T10:00:00
+    // Prefer the admin-defined Calendar Date & Time; fall back to the wedding date.
+    const dateStr = config?.calendar?.dateTimeISO || config?.wedding?.dateTimeISO || ''; // e.g. 2026-12-19T10:00:00
     const start = dateStr.replace(/[-:]/g, '').split('.')[0] || '';
     const end = start; // Same day usually
     
@@ -428,10 +433,15 @@ function EventCard9({ event, delay, date, config }) {
   const ref = useReveal(delay);
 
   const handleAddToCalendar = () => {
-    const title = encodeURIComponent(`${config?.couple?.displayNames || 'Wedding'}'s ${event?.title || 'Event'}`);
+    // Prefer the admin-defined Calendar Name (works for any event type); fall back to the couple's name.
+    const calTitle = config?.calendar?.title?.trim()
+      ? config.calendar.title
+      : `${config?.couple?.displayNames || 'Wedding'}'s ${event?.title || 'Event'}`;
+    const title = encodeURIComponent(calTitle);
     const details = encodeURIComponent(`We would love to see you at our ${event?.title || 'Event'}!\n\nVenue: ${event?.venueName || ''}\nAddress: ${event?.address || ''}`);
     const location = encodeURIComponent(event?.address || event?.venueName || '');
-    const dateStr = config?.wedding?.dateTimeISO || '';
+    // Prefer the admin-defined Calendar Date & Time; fall back to the wedding date.
+    const dateStr = config?.calendar?.dateTimeISO || config?.wedding?.dateTimeISO || '';
     const start = dateStr.replace(/[-:]/g, '').split('.')[0] || '';
     const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}&dates=${start}/${start}`;
     window.open(googleUrl, '_blank');

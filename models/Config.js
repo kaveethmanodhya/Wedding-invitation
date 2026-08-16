@@ -13,7 +13,12 @@ export const getDefaultConfig = (slug) => ({
   wedding: {
     dateTimeISO: new Date().toISOString(),
     displayDate: 'December 19, 2026',
-    year: '2026'
+    year: '2026',
+    heroTime: '10:00 AM' // Time shown on the hero card. Only set on newly created invitations.
+  },
+  calendar: {
+    title: '',       // Name saved to the guest's calendar (works for any event type). Blank = auto from couple/celebrant name.
+    dateTimeISO: ''  // Date & time saved to the calendar. Blank = falls back to wedding.dateTimeISO.
   },
   story: {
     invitationText: 'Together with their families, we invite you to celebrate our joyful union.',

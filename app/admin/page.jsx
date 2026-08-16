@@ -1580,6 +1580,15 @@ function AdminDashboard({ slug, onBack, showToast }) {
                   onChange={e => setPath('wedding.dateTimeISO', e.target.value + ':00')}
                 />
               </FieldGroup>
+              <FieldGroup label="Hero Time" hint="Time shown on the hero card (e.g. 4:00 PM). Falls back to the Ceremony time if left blank.">
+                <input
+                  type="text"
+                  placeholder="4:00 PM"
+                  className={inputCls}
+                  value={config?.wedding?.heroTime || ''}
+                  onChange={e => setPath('wedding.heroTime', e.target.value)}
+                />
+              </FieldGroup>
               <FieldGroup label="Display Date" hint='Human-readable, shown on the invitation'>
                 <input
                   type="text"
@@ -1694,6 +1703,26 @@ function AdminDashboard({ slug, onBack, showToast }) {
 
           {activeTab === 'events' && (
             <>
+            <SectionCard title="Add to Calendar" icon={<Calendar size={18} className="text-sky-400" />}>
+              <FieldGroup label="Calendar Event Name" hint="Name saved when a guest taps “Add to Calendar” — works for any event type (e.g. “Ravindu's 5th Birthday”, “Annual Gala”). Leave blank to use the couple/celebrant name automatically.">
+                <input
+                  type="text"
+                  className={inputCls}
+                  placeholder="e.g. Ravindu's 5th Birthday"
+                  value={config?.calendar?.title || ''}
+                  onChange={e => setPath('calendar.title', e.target.value)}
+                />
+              </FieldGroup>
+              <FieldGroup label="Calendar Date & Time" hint="Date & time saved to the calendar. Leave blank to use the main Wedding Date & Time.">
+                <input
+                  type="datetime-local"
+                  className={inputCls}
+                  value={config?.calendar?.dateTimeISO?.slice(0, 16) || ''}
+                  onChange={e => setPath('calendar.dateTimeISO', e.target.value + ':00')}
+                />
+              </FieldGroup>
+            </SectionCard>
+
             <SectionCard title="Ceremony Details" icon={<MapPin size={18} className="text-emerald-400" />}>
               <FieldGroup label="Title">
                 <input

@@ -7,7 +7,7 @@ import {
   ArrowRight, Mail, Navigation, Info, Users
 } from 'lucide-react';
 import { PRESET_THEMES } from '../../lib/themes';
-import { DESIGNER_CREDIT } from '../../lib/branding';
+import { DESIGNER_CREDIT, DESIGNER_URL } from '../../lib/branding';
 import RSVPSection from './RSVPSection';
 
 // ── Elaborate SVG Mandalas ──
@@ -339,10 +339,14 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
           <div className={`flex flex-wrap justify-center gap-8 ${[...Object.values(config?.events || {}), ...(config?.extraEvents || [])].length === 0 ? 'hidden' : ''}`}>
             {[...Object.values(config?.events || {}), ...(config?.extraEvents || [])].map((event, idx) => {
               const handleAddToCalendar = () => {
-                const title = encodeURIComponent(`${config?.couple?.bride?.firstName || 'Wedding'}'s ${event?.title || 'Event'}`);
+                // Prefer the admin-defined Calendar Name / Date & Time (works for any event type).
+                const calTitle = config?.calendar?.title?.trim()
+                  ? config.calendar.title
+                  : `${config?.couple?.bride?.firstName || 'Wedding'}'s ${event?.title || 'Event'}`;
+                const title = encodeURIComponent(calTitle);
                 const details = encodeURIComponent(`We would love to see you at our ${event?.title || 'Event'}! \n\nVenue: ${event?.venueName || ''}\nAddress: ${event?.address || ''}`);
                 const location = encodeURIComponent(event?.address || event?.venueName || '');
-                const dateStr = config?.wedding?.dateTimeISO || '';
+                const dateStr = config?.calendar?.dateTimeISO || config?.wedding?.dateTimeISO || '';
                 const start = dateStr.replace(/[-:]/g, '').split('.')[0] || '';
                 const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}&dates=${start}/${start}`;
                 window.open(googleUrl, '_blank');
@@ -535,13 +539,12 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
 
           <div className="w-12 h-[1px] mx-auto mb-10" style={{ backgroundColor: theme.colorPrimary, opacity: 0.3 }} />
 
-          <p className="font-sans text-[9px] md:text-[10px] tracking-[0.4em] uppercase font-bold" style={{ color: theme.colorBg, opacity: 0.4 }}>
-            Handcrafted with Love — &copy; {config?.wedding?.year || new Date().getFullYear()} KodeX
-          </p>
 
           {/* Designer credit — shown on every template */}
           <p className="font-sans text-[9px] md:text-[10px] tracking-[0.2em] uppercase font-bold mt-3" style={{ color: theme.colorBg, opacity: 0.55 }}>
-            {DESIGNER_CREDIT}
+            <a href={DESIGNER_URL} target="_blank" rel="noopener noreferrer" className="hover:underline">
+              {DESIGNER_CREDIT}
+            </a>
           </p>
         </div>
       </section>

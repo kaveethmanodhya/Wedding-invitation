@@ -43,6 +43,8 @@ function Layout1({ config, labels = {}, birthdayData = null, generalData = null 
   const { couple = {}, wedding = {}, events = {}, heroImage } = config;
   const ceremony = events?.ceremony || {};
   const dayLabel = dayName(wedding?.dateTimeISO);
+  // Prefer the dedicated Hero Time (new invitations); fall back to ceremony time for existing ones.
+  const heroTime = wedding?.heroTime || ceremony?.time;
   const names = resolveNames(config, birthdayData, generalData);
 
   return (
@@ -92,7 +94,7 @@ function Layout1({ config, labels = {}, birthdayData = null, generalData = null 
           <div style={{ width: '60px', height: '1.5px', background: 'var(--colorPrimary)', margin: '32px 0', opacity: 0.8 }} />
 
           <p style={detail}>{dayLabel ? dayLabel + ', ' : ''} {wedding?.displayDate}</p>
-          {ceremony?.time && <p style={{ ...detail, marginTop: '4px' }}>{ceremony.time}</p>}
+          {heroTime && <p style={{ ...detail, marginTop: '4px' }}>{heroTime}</p>}
 
           {ceremony?.venueName && (
             <>
@@ -198,6 +200,8 @@ function Layout3({ config, isOpened, birthdayData = null, generalData = null }) 
   const { wedding = {}, events = {}, heroImage } = config;
   const ceremony = events?.ceremony || {};
   const dayLabel = dayName(wedding?.dateTimeISO);
+  // Prefer the dedicated Hero Time (new invitations); fall back to ceremony time for existing ones.
+  const heroTime = wedding?.heroTime || ceremony?.time;
   const names = resolveNames(config, birthdayData, generalData);
 
   return (
@@ -281,9 +285,9 @@ function Layout3({ config, isOpened, birthdayData = null, generalData = null }) 
           <p className="font-sans text-[11px] tracking-[0.35em] uppercase opacity-75 font-black mb-1" style={{ color: 'var(--colorTextDark)' }}>
             {dayLabel ? dayLabel + ', ' : ''}{wedding?.displayDate}
           </p>
-          {ceremony?.time && (
+          {heroTime && (
             <p className="font-sans text-[11px] tracking-[0.35em] mt-2 uppercase opacity-75 font-black" style={{ color: 'var(--colorTextDark)' }}>
-              Time {ceremony.time}
+              Time {heroTime}
             </p>
           )}
           {ceremony?.venueName && (
@@ -295,7 +299,6 @@ function Layout3({ config, isOpened, birthdayData = null, generalData = null }) 
 
         {/* Decorative Peacocks Footer */}
         <div className="absolute bottom-5 left-0 right-0 flex flex-col items-center gap-3 pointer-events-none z-20">
-          <div className="w-20 h-px bg-gradient-to-r from-transparent via-[var(--colorPrimary)]/40 to-transparent" />
           <div className="flex justify-center gap-10 opacity-75">
             <span className="text-3xl filter saturate-[0.2] brightness-125" style={{ color: 'var(--colorPrimary)' }}>🦚</span>
             <span className="text-3xl filter saturate-[0.2] brightness-125" style={{ transform: 'scaleX(-1)', color: 'var(--colorPrimary)' }}>🦚</span>
@@ -453,6 +456,8 @@ function Layout9({ config }) {
 function Layout4({ config, labels = {}, birthdayData = null, generalData = null }) {
   const { couple = {}, wedding = {}, events = {}, heroImage, coupleImages } = config;
   const ceremony = events?.ceremony || {};
+  // Prefer the dedicated Hero Time (new invitations); fall back to ceremony time for existing ones.
+  const heroTime = wedding?.heroTime || ceremony?.time;
   const dateObj = wedding?.dateTimeISO ? new Date(wedding.dateTimeISO) : null;
   const dayLabel = dateObj && !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase() : '';
   const month = dateObj && !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase() : '';
@@ -489,7 +494,7 @@ function Layout4({ config, labels = {}, birthdayData = null, generalData = null 
         </div>
 
         <div className="flex-1 text-center font-sans font-bold text-[14px] md:text-[16px] tracking-[0.25em] uppercase text-[#2C2018] opacity-90 w-full">
-          {ceremony?.time ? `AT ${ceremony.time.toUpperCase()}` : 'AT 10:00 AM'}
+          {heroTime ? `AT ${heroTime.toUpperCase()}` : 'AT 10:00 AM'}
         </div>
       </div>
 
@@ -639,17 +644,26 @@ function Layout6({ config, labels = {}, birthdayData = null, generalData = null 
   };
 
   const generateGoogleUrl = () => {
-    const start = wedding?.dateTimeISO?.replace(/[-:]/g, '').split('.')[0] + 'Z' || '';
+    // Prefer the admin-defined Calendar Name / Date & Time (works for any event type).
+    const calDate = config?.calendar?.dateTimeISO || wedding?.dateTimeISO;
+    const start = calDate?.replace(/[-:]/g, '').split('.')[0] || '';
     const end = start; // Same for simplicity or handle duration
-    const title = encodeURIComponent(`Wedding of ${couple?.groom?.firstName} & ${couple?.bride?.firstName}`);
+    const calName = config?.calendar?.title?.trim()
+      ? config.calendar.title
+      : (names.showBoth ? `${names.name1} & ${names.name2}` : names.name1);
+    const title = encodeURIComponent(calName);
     const location = encodeURIComponent(events?.ceremony?.location || 'Wedding Venue');
     const details = encodeURIComponent('Looking forward to seeing you there!');
     return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}&sf=true&output=xml`;
   };
 
   const handleIcsDownload = () => {
-    const start = wedding?.dateTimeISO?.replace(/[-:]/g, '').split('.')[0] + 'Z' || '';
-    const title = `Wedding of ${couple?.groom?.firstName} & ${couple?.bride?.firstName}`;
+    // Prefer the admin-defined Calendar Name / Date & Time (works for any event type).
+    const calDate = config?.calendar?.dateTimeISO || wedding?.dateTimeISO;
+    const start = calDate?.replace(/[-:]/g, '').split('.')[0] || '';
+    const title = config?.calendar?.title?.trim()
+      ? config.calendar.title
+      : (names.showBoth ? `${names.name1} & ${names.name2}` : names.name1);
     const location = events?.ceremony?.location || 'Wedding Venue';
     
     const icsContent = [
