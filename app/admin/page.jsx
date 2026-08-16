@@ -1845,15 +1845,60 @@ function AdminDashboard({ slug, onBack, showToast }) {
           {activeTab === 'rsvp' && (
             <>
               <SectionCard title="RSVP Settings" icon={<Mail size={18} className="text-blue-400" />}>
-                <FieldGroup label="WhatsApp Number" hint="Phone number for receiving RSVPs">
-                  <input
-                    type="text"
-                    className={inputCls}
-                    placeholder="94771234567"
-                    value={config?.rsvp?.whatsappNumber || ''}
-                    onChange={e => setPath('rsvp.whatsappNumber', e.target.value)}
-                  />
+                <FieldGroup label="Submission Destination" hint="Choose where RSVP submissions are sent">
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="submissionDest"
+                        value="whatsapp"
+                        checked={(config?.rsvp?.submissionDestination || 'whatsapp') === 'whatsapp'}
+                        onChange={e => setPath('rsvp.submissionDestination', e.target.value)}
+                        className="w-4 h-4"
+                      />
+                      <span className="text-sm">WhatsApp</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="submissionDest"
+                        value="google-sheet"
+                        checked={(config?.rsvp?.submissionDestination || 'whatsapp') === 'google-sheet'}
+                        onChange={e => setPath('rsvp.submissionDestination', e.target.value)}
+                        className="w-4 h-4"
+                      />
+                      <span className="text-sm">Google Sheet</span>
+                    </label>
+                  </div>
                 </FieldGroup>
+
+                {(config?.rsvp?.submissionDestination === 'whatsapp' || !config?.rsvp?.submissionDestination) && (
+                  <FieldGroup label="WhatsApp Number" hint="Phone number for receiving RSVPs">
+                    <input
+                      type="text"
+                      className={inputCls}
+                      placeholder="94771234567"
+                      value={config?.rsvp?.whatsappNumber || ''}
+                      onChange={e => setPath('rsvp.whatsappNumber', e.target.value)}
+                    />
+                  </FieldGroup>
+                )}
+
+                {config?.rsvp?.submissionDestination === 'google-sheet' && (
+                  <FieldGroup label="Google Sheet URL" hint="Apps Script deployment URL for receiving submissions">
+                    <input
+                      type="text"
+                      className={inputCls}
+                      placeholder="https://script.google.com/macros/s/.../exec"
+                      value={config?.rsvp?.googleSheetUrl || ''}
+                      onChange={e => setPath('rsvp.googleSheetUrl', e.target.value)}
+                    />
+                    <p className="text-xs text-slate-400 mt-2">
+                      Set up Google Apps Script webhook and paste the deployment URL here. <a href="https://developers.google.com/apps-script" target="_blank" rel="noreferrer" className="text-blue-400 hover:underline">Learn more</a>
+                    </p>
+                  </FieldGroup>
+                )}
+
                 <FieldGroup label="RSVP Deadline">
                   <input type="text" className={inputCls} value={config?.rsvp?.deadline || ''} onChange={e => setPath('rsvp.deadline', e.target.value)} />
                 </FieldGroup>

@@ -91,20 +91,64 @@ export default function RSVPSection({ config, labels = {} }) {
         return isAttending;
       });
 
-      const fieldsText = visibleFields.filter(field => !isStaticTextItem(field)).map(field => {
-        const val = formData[field.id];
-        return `*${field.label}:* ${val ? val : 'Not provided'}`;
-      }).join('\n');
+      // Get submission destination (default to whatsapp for backward compatibility)
+      const submissionDest = config?.rsvp?.submissionDestination || 'whatsapp';
+      const googleSheetUrl = config?.rsvp?.googleSheetUrl;
 
-      const waMessage = `${labels.rsvpMessageHeader || '💍 *Wedding Invitation Reply* 💍'}\n\n${fieldsText}`;
+      // Build form object for submission
+      const submitData = {};
+      visibleFields
+        .filter(field => !isStaticTextItem(field))
+        .forEach(field => {
+          submitData[field.label] = formData[field.id] || 'Not provided';
+        });
 
-      // 1. WhatsApp redirect
-      const encodedMessage = encodeURIComponent(waMessage);
-      const cleanNumber = (rsvp?.whatsappNumber || '').replace(/[+\s-]/g, '').replace(/^0+/, '');
-      const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
-      window.open(whatsappUrl, '_blank');
+      if (submissionDest === 'google-sheet') {
+        // Send to Google Sheet via API proxy (to bypass CORS)
+        if (!googleSheetUrl) {
+          setStatus('error');
+          alert('Google Sheet not configured. Please contact the couple.');
+          return;
+        }
 
-      setStatus('success');
+        try {
+          const response = await fetch('/api/rsvp-submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              googleSheetUrl,
+              ...submitData,
+            }),
+          });
+
+          const result = await response.json();
+          if (result.success) {
+            setStatus('success');
+            setTimeout(() => setStatus('idle'), 2000);
+          } else {
+            throw new Error(result.error);
+          }
+        } catch (err) {
+          console.error('Google Sheet submission error:', err);
+          setStatus('error');
+          setTimeout(() => setStatus('idle'), 2000);
+        }
+      } else {
+        // Send to WhatsApp (original behavior)
+        const fieldsText = visibleFields.filter(field => !isStaticTextItem(field)).map(field => {
+          const val = formData[field.id];
+          return `*${field.label}:* ${val ? val : 'Not provided'}`;
+        }).join('\n');
+
+        const waMessage = `${labels.rsvpMessageHeader || '💍 *Wedding Invitation Reply* 💍'}\n\n${fieldsText}`;
+
+        const encodedMessage = encodeURIComponent(waMessage);
+        const cleanNumber = (rsvp?.whatsappNumber || '').replace(/[+\s-]/g, '').replace(/^0+/, '');
+        const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+
+        setStatus('success');
+      }
     } catch (err) {
       console.error(err);
       setStatus('error');
@@ -375,7 +419,7 @@ export default function RSVPSection({ config, labels = {} }) {
             ) : status === 'success' ? (
               <>Sent ✨</>
             ) : (
-              <>Confirm via WhatsApp</>
+              <>{(config?.rsvp?.submissionDestination === 'google-sheet') ? 'Submit' : 'Confirm via WhatsApp'}</>
             )}
           </button>
 

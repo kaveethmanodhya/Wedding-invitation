@@ -57,6 +57,8 @@ export const getDefaultConfig = (slug) => ({
     heroOverlayEnd: 'rgba(18, 12, 6, 0.25)'
   },
   rsvp: {
+    submissionDestination: 'whatsapp', // 'whatsapp' | 'google-sheet'
+    googleSheetUrl: '',
     whatsappNumber: '',
     deadline: 'December 1, 2026',
     maxGuests: 2,
