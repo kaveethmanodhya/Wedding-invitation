@@ -59,11 +59,19 @@ export default function CoverReveal({ config, onOpen, labels = {}, birthdayData 
           </div>
 
           <h1 className="font-serif text-4xl md:text-6xl font-bold tracking-tight text-[#2C2018] mb-12 leading-tight">
-            {displayName
-              ? displayName.toUpperCase()
-              : <>{(couple?.groom?.firstName || '').toUpperCase()} & {(couple?.bride?.firstName || '').toUpperCase()}</>
-            }
-          </h1>
+  {displayName ? (
+    displayName.toUpperCase()
+  ) : (
+    <>
+      {(couple?.groom?.firstName || '').toUpperCase()}
+      <br />
+      &
+      <br />
+      {(couple?.bride?.firstName || '').toUpperCase()}
+    </>
+  )}
+</h1>
+
 
           <motion.button
             whileHover={{ scale: 1.05 }}

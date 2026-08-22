@@ -57,19 +57,19 @@ const BottomMandala = ({ className = "" }) => (
 
 
 // ── Shared Blurred Background Layer ──
-const SectionBackground = ({ image, opacity = 0.4 }) => {
+const SectionBackground = ({ image, opacity = 0.4, blurClass = 'blur-[3px]', scaleClass = 'scale-[1.02]' }) => {
   if (!image) return null;
   return (
     <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
       <div 
-        className="absolute inset-0 bg-cover bg-center blur-[6px] scale-[1.05]" 
+        className={`absolute inset-0 bg-cover bg-center ${blurClass} ${scaleClass}`} 
         style={{ 
           backgroundImage: `url(${image})`,
           opacity: opacity
         }} 
       />
       {/* Subtle white/base gradient to help text pop */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white/20" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-white/10" />
     </div>
   );
 };
@@ -78,6 +78,16 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
   // Use admin panel theme setting
   const themeId = config.themeId || config.theme || 'gold';
   const theme = PRESET_THEMES.find(t => t.id === themeId)?.colors || config.theme || PRESET_THEMES[0].colors;
+
+  const singleHeroName = (birthdayData?.celebrantName || generalData?.eventTitle || generalData?.hostName || '').trim();
+  const groomHeroName = (config?.couple?.groom?.firstName || 'Groom').trim();
+  const brideHeroName = (config?.couple?.bride?.firstName || 'Bride').trim();
+  const isLongHeroNameMobile = singleHeroName
+    ? singleHeroName.length > 13
+    : (groomHeroName.length > 10 || brideHeroName.length > 10);
+  const heroNameMobileClass = isLongHeroNameMobile
+    ? 'text-[1.95rem] leading-[1.03] tracking-[0.03em]'
+    : 'text-[clamp(2.4rem,9vw,3.8rem)] leading-[0.98] tracking-[0.08em]';
 
   let hDay = '', hMonth = '', hDate = '', hYear = '', hTime = '';
   if (config?.wedding?.dateTimeISO) {
@@ -134,7 +144,7 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
         className="relative min-h-screen w-full flex flex-col items-center justify-center py-12 md:py-24 px-4 overflow-hidden z-20" 
         style={{ backgroundColor: theme.colorBg }}
       >
-        <SectionBackground image={config.sectionBackgrounds?.hero} opacity={0.3} />
+        <SectionBackground image={config.sectionBackgrounds?.hero} opacity={0.3} blurClass="blur-[6px]" scaleClass="scale-[1.05]" />
         
         {/* The White Card Container */}
         <div className="relative w-full max-w-[850px] bg-white shadow-[0_30px_80px_rgba(0,0,0,0.08)] rounded-[40px] overflow-hidden flex flex-col items-center justify-start pb-20 z-10 border border-[rgba(0,0,0,0.02)]">
@@ -169,13 +179,13 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
           {/* Content Over Background - Overlapping the blurred bottom */}
           <div className="mt-[-25%] md:mt-[-15%] text-center max-w-2xl mx-auto w-full z-20 px-4">
             
-            <h1 className="flex flex-col items-center justify-center text-[3.5rem] md:text-[5.5rem] leading-[0.9] font-serif uppercase tracking-[0.2em] mb-12 drop-shadow-md" style={{ color: theme.colorTextDark }}>
+            <h1 className={`flex flex-col items-center justify-center ${heroNameMobileClass} md:text-[5.5rem] md:leading-[0.9] font-serif uppercase md:tracking-[0.14em] mb-12 drop-shadow-md max-w-full px-2`} style={{ color: theme.colorTextDark }}>
               {birthdayData?.celebrantName || generalData?.eventTitle || generalData?.hostName
-                ? <span>{birthdayData?.celebrantName || generalData?.eventTitle || generalData?.hostName}</span>
+                ? <span className="max-w-full">{birthdayData?.celebrantName || generalData?.eventTitle || generalData?.hostName}</span>
                 : <>
-                    <span>{config?.couple?.groom?.firstName || 'Groom'}</span>
+                    <span className="max-w-full">{config?.couple?.groom?.firstName || 'Groom'}</span>
                     <span className="text-2xl md:text-3xl font-sans font-light opacity-50 my-1">&</span>
-                    <span>{config?.couple?.bride?.firstName || 'Bride'}</span>
+                    <span className="max-w-full">{config?.couple?.bride?.firstName || 'Bride'}</span>
                   </>
               }
             </h1>
@@ -250,7 +260,7 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 md:w-96 z-40 opacity-40 pointer-events-none" style={{ color: theme.colorPrimary }}>
            <TopMandala className="w-full" />
         </div>
-        <SectionBackground image={config.sectionBackgrounds?.story || config.story?.bgImage} opacity={0.4} />
+        <SectionBackground image={config.sectionBackgrounds?.story || config.story?.bgImage} opacity={0.58} blurClass="blur-[2px]" scaleClass="scale-[1.01]" />
         <div className="max-w-3xl mx-auto relative p-12 md:p-16 rounded-[3rem] shadow-[0_30px_60px_rgba(0,0,0,0.1)]" style={{ backgroundColor: theme.colorSurface }}>
           <span className="font-sans text-[10px] uppercase tracking-[0.5em] font-bold block mb-12" style={{ color: theme.colorPrimary }}>{labels.storySection || 'Our Story'}</span>
 
@@ -281,7 +291,7 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 md:w-96 z-40 opacity-40 pointer-events-none" style={{ color: theme.colorPrimary }}>
              <TopMandala className="w-full" />
           </div>
-          <SectionBackground image={config.sectionBackgrounds?.gallery || config.galleryConfig?.bgImage} opacity={0.4} />
+          <SectionBackground image={config.sectionBackgrounds?.gallery || config.galleryConfig?.bgImage} opacity={0.58} blurClass="blur-[2px]" scaleClass="scale-[1.01]" />
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <span className="font-sans text-[10px] uppercase tracking-[0.4em] font-bold" style={{ color: theme.colorPrimary }}>Captured Moments</span>
@@ -317,7 +327,7 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 md:w-96 z-40 opacity-40 pointer-events-none" style={{ color: theme.colorPrimary }}>
            <TopMandala className="w-full" />
         </div>
-        <SectionBackground image={config.sectionBackgrounds?.events || config.timelineConfig?.bgImage} opacity={0.4} />
+        <SectionBackground image={config.sectionBackgrounds?.events || config.timelineConfig?.bgImage} opacity={0.58} blurClass="blur-[2px]" scaleClass="scale-[1.01]" />
         <div className="max-w-6xl mx-auto text-center relative z-10">
           
           {config?.events?.ceremony?.image ? (
@@ -521,7 +531,7 @@ export default function LayoutTen({ config, labels = {}, birthdayData = null, ge
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 md:w-96 z-40 opacity-40 pointer-events-none" style={{ color: theme.colorPrimary }}>
            <TopMandala className="w-full" />
         </div>
-        <SectionBackground image={config.sectionBackgrounds?.footer} opacity={0.25} />
+        <SectionBackground image={config.sectionBackgrounds?.footer} opacity={0.42} blurClass="blur-[2px]" scaleClass="scale-[1.01]" />
         <div className="absolute bottom-0 left-0 w-full pointer-events-none -translate-y-[20%] md:-translate-y-[45%] opacity-10 z-0" style={{ color: theme.colorBg }}>
           <TopMandala className="w-full max-w-[1200px] mx-auto" />
         </div>
