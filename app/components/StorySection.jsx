@@ -94,55 +94,93 @@ function Layout2({ config, ref1, ref2, ref3 }) {
 
 function Layout3({ config, ref1, ref2, ref3, ref4 }) {
   const { story } = config;
+
   return (
-    <div className="relative max-w-5xl mx-auto px-6 py-28 md:py-36">
+    <div className="relative max-w-5xl mx-auto px-6 py-16 md:py-20">
       {/* Decorative Border */}
       <div className="absolute inset-4 md:inset-8 border border-[var(--colorPrimary)] pointer-events-none opacity-40 mix-blend-multiply" />
       <div className="absolute inset-[18px] md:inset-[34px] border border-[var(--colorPrimary)] pointer-events-none opacity-20 outline outline-1 outline-offset-2 outline-[var(--colorPrimary)]" />
-      
+
       <div className="relative z-10 flex flex-col items-center max-w-3xl mx-auto text-center px-4">
-        <div ref={ref1} className="opacity-0 translate-y-8 transition-all duration-700 mb-12">
-           <span className="text-3xl text-[var(--colorPrimary)] mb-4 block">❀</span>
-           <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-4 tracking-wide">
-             The Journey
-           </h2>
-           <div className="w-24 h-0.5 bg-[var(--colorPrimary)] mx-auto opacity-60" />
+
+        {/* Heading */}
+        <div
+          ref={ref1}
+          className="opacity-0 translate-y-8 transition-all duration-700 mb-8"
+        >
+          <span className="text-3xl text-[var(--colorPrimary)] mb-3 block">
+            ❀
+          </span>
+
+          <h2 className="font-serif text-4xl md:text-5xl text-[var(--colorTextDark)] mb-3 tracking-wide">
+            The Journey
+          </h2>
+
+          <div className="w-24 h-0.5 bg-[var(--colorPrimary)] mx-auto opacity-60" />
         </div>
 
-        <div ref={ref2} className="opacity-0 translate-y-8 transition-all duration-700 delay-100 bg-[var(--colorPrimary)]/5 p-8 md:p-12 border border-[var(--colorPrimary)]/30 shadow-lg mb-16 relative">
+        {/* Invitation */}
+        <div
+          ref={ref2}
+          className="opacity-0 translate-y-8 transition-all duration-700 delay-100 bg-[var(--colorPrimary)]/5 p-6 md:p-10 border border-[var(--colorPrimary)]/30 shadow-lg mb-10 relative w-full"
+        >
           {/* Corner ornaments */}
           <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-[var(--colorPrimary)]" />
           <div className="absolute top-2 right-2 w-4 h-4 border-t border-r border-[var(--colorPrimary)]" />
           <div className="absolute bottom-2 left-2 w-4 h-4 border-b border-l border-[var(--colorPrimary)]" />
           <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-[var(--colorPrimary)]" />
-          
-          <p className="font-serif text-xl md:text-2xl leading-loose text-[var(--colorTextDark)] mb-4">
+
+          <p className="font-serif text-xl md:text-2xl leading-relaxed text-[var(--colorTextDark)]">
             {story?.invitationText || ''}
           </p>
         </div>
 
-        <div ref={ref3} className="opacity-0 translate-y-8 transition-all duration-700 delay-200 space-y-8 mb-20">
+        {/* Story Paragraphs */}
+        <div
+          ref={ref3}
+          className="opacity-0 translate-y-8 transition-all duration-700 delay-200 space-y-5 mb-10 w-full"
+        >
           {(story?.paragraphs || []).map((p, i) => (
-            <p key={i} className="font-sans text-sm md:text-base leading-relaxed tracking-wide text-[var(--colorTextDark)] opacity-80 text-justify md:text-center">
+            <p
+              key={i}
+              className="font-sans text-sm md:text-base leading-relaxed tracking-wide text-[var(--colorTextDark)] opacity-80 text-justify md:text-center"
+            >
               {p}
             </p>
           ))}
         </div>
-        
-        <div ref={ref4} className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-5xl mx-auto opacity-0 translate-y-8 transition-all duration-700 delay-300 mt-8 mb-16">
-           {config.gallery?.slice(0, 4).map((img, i) => (
-              <div key={i} className="w-full aspect-square rounded-lg overflow-hidden shadow-lg border-2 border-[var(--colorBg)] transition-transform duration-500 hover:scale-105 relative">
-                 <Image src={img.src} alt={`Journey ${i}`} fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" className="object-cover" />
-              </div>
-           ))}
+
+        {/* Gallery */}
+        <div
+          ref={ref4}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full opacity-0 translate-y-8 transition-all duration-700 delay-300 mb-8"
+        >
+          {config.gallery?.slice(0, 4).map((img, i) => (
+            <div
+              key={i}
+              className="w-full aspect-square rounded-lg overflow-hidden shadow-lg border-2 border-[var(--colorBg)] transition-transform duration-500 hover:scale-105 relative"
+            >
+              <Image
+                src={img.src}
+                alt={`Journey ${i}`}
+                fill
+                sizes="(max-width: 768px) 50vw, 25vw"
+                loading="lazy"
+                className="object-cover"
+              />
+            </div>
+          ))}
         </div>
-        
-        <span className="text-3xl text-[var(--colorPrimary)] mt-24 scale-[-1]">❀</span>
+
+        {/* Bottom decoration */}
+        <span className="text-3xl text-[var(--colorPrimary)] mt-4 scale-[-1]">
+          ❀
+        </span>
+
       </div>
     </div>
   );
 }
-
 function Layout4({ config, ref1, ref2, ref3 }) {
   const { story } = config;
   return (
